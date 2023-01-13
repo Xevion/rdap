@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>RDAP Lookup - a private domain name lookup tool</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="./assets/bootstrap.min.css?v=2021112213" />
+    <link rel="shortcut icon" href="public/shortcut-icon.svg?v=2021112213" />
+    <meta name="description" content="A completely private domain name lookup tool using RDAP (the replacement for Whois)" />
+    <meta name="keywords" content="rdap, whois, rdap, domain name, dns, ip address" />
+    <script src="assets/ipaddr.js/ipaddr.min.js?v=2021122209"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+      <span class="text-white font-weight-bold" style="font-size:larger">
+        <a class="navbar-brand" href="#">RDAP.ORG</a>
+      </span>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar1" aria-controls="navbar1" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbar1">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="https://about.rdap.org/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="https://client.rdap.org/">Web Client</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://deployment.rdap.org/">Deployment Dashboard</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <br/>
+
+    <div class="container">
+
+      <form onsubmit="doQuery();return false" class="form-inline">
+        <div class="col" style="padding:0">
+          <div class="input-group">
+
+            <div class="input-group-prepend">
+              <select class="custom-select" id="type" name="type" onchange="getPlaceholder(this.options[this.selectedIndex].value)">
+                <option value="domain" selected>Domain</option>
+                <option value="tld">TLD</option>
+                <option value="ip">IP/CIDR</option>
+                <option value="autnum">AS Number</option>
+                <option value="entity">Entity</option>
+                <option value="registrar">Registrar</option>
+                <option value="url">URL</option>
+                <option value="json">JSON</option>
+              </select>
+            </div>
+
+            <input class="form-control" id="object" type="text" name="object" placeholder="example.com" required onKeyUp={() => {}} />
+            <div class="input-group-append">
+              <input id="button" type="button" value="Submit" onclick="doQuery()" class="btn btn-primary" disabled/>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div class="container" style="padding:0;font-size:small;font-style:italic;color:#aaa">
+        <div class="col" style="padding:0.75em 0 0.25em 0">
+          Options:&nbsp;
+          <label for="request-jscontact">
+            <input name="request-jscontact" id="request-jscontact" type="checkbox">
+            Request JSContact
+          </label>
+          &nbsp;
+          <label for="follow-referral">
+            <input name="follow-referral" id="follow-referral" type="checkbox">
+            Follow referral to registrar's RDAP record
+          </label>
+        </div>
+      </div>
+
+      <div id="output-div"></div>
+
+      <p>This page implements a <em>completely private lookup tool</em> for domain names, IP addresses and Autonymous System Numbers (ASNs). Only the relevant registry sees your query: your browser will directly connect to the registry's RDAP server using an encrypted HTTPS connection to protect the confidentiality of your query. If you click the "Follow referral to registrar's RDAP record" checkbox, then the sponsoring registrar may also see your query.</p>
+      <ul>
+        <li><a href="https://about.rdap.org" target="_new">Click here</a> for more information about what RDAP is and how it differs from traditional Whois.</li>
+        <li>Most generic TLDs now support RDAP, but only a few ccTLDs have deployed RDAP so far. To see which TLDs support RDAP, <a href="https://deployment.rdap.org" target="_new">click here</a>.</li>
+        <li>There is no bootstrap registry for top-level domains or ICANN-accredited registrars; instead these queries are sent to the <a href="https://about.rdap.org/#additional" target="_new">{root,registrars}.rdap.org servers</a>.</li>
+        <li>To submit feedback, <a href="mailto:feedback@rdap.org">click here</a>. Please contact the relevant registry or registrar if you have an issue with the content of an RDAP response.</li>
+        <li>This tool is Free Software; for the license, <a href="LICENSE">click here</a>. To fork a copy of the git repository, <a rel="noopener" target="_new" href="https://gitlab.centralnic.com/centralnic/rdap-web-client">click here</a>.</li>
+        <li>This page uses <a rel="noopener" target="_new" href="https://github.com/whitequark/ipaddr.js/">ipaddr.js</a> by <a rel="noopener" target="_new" href="https://whitequark.org/">whitequark</a>.</li>
+      </ul>
+
+    </div>
+
+    <script>
+      loadRegistries();
+    </script>
+  </body>
+</html>
