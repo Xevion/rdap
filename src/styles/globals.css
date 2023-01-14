@@ -3,3 +3,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+[title]:not(.no-title) {
+    border-bottom: 1px dashed silver;
+}
