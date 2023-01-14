@@ -1,6 +1,6 @@
 import ipaddr from "ipaddr.js";
 import {rdapStatusInfo, registryURLs} from "@/constants";
-import type {Uri} from "@/types";
+import type {ObjectType} from "@/types";
 
 // keeps track of how many registries we've loaded
 let loadedRegistries = 0;
@@ -700,7 +700,7 @@ export function createRDAPLink(url, title) {
     return link;
 }
 
-const URIPatterns: [RegExp, Uri][] = [
+const URIPatterns: [RegExp, ObjectType][] = [
     [/^\d+$/, "autnum"],
     [/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/?\d*$/, "ip"],
     [/^[0-9a-f:]{2,}\/?\d*$/, "ip"],
@@ -710,7 +710,7 @@ const URIPatterns: [RegExp, Uri][] = [
 ];
 
 // guess the type from the input value
-export function getType(value: string): Uri | null {
+export function getType(value: string): ObjectType | null {
     for (let i = 0; i < URIPatterns.length; i++)
         if (URIPatterns[i]![0].test(value)) {
             return URIPatterns[i]![1];

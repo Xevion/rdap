@@ -1,6 +1,6 @@
 import {type NextPage} from "next";
 import Head from "next/head";
-import type {Uri} from "../types";
+import type {ObjectType} from "../types";
 import {placeholders} from "../constants";
 import {asnMatch, domainMatch, entityMatch, getBestURL, getRDAPURL, getType, ipMatch, showSpinner} from "../rdap";
 import {useEffect, useState} from "react";
@@ -11,7 +11,7 @@ import update from "immutability-helper";
 import GenericObject, {Link} from "../components/DomainType";
 
 const Index: NextPage = () => {
-    const [uriType, setUriType] = useState<Uri>('domain');
+    const [uriType, setUriType] = useState<ObjectType>('domain');
 
 
     const [requestJSContact, setRequestJSContact] = useState(false);
@@ -170,7 +170,7 @@ const Index: NextPage = () => {
         // Load parameters from URL query string on page load
         const params = new URLSearchParams(window.location.search);
         if (params.has('type'))
-            setUriType(params.get('type') as Uri);
+            setUriType(params.get('type') as ObjectType);
         else if (params.has('object'))
             setObject(params.get('object')!);
 
@@ -250,7 +250,7 @@ const Index: NextPage = () => {
                                     <select className="custom-select" id="type" name="type"
                                             value={uriType}
                                             onChange={(e) => {
-                                                setUriType(e.target.value as Uri);
+                                                setUriType(e.target.value as ObjectType);
                                             }}>
                                         <option value="domain">Domain</option>
                                         <option value="tld">TLD</option>
