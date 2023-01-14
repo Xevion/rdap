@@ -1,6 +1,6 @@
 import ipaddr from "ipaddr.js";
-import {registryURLs, rdapStatusInfo, placeholders} from "./constants";
-import type {Uri} from "./types";
+import {rdapStatusInfo, registryURLs} from "@/constants";
+import type {Uri} from "@/types";
 
 // keeps track of how many registries we've loaded
 let loadedRegistries = 0;

@@ -1,6 +1,5 @@
 import type {FunctionComponent} from "react";
-import {useMemo} from "react";
-import Domain from "./Domain";
+import Domain from "@/components/Domain";
 
 export type Link = {
     value: string;

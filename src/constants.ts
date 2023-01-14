@@ -1,5 +1,5 @@
 // see https://www.iana.org/assignments/rdap-json-values
-import type {ExtendedUri, RdapStatusType, Uri} from "./types";
+import type {ExtendedUri, RdapStatusType, Uri} from "@/types";
 
 export const rdapStatusInfo: Record<RdapStatusType, string> = {
     "validated": "Signifies that the data of the object instance has been found to be accurate. This type of status is usually found on entity object instances to note the validity of identifying contact information.",

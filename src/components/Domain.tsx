@@ -1,6 +1,7 @@
-import React, {Fragment, FunctionComponent, ReactNode} from "react";
-import {DomainType} from "./DomainType";
-import {rdapStatusInfo} from "../constants";
+import type {FunctionComponent, ReactNode} from "react";
+import React, {Fragment} from "react";
+import type {DomainType} from "@/components/DomainType";
+import {rdapStatusInfo} from "@/constants";
 
 export type DomainProps = {
     data: DomainType;
