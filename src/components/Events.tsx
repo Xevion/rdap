@@ -16,7 +16,7 @@ const Events: FunctionComponent<EventsProps> = ({data}) => {
                     <span
                         title={eventDate.toString()}>{eventDate.toString()}
                     </span>
-                    {eventActor != null ? `(by ${eventActor})` : null}
+                    {eventActor != null ? ` (by ${eventActor})` : null}
                 </dd>
             </Fragment>
         })}
