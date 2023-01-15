@@ -98,3 +98,21 @@ export const DomainSchema = z.object({
     network: IpNetworkSchema.optional(),
 })
 export type Domain = z.infer<typeof DomainSchema>;
+
+
+const RegistrarSchema = z.tuple([
+    z.array(z.string()).min(1),
+    z.array(z.string()).min(1)
+]).or(z.tuple([
+    z.array(z.string()).min(1),
+    z.array(z.string()).min(1),
+    z.array(z.string()).min(1)
+]))
+
+export const RegisterSchema = z.object({
+    description: z.string(),
+    publication: z.string(),
+    services: z.array(RegistrarSchema),
+    version: z.string()
+});
+export type Register = z.infer<typeof RegisterSchema>;

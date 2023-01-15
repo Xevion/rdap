@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+dd {
+    margin: 0.5em 0 1em 2em;
+}
+
 [title]:not(.no-title) {
     border-bottom: 1px dashed silver;
 }

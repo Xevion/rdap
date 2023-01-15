@@ -4,29 +4,27 @@ import type {ObjectType} from "@/types";
 import {placeholders, registryURLs} from "@/constants";
 import {domainMatch, getBestURL, getType} from "@/rdap";
 import type {FormEvent} from "react";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {truthy} from "@/helpers";
 import axios from "axios";
 import type {ParsedGeneric} from "@/components/Generic";
 import Generic from "@/components/Generic";
 import type {ZodSchema} from "zod";
-import {DomainSchema} from "@/responses";
+import type {Register} from "@/responses";
+import {DomainSchema, RegisterSchema} from "@/responses";
 
 const Index: NextPage = () => {
-    const [uriType, setUriType] = useState<ObjectType>('domain');
     const [requestJSContact, setRequestJSContact] = useState(false);
     const [followReferral, setFollowReferral] = useState(false);
     const [object, setObject] = useState<string>("");
     const [loading, setLoading] = useState(false);
     const [response, setResponse] = useState<ParsedGeneric | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [registryData, setRegistryData] = useState<Record<string, any>>({});
+    const [registryData, setRegistryData] = useState<Record<string, Register> | null>(null);
 
     // Change the selected type automatically
-    useEffect(function () {
-        const newType = getType(object);
-        if (newType != null && newType != uriType)
-            setUriType(newType)
+    const uriType = useMemo<ObjectType>(function () {
+        return getType(object) ?? 'domain';
     }, [object]);
 
     async function loadRegistryData() {
@@ -41,15 +39,15 @@ const Index: NextPage = () => {
             console.log(`Registered loaded ${registersLoaded}/${totalRegisters}`)
             return {
                 registryType,
-                response: response.data
+                response: RegisterSchema.parse(response.data)
             };
         }))
 
         console.log('Registry data set.')
         setRegistryData(() => {
             return Object.fromEntries(
-                responses.map(({registryType, response}) => [registryType, response.services])
-            )
+                responses.map(({registryType, response}) => [registryType, response])
+            ) as Record<string, Register>
         })
         setLoading(false);
     }
@@ -58,7 +56,13 @@ const Index: NextPage = () => {
     function getRDAPURL(object: string): string | null {
         let urls: string[] = [];
 
-        const service: [string[], string[]][] | [string[], string[], string[]][] = registryData[uriType];
+        if (registryData == null) {
+            console.log('Registry data not loaded.')
+            return null;
+        }
+        const service = registryData[uriType]?.services;
+        if (service == undefined) return null;
+
         services:
             for (const serviceItem of service) {
                 // special case for object tags, since the registrant email address is in the 0th position
@@ -155,15 +159,15 @@ const Index: NextPage = () => {
             }
         }
 
-        if (followReferral && data?.links != null) {
-            console.log('Using followReferral.')
-            for (const link of data.links) {
-                if ('related' == link.rel && 'application/rdap+json' == link.type && link.href.match(/^(https?:|)\/\//i)) {
-                    await sendQuery(link.href, false)
-                    return;
-                }
-            }
-        }
+        // if (followReferral && data.hasOwnProperty('links') != undefined) {
+        //     console.log('Using followReferral.')
+        //     for (const link of data.links) {
+        //         if ('related' == link.rel && 'application/rdap+json' == link.type && link.href.match(/^(https?:|)\/\//i)) {
+        //             await sendQuery(link.href, false)
+        //             return;
+        //         }
+        //     }
+        // }
 
         setLoading(false);
         console.log(data);
@@ -173,16 +177,21 @@ const Index: NextPage = () => {
             window.history.pushState(null, document.title, url);
 
         } catch (e) {
-            setError(`Exception: ${e.message} (line ${e.lineNumber})`);
+            if (e instanceof Error)
+                setError(`Exception: ${e.message}`);
+            else
+                setError('Unknown error.')
         }
     }
 
     useEffect(() => {
         // Load parameters from URL query string on page load
         const params = new URLSearchParams(window.location.search);
-        if (params.has('type'))
-            setUriType(params.get('type') as ObjectType);
-        else if (params.has('object'))
+
+        // if (params.has('type'))
+        //     setUriType(params.get('type') as ObjectType);
+
+        if (params.has('object'))
             setObject(params.get('object')!);
 
         if (params.has('request-jscontact') && truthy(params.get('request-jscontact')))
@@ -193,7 +202,7 @@ const Index: NextPage = () => {
 
         if (params.has('object') && (params.get('object')?.length ?? 0) > 0) {
             setObject(params.get('object')!);
-            submit(null);
+            // submit(null);
         }
 
         loadRegistryData().catch(console.error);
@@ -243,20 +252,16 @@ const Index: NextPage = () => {
                     <a className="navbar-brand" href="#">rdap.xevion.dev</a>
                   </span>
                 </nav>
-
-                <br/>
-
-                <div className="container mx-auto max-w-screen-lg">
-                    <form onSubmit={submit} className="form-inline">
+                <div className="container py-12 mx-auto max-w-screen-lg">
+                    <form onSubmit={(e) => {
+                        void submit(e)
+                    }} className="form-inline">
                         <div className="col p-0">
                             <div className="input-group">
 
                                 <div className="input-group-prepend">
                                     <select className="custom-select" id="type" name="type"
-                                            value={uriType}
-                                            onChange={(e) => {
-                                                setUriType(e.target.value as ObjectType);
-                                            }}>
+                                            value={uriType}>
                                         <option value="domain">Domain</option>
                                         <option value="tld">TLD</option>
                                         <option value="ip">IP/CIDR</option>
@@ -277,7 +282,9 @@ const Index: NextPage = () => {
                                        }} required/>
 
                                 <div className="input-group-append">
-                                    <input id="button" type="button" value="Submit" onClick={submit}
+                                    <input id="button" type="button" value="Submit" onClick={(event) => {
+                                        void submit(event)
+                                    }}
                                            className="btn btn-primary"
                                            disabled={loading}/>
                                 </div>

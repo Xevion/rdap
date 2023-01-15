@@ -1,15 +1,13 @@
-import ipaddr from "ipaddr.js";
-import {rdapStatusInfo, registryURLs} from "@/constants";
 import type {ObjectType} from "@/types";
 
 // keeps track of how many registries we've loaded
-let loadedRegistries = 0;
+const loadedRegistries = 0;
 
 // registry data is stored in this
-let registryData = {};
+const registryData = {};
 
 // keeps track of the elements we've created so we can assign a unique ID
-let elementCounter = 123456;
+// let elementCounter = 123456;
 
 const cardTitles = {
     "domain": "Domain Name",
@@ -23,23 +21,29 @@ export function domainMatch(tld: string, domain: string): boolean {
     return domain.toUpperCase().endsWith(`.${tld.toUpperCase()}`);
 }
 
+/*
 export function asnMatch(range, asn) {
-    var [min, max] = range.split('-', 2);
+    let [min, max] = range.split('-', 2);
     min = parseInt(min);
     max = parseInt(max);
 
     return (asn >= min && asn <= max);
 }
+*/
 
+/*
 export function entityMatch(tag: string, handle: string) {
     return handle.toUpperCase().endsWith('-' + tag.toUpperCase());
 }
+*/
 
+/*
 export function ipMatch(prefix: string, ip: string) {
-    var parsedIp = ipaddr.parse(ip);
-    let cidr = ipaddr.parseCIDR(prefix);
+    const parsedIp = ipaddr.parse(ip);
+    const cidr = ipaddr.parseCIDR(prefix);
     return (parsedIp.kind() == cidr[0].kind() && parsedIp.match(cidr));
 }
+*/
 
 // return the first HTTPS url, or the first URL
 export function getBestURL(urls: string[]): string {
@@ -52,34 +56,38 @@ export function getBestURL(urls: string[]): string {
 
 // given a URL, injects that URL into the query input,
 // and initiates an RDAP query
+/*
 export function runQuery(url) {
-    var type = document.getElementById('type');
+    const type = document.getElementById('type');
 
-    for (var i = 0; i < type.options.length; i++) if ('url' == type.options[i].value) type.selectedIndex = i;
+    for (let i = 0; i < type.options.length; i++) if ('url' == type.options[i].value) type.selectedIndex = i;
     document.getElementById('object').value = url;
     doQuery();
 }
+*/
 
+/*
 export function showSpinner(msg) {
     msg = msg ? msg : 'Loading...';
 
-    var div = document.getElementById('output-div');
+    const div = document.getElementById('output-div');
     div.innerHTML = '';
 
-    var spinner = document.createElement('div');
+    const spinner = document.createElement('div');
     spinner.classList.add('spinner-border');
     spinner.role = 'status';
-    var span = spinner.appendChild(document.createElement('span'));
+    const span = spinner.appendChild(document.createElement('span'));
     span.classList.add('sr-only');
     span.appendChild(document.createTextNode(msg));
 
     div.appendChild(spinner);
 
-    var msgDiv = document.createElement('div');
+    const msgDiv = document.createElement('div');
     msgDiv.id = 'spinner-msg';
     msgDiv.appendChild(document.createTextNode(msg));
     div.appendChild(msgDiv);
 }
+*/
 
 // export function handleError(error) {
 //     var div = document.getElementById('output-div');
@@ -87,6 +95,7 @@ export function showSpinner(msg) {
 //     div.appendChild(createErrorNode(error));
 // }
 
+/*
 export function createErrorNode(error) {
     el = document.createElement('p');
     el.classList.add('error', 'alert', 'alert-warning');
@@ -94,16 +103,18 @@ export function createErrorNode(error) {
 
     return el;
 }
+*/
 
 // process an RDAP object. Argument is a JSON object, return
 // value is an element that can be inserted into the page
+/*
 export function processObject(object, toplevel, followReferral = true) {
     if (!object) {
         console.log(object);
         return false;
     }
 
-    var dl = document.createElement('dl');
+    const dl = document.createElement('dl');
 
     switch (object.objectClassName) {
         case 'domain':
@@ -136,10 +147,10 @@ export function processObject(object, toplevel, followReferral = true) {
             }
     }
 
-    var card = document.createElement('div');
+    const card = document.createElement('div');
     card.classList.add('card');
 
-    var titleText = '';
+    let titleText = '';
     if (object.unicodeName) {
         titleText = object.unicodeName.toUpperCase();
 
@@ -164,12 +175,12 @@ export function processObject(object, toplevel, followReferral = true) {
 
     }
 
-    var title = document.createElement('div');
+    const title = document.createElement('div');
     title.classList.add('card-header', 'font-weight-bold');
     title.appendChild(document.createTextNode(titleText));
     card.appendChild(title);
 
-    var body = document.createElement('div');
+    const body = document.createElement('div');
     body.classList.add('card-body');
 
     body.appendChild(dl);
@@ -177,16 +188,18 @@ export function processObject(object, toplevel, followReferral = true) {
     card.appendChild(body);
     return card;
 }
+*/
 
 // simplify the process of adding a name => value to a definition list
+/*
 export function addProperty(dl, name, value) {
 
-    var dt = document.createElement('dt');
+    const dt = document.createElement('dt');
     dt.classList.add('rdap-property-name');
     dt.appendChild(document.createTextNode(name));
     dl.appendChild(dt);
 
-    var dd = document.createElement('dd');
+    const dd = document.createElement('dd');
     dd.classList.add('rdap-property-value');
     if (value instanceof Node) {
         dd.appendChild(value);
@@ -197,10 +210,12 @@ export function addProperty(dl, name, value) {
     }
     dl.appendChild(dd);
 }
+*/
 
 // called by the individual object processors, since all RDAP objects have a similar set of
 // properties. the first argument is the RDAP object and the second is the <dl> element
 // being used to display that object.
+/*
 export function processCommonObjectProperties(object, dl) {
     // if (object.objectClassName) addProperty(dl, 'Object Type:', object.objectClassName);
     // if (object.handle) addProperty(dl, 'Handle:', object.handle);
@@ -214,36 +229,40 @@ export function processCommonObjectProperties(object, dl) {
     if (object.port43) addProperty(dl, 'Whois Server:', object.port43);
     if (object.rdapConformance) processrdapConformance(object.rdapConformance, dl);
 
-    var div = document.createElement('div');
+    const div = document.createElement('div');
     div.id = 'element-' + ++elementCounter;
 
-    var button = document.createElement('button');
+    const button = document.createElement('button');
     button.classList.add('btn', 'btn-secondary');
     button.appendChild(document.createTextNode('Show'));
     button.onclick = new Function('showRawData("' + div.id + '");return false');
     div.appendChild(button);
 
-    var pre = document.createElement('pre');
+    const pre = document.createElement('pre');
     pre.style = 'display:none;visibility:hidden';
     pre.appendChild(document.createTextNode(JSON.stringify(object, null, 2)));
     div.appendChild(pre);
 
     addProperty(dl, 'Raw Data:', div);
 }
+*/
 
 // call back for "Show Raw Data" button
+/*
 export function showRawData(id) {
-    var div = document.getElementById(id);
+    const div = document.getElementById(id);
     div.childNodes[0].style = 'display:none;visibility:hidden';
     div.childNodes[1].style = 'display:block;visibility:visible';
 }
+*/
 
 // convert an array into a bulleted list
+/*
 export function createList(list) {
-    var ul = document.createElement('ul');
+    const ul = document.createElement('ul');
 
-    for (var i = 0; i < list.length; i++) {
-        var li = document.createElement('li');
+    for (let i = 0; i < list.length; i++) {
+        const li = document.createElement('li');
         if (list[i] instanceof Node) {
             li.appendChild(list[i]);
 
@@ -256,17 +275,21 @@ export function createList(list) {
 
     return ul;
 }
+*/
 
 // add the RDAP conformance of the response
+/*
 export function processrdapConformance(rdapConformance, dl) {
     addProperty(dl, 'Conformance:', createList(rdapConformance));
 }
+*/
 
 // add the object's status codes
+/*
 export function processStatus(status, dl) {
-    var s = new Array;
-    for (var i = 0; i < status.length; i++) {
-        var span = document.createElement('span');
+    const s = [];
+    for (let i = 0; i < status.length; i++) {
+        const span = document.createElement('span');
         span.classList.add('rdap-status-code');
         span.appendChild(document.createTextNode(status[i]));
         span.setAttribute("title", rdapStatusInfo[status[i]]);
@@ -274,18 +297,20 @@ export function processStatus(status, dl) {
     }
     addProperty(dl, 'Status:', createList(s));
 }
+*/
 
 // add the object's events
+/*
 export function processEvents(events, dl) {
-    var sdl = document.createElement('dl');
+    const sdl = document.createElement('dl');
 
-    for (var i = 0; i < events.length; i++) {
-        var span1 = document.createElement('span');
+    for (let i = 0; i < events.length; i++) {
+        const span1 = document.createElement('span');
         span1.appendChild(document.createTextNode(new Date(events[i].eventDate).toLocaleString()));
         span1.classList.add('rdap-event-time');
         span1.setAttribute('title', events[i].eventDate);
 
-        var span2 = document.createElement('span');
+        const span2 = document.createElement('span');
         span2.appendChild(span1);
 
         if (events[i].eventActor) {
@@ -294,17 +319,19 @@ export function processEvents(events, dl) {
         addProperty(sdl, events[i].eventAction + ':', span2);
     }
 
-    addProperty(dl, 'Events:', sdl);
+    addProperty(dl, 'Event:', sdl);
 }
+*/
 
 // add the object's links
+/*
 export function processLinks(links, dl) {
-    var ul = document.createElement('ul');
+    const ul = document.createElement('ul');
 
-    for (var i = 0; i < links.length; i++) {
+    for (let i = 0; i < links.length; i++) {
         li = document.createElement('li');
 
-        var title = (links[i].title ? links[i].title : links[i].href);
+        const title = (links[i].title ? links[i].title : links[i].href);
 
         var link;
         if (links[i].type && 0 == links[i].type.indexOf('application/rdap+json')) {
@@ -328,53 +355,61 @@ export function processLinks(links, dl) {
 
     addProperty(dl, 'Links:', ul);
 }
+*/
 
 // add the object's entities
+/*
 export function processEntities(entities, dl) {
-    var div = document.createElement('div');
+    const div = document.createElement('div');
 
-    for (var i = 0; i < entities.length; i++) div.appendChild(processObject(entities[i]));
+    for (let i = 0; i < entities.length; i++) div.appendChild(processObject(entities[i]));
 
     addProperty(dl, 'Entities:', div);
 }
+*/
 
 // add the object's remarks
+/*
 export function processRemarks(remarks, dl) {
     addProperty(dl, 'Remarks:', processRemarksOrNotices(remarks));
 
 }
+*/
 
 // add the responses's notices
+/*
 export function processNotices(notices, dl) {
     addProperty(dl, 'Notices:', processRemarksOrNotices(notices));
 }
+*/
 
 // command handler for remarks and notices
+/*
 export function processRemarksOrNotices(things) {
-    var div = document.createElement('div');
+    const div = document.createElement('div');
 
-    for (var i = 0; i < things.length; i++) {
-        var section = document.createElement('section');
+    for (let i = 0; i < things.length; i++) {
+        const section = document.createElement('section');
         section.classList.add('card');
         div.appendChild(section);
 
-        var title = document.createElement('header');
+        const title = document.createElement('header');
         title.classList.add('card-header', 'font-weight-bold');
         title.appendChild(document.createTextNode(things[i].title));
         section.appendChild(title);
 
-        var body = document.createElement('div');
+        const body = document.createElement('div');
         body.classList.add('card-body');
         section.appendChild(body);
 
-        if (things[i].description) for (var j = 0; j < things[i].description.length; j++) {
-            var p = document.createElement('p');
+        if (things[i].description) for (let j = 0; j < things[i].description.length; j++) {
+            const p = document.createElement('p');
             p.innerHTML = convertURLstoLinks(things[i].description[j]);
             body.appendChild(p);
         }
 
         if (things[i].links) {
-            var ldl = document.createElement('dl');
+            const ldl = document.createElement('dl');
             processLinks(things[i].links, ldl);
             body.appendChild(ldl);
         }
@@ -382,16 +417,20 @@ export function processRemarksOrNotices(things) {
 
     return div;
 }
+*/
 
 // naively match URLs in plain text and convert to links
+/*
 export function convertURLstoLinks(str) {
     return str.replace(
         /(https?:\/\/[^\s]+[^\.])/g,
         '<a href="$1" target="_new" rel="noopener">$1</a>'
     );
 }
+*/
 
 // process a domain
+/*
 export function processDomain(object, dl, toplevel = false) {
 
     if (toplevel) document.title = 'Domain ' + (object.unicodeName ? object.unicodeName : object.ldhName).toUpperCase() + ' - RDAP Lookup';
@@ -416,9 +455,9 @@ export function processDomain(object, dl, toplevel = false) {
     object.events = object.status = object.entities = null;
 
     if (object.nameservers) {
-        var div = document.createElement('div');
+        const div = document.createElement('div');
 
-        for (var i = 0; i < object.nameservers.length; i++) div.appendChild(processObject(object.nameservers[i]));
+        for (let i = 0; i < object.nameservers.length; i++) div.appendChild(processObject(object.nameservers[i]));
 
         addProperty(dl, 'Nameservers:', div);
     }
@@ -427,8 +466,10 @@ export function processDomain(object, dl, toplevel = false) {
 
     processCommonObjectProperties(object, dl);
 }
+*/
 
 // process a nameserver
+/*
 export function processNameserver(object, dl, toplevel = false) {
 
     if (toplevel) document.title = 'Nameserver ' + object.ldhName + ' - RDAP Lookup';
@@ -453,8 +494,10 @@ export function processNameserver(object, dl, toplevel = false) {
 
     processCommonObjectProperties(object, dl);
 }
+*/
 
 // process an entity
+/*
 export function processEntity(object, dl, toplevel = false) {
 
     if (toplevel) document.title = 'Entity ' + object.handle + ' - RDAP Lookup';
@@ -462,7 +505,7 @@ export function processEntity(object, dl, toplevel = false) {
     if (object.handle) addProperty(dl, 'Handle:', object.handle);
 
     if (object.publicIds) {
-        for (var i = 0; i < object.publicIds.length; i++) addProperty(dl, object.publicIds[i].type + ':', object.publicIds[i].identifier);
+        for (let i = 0; i < object.publicIds.length; i++) addProperty(dl, object.publicIds[i].type + ':', object.publicIds[i].identifier);
     }
 
     if (object.roles) addProperty(dl, 'Roles:', createList(object.roles));
@@ -479,16 +522,18 @@ export function processEntity(object, dl, toplevel = false) {
 
     processCommonObjectProperties(object, dl);
 }
+*/
 
 // process an entity's vCard
+/*
 export function processVCardArray(vcard) {
-    var vdl = document.createElement('dl');
+    const vdl = document.createElement('dl');
 
-    for (var i = 0; i < vcard.length; i++) {
-        var node = vcard[i];
+    for (let i = 0; i < vcard.length; i++) {
+        const node = vcard[i];
 
-        var type = node[0];
-        var value = node[3];
+        let type = node[0];
+        let value = node[3];
 
         if ('version' == type) {
             continue;
@@ -568,9 +613,11 @@ export function processVCardArray(vcard) {
 
     return vdl;
 }
+*/
 
+/*
 export function processJSCard(jscard) {
-    var vdl = document.createElement('dl');
+    const vdl = document.createElement('dl');
 
     if (jscard.fullName) addProperty(vdl, 'Name:', jscard.fullName);
 
@@ -610,14 +657,16 @@ export function processJSCard(jscard) {
 
     return vdl;
 }
+*/
 
+/*
 export function processJSCardAddress(address) {
-    var dl = document.createElement('dl');
+    const dl = document.createElement('dl');
     for (k in address) {
         v = address[k];
         if ('street' == k) {
-            var addr = document.createElement('span');
-            for (var i = 0; i < v.length; i++) {
+            const addr = document.createElement('span');
+            for (let i = 0; i < v.length; i++) {
                 if (i > 1) addr.appendChild(document.createElement('br'));
                 addr.appendChild(document.createTextNode(v[i]));
             }
@@ -639,8 +688,10 @@ export function processJSCardAddress(address) {
     }
     return dl;
 }
+*/
 
 // process an AS number
+/*
 export function processAutnum(object, dl, toplevel = false) {
 
     if (toplevel) document.title = 'AS Number ' + object.handle + ' - RDAP Lookup';
@@ -650,8 +701,10 @@ export function processAutnum(object, dl, toplevel = false) {
 
     processCommonObjectProperties(object, dl);
 }
+*/
 
 // process an IP or IP block
+/*
 export function processIp(object, dl, toplevel = false) {
 
     if (toplevel) document.title = 'IP Network ' + object.handle + ' - RDAP Lookup';
@@ -666,31 +719,39 @@ export function processIp(object, dl, toplevel = false) {
 
     processCommonObjectProperties(object, dl);
 }
+*/
 
+/*
 export function processCIDRs(cidrs) {
-    var list = document.createElement('ul');
+    const list = document.createElement('ul');
     for (i = 0; i < cidrs.length; i++) {
-        var cidr = (cidrs[i].v6prefix ? cidrs[i].v6prefix : cidrs[i].v4prefix) + '/' + cidrs[i].length;
+        const cidr = (cidrs[i].v6prefix ? cidrs[i].v6prefix : cidrs[i].v4prefix) + '/' + cidrs[i].length;
         list.appendChild(document.createElement('li')).appendChild(createRDAPLink('https://rdap.org/ip/' + cidr, cidr));
     }
     return list;
 }
+*/
 
+/*
 export function processUnknown(object, dl, toplevel = false) {
     processCommonObjectProperties(object, dl);
 }
+*/
 
 // given an object, return the "self" URL (if any) 
+/*
 export function getSelfLink(object) {
-    if (object.links) for (var i = 0; i < object.links.length; i++) if ('self' == object.links[i].rel) return object.links[i].href;
+    if (object.links) for (let i = 0; i < object.links.length; i++) if ('self' == object.links[i].rel) return object.links[i].href;
 
     return null;
 }
+*/
 
 // create an RDAP link: a link pointing to an RDAP URL
 // that when clicked, causes an RDAP query to be made
+/*
 export function createRDAPLink(url, title) {
-    var link = document.createElement('a');
+    const link = document.createElement('a');
 
     link.href = 'javascript:void(0)';
     link.title = url;
@@ -699,6 +760,7 @@ export function createRDAPLink(url, title) {
 
     return link;
 }
+*/
 
 const URIPatterns: [RegExp, ObjectType][] = [
     [/^\d+$/, "autnum"],
@@ -716,25 +778,4 @@ export function getType(value: string): ObjectType | null {
             return URIPatterns[i]![1];
         }
     return null;
-}
-
-export function loadRegistries(callback) {
-    showSpinner('Loading bootstrap registries...');
-    for (const url in registryURLs) {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', url);
-
-        xhr.timeout = 25000;
-        xhr.responseType = 'json';
-        xhr.onload = () => handleRegistryResponse(xhr);
-
-        xhr.send();
-    }
-}
-
-
-// event handler for when the submit button is pressed, or
-// when the user clicks on a link to an RDAP URL
-export function doQuery() {
-
 }
