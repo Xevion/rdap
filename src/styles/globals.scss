@@ -11,3 +11,18 @@ dd {
 [title]:not(.no-title) {
     border-bottom: 1px dashed silver;
 }
+
+body {
+    @apply bg-zinc-900 text-white;
+}
+
+.card {
+    @apply bg-zinc-800;
+    .card-header {
+        @apply bg-zinc-700;
+    }
+}
+
+.navbar {
+    @apply bg-zinc-850;
+}

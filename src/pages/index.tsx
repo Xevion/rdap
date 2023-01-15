@@ -247,7 +247,7 @@ const Index: NextPage = () => {
                   }
 
                 `}</style>
-                <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+                <nav className="navbar navbar-expand-lg navbar-dark shadow-sm">
                   <span className="text-white" style={{fontSize: 'larger'}}>
                     <a className="navbar-brand" href="#">rdap.xevion.dev</a>
                   </span>
@@ -260,7 +260,9 @@ const Index: NextPage = () => {
                             <div className="input-group">
 
                                 <div className="input-group-prepend">
-                                    <select className="custom-select" id="type" name="type"
+                                    <select onChange={() => {
+                                        return false;
+                                    }} className="custom-select bg-zinc-800 border-zinc-700 text-zinc-200" id="type" name="type"
                                             value={uriType}>
                                         <option value="domain">Domain</option>
                                         <option value="tld">TLD</option>
@@ -273,7 +275,7 @@ const Index: NextPage = () => {
                                     </select>
                                 </div>
 
-                                <input className="form-control"
+                                <input className="form-control bg-zinc-800 focus:bg-zinc-700 focus:border-zinc-600 border-zinc-700 text-zinc-200"
                                        type="text"
                                        placeholder={placeholders[uriType]}
                                        disabled={loading}
