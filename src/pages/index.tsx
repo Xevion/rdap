@@ -1,44 +1,51 @@
 import {type NextPage} from "next";
 import Head from "next/head";
-import type {ObjectType} from "../types";
-import {placeholders} from "../constants";
-import {asnMatch, domainMatch, entityMatch, getBestURL, getRDAPURL, getType, ipMatch, showSpinner} from "../rdap";
+import type {ObjectType} from "@/types";
+import {placeholders, registryURLs} from "@/constants";
+import {domainMatch, getBestURL, getType} from "@/rdap";
+import type {FormEvent} from "react";
 import {useEffect, useState} from "react";
-import {truthy} from "../helpers";
-import {registryURLs} from "../constants";
-import axios, {AxiosResponse} from "axios";
-import update from "immutability-helper";
-import GenericObject, {Link} from "../components/DomainType";
+import {truthy} from "@/helpers";
+import axios from "axios";
+import type {ParsedGeneric} from "@/components/Generic";
+import Generic from "@/components/Generic";
+import type {ZodSchema} from "zod";
+import {DomainSchema} from "@/responses";
 
 const Index: NextPage = () => {
     const [uriType, setUriType] = useState<ObjectType>('domain');
-
-
     const [requestJSContact, setRequestJSContact] = useState(false);
     const [followReferral, setFollowReferral] = useState(false);
     const [object, setObject] = useState<string>("");
     const [loading, setLoading] = useState(false);
-    const [response, setResponse] = useState<any | null>(null);
+    const [response, setResponse] = useState<ParsedGeneric | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [registryData, setRegistryData] = useState<Record<string, Any>>({});
+    const [registryData, setRegistryData] = useState<Record<string, any>>({});
 
     // Change the selected type automatically
     useEffect(function () {
-        const new_type = getType(object);
-        if (new_type != null && new_type != uriType)
-            setUriType(new_type)
+        const newType = getType(object);
+        if (newType != null && newType != uriType)
+            setUriType(newType)
     }, [object]);
 
     async function loadRegistryData() {
         setLoading(true);
+
+        console.log('Retrieving registry  ..')
+        let registersLoaded = 0;
+        const totalRegisters = Object.keys(registryURLs).length;
         const responses = await Promise.all(Object.entries(registryURLs).map(async ([url, registryType]) => {
             const response = await axios.get(url);
+            registersLoaded++;
+            console.log(`Registered loaded ${registersLoaded}/${totalRegisters}`)
             return {
                 registryType,
                 response: response.data
             };
         }))
 
+        console.log('Registry data set.')
         setRegistryData(() => {
             return Object.fromEntries(
                 responses.map(({registryType, response}) => [registryType, response.services])
@@ -93,40 +100,44 @@ const Index: NextPage = () => {
     }
 
 
-    function submit(e) {
+    async function submit(e?: FormEvent) {
         e?.preventDefault();
 
+        console.log(`Submit invoked. ${uriType}/${JSON.stringify(object)}`)
         const queryParams = requestJSContact ? '?jscard=1' : '';
-
-        const url = (function () {
+        const [url, schema]: [string, ZodSchema<ParsedGeneric>] | [null, null] = (function () {
             switch (uriType) {
-                case 'url':
-                    return object;
-                case 'tld':
-                    return `https://root.rdap.org/domain/${object}${queryParams}`;
-                case 'registrar':
-                    return `https://registrars.rdap.org/entity/${object}-IANA${queryParams}`;
-                case 'json':
-                    return `json://${object}`
+                // case 'url':
+                //     return [object];
+                // case 'tld':
+                //     return `https://root.rdap.org/domain/${object}${queryParams}`;
+                // case 'registrar':
+                //     return `https://registrars.rdap.org/entity/${object}-IANA${queryParams}`;
+                // case 'json':
+                //     return `json://${object}`
                 case 'domain':
                     const temp = getRDAPURL(object);
-                    if (temp) return `${temp}${queryParams}`
-                    return null;
+                    if (temp) return [`${temp}${queryParams}`, DomainSchema]
+                    return [null, null];
                 default:
                     setError(`No RDAP URL available for ${uriType} ${object}.`);
-                    return null;
+                    return [null, null];
             }
         })()
 
-        if (url) sendQuery(url, followReferral);
+        console.log(`URL: ${url ?? "null"}`)
+        if (url != null)
+            await sendQuery(url, schema, followReferral);
     }
 
-    async function sendQuery(url: string, followReferral = false) {
+    async function sendQuery(url: string, schema: ZodSchema<ParsedGeneric>, followReferral = false) {
         setLoading(true);
 
+        let data: ParsedGeneric | null = null;
         if (url.startsWith('json://')) {
+            console.log('Mock JSON query detected.')
             // run the callback with a mock XHR
-            await handleResponse(JSON.parse(url.substring(7)))
+            data = schema.parse(JSON.parse(url.substring(7)))
         } else {
             try {
                 const response = await axios.get(url, {responseType: "json"})
@@ -134,19 +145,18 @@ const Index: NextPage = () => {
                     setError('This object does not exist.');
                 else if (response.status != 200)
                     setError(`Error ${response.status}: ${response.statusText}`)
-                await handleResponse(response, followReferral)
+                data = schema.parse(response.data);
             } catch (e) {
+                console.log(e);
                 setLoading(false);
-                setError(e.toString())
+                if (e instanceof Error)
+                    setError(e.toString())
+                return;
             }
         }
-    }
 
-    // callback executed when a response is received
-    async function handleResponse(data: { links: Link[] }, followReferral = false) {
-        setLoading(false);
-
-        if (followReferral && data.links != null) {
+        if (followReferral && data?.links != null) {
+            console.log('Using followReferral.')
             for (const link of data.links) {
                 if ('related' == link.rel && 'application/rdap+json' == link.type && link.href.match(/^(https?:|)\/\//i)) {
                     await sendQuery(link.href, false)
@@ -155,10 +165,11 @@ const Index: NextPage = () => {
             }
         }
 
+        setLoading(false);
+        console.log(data);
         try {
-            // div.appendChild(processObject(xhr.response, true));
             setResponse(data);
-            const url = `${window.location.href}?type=${encodeURIComponent(uriType)}&object=${object}&request-jscontact=${requestJSContact ? 1 : 0}&follow-referral=${followReferral ? 1 : 0}`
+            const url = `${window.location.origin}?type=${encodeURIComponent(uriType)}&object=${object}&request-jscontact=${requestJSContact ? 1 : 0}&follow-referral=${followReferral ? 1 : 0}`
             window.history.pushState(null, document.title, url);
 
         } catch (e) {
@@ -185,14 +196,8 @@ const Index: NextPage = () => {
             submit(null);
         }
 
-
         loadRegistryData().catch(console.error);
     }, [])
-
-    useEffect(() => {
-        if (!loading && registryData.domain != undefined)
-            console.log(registryData);
-    }, [loading])
 
     return (
         <>
@@ -241,7 +246,7 @@ const Index: NextPage = () => {
 
                 <br/>
 
-                <div className="container">
+                <div className="container mx-auto max-w-screen-lg">
                     <form onSubmit={submit} className="form-inline">
                         <div className="col p-0">
                             <div className="input-group">
@@ -296,7 +301,7 @@ const Index: NextPage = () => {
                     </div>
 
                     <div id="output-div">
-                        {response != null ? <GenericObject data={response.data}/> : null}
+                        {response != null ? <Generic data={response}/> : null}
                     </div>
 
                     <p>This page implements a <em>completely private lookup tool</em> for domain names, IP addresses and

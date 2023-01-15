@@ -1,13 +1,14 @@
 import type {FunctionComponent, ReactNode} from "react";
 import React, {Fragment} from "react";
-import type {DomainType} from "@/components/DomainType";
 import {rdapStatusInfo} from "@/constants";
+import type {Domain} from "@/responses";
+import Events from "@/components/Events"
 
 export type DomainProps = {
-    data: DomainType;
+    data: Domain;
 };
 
-const Domain: FunctionComponent<DomainProps> = ({data}: DomainProps) => {
+const DomainCard: FunctionComponent<DomainProps> = ({data}: DomainProps) => {
     const properties: [string | ReactNode, string | ReactNode][] = [];
 
     if (data.unicodeName) {
@@ -17,18 +18,20 @@ const Domain: FunctionComponent<DomainProps> = ({data}: DomainProps) => {
         properties.push(["Name", data.ldhName])
     }
 
-    if (data.handle) properties.push(["Handle", data.handle]);
-    // if (data.events) properties.push
-    if (data.status) properties.push([
-        "Status",
-        data.status.map((statusKey, index) =>
-            <span title={rdapStatusInfo[statusKey]!} key={index}>
-            {statusKey}
-        </span>)
-    ])
+    properties.push(["Handle", data.handle]);
+    properties.push(["Events", <Events key={0} data={data.events} />])
 
+    properties.push([
+        "Status",
+        <ul key={2} className="list-disc">
+            {data.status.map((statusKey, index) =>
+                <li title={rdapStatusInfo[statusKey]} key={index}>
+                    {statusKey}
+                </li>)}
+        </ul>
+    ])
     return <div className="card">
-        <div className="card-header">{data.name} ({data.handle})</div>
+        <div className="card-header">{data.ldhName ?? data.unicodeName} ({data.handle})</div>
         <div className="card-body">
             <dl>
                 {
@@ -44,4 +47,4 @@ const Domain: FunctionComponent<DomainProps> = ({data}: DomainProps) => {
     </div>
 }
 
-export default Domain;
+export default DomainCard;
