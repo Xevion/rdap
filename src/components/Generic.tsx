@@ -1,6 +1,6 @@
 import type {FunctionComponent} from "react";
 import DomainCard from "@/components/DomainCard";
-import type {Domain, AutonomousNumber, Entity, Nameserver, IpNetwork} from "@/responses";
+import type {Domain, AutonomousNumber, Entity, Nameserver, IpNetwork} from "@/schema";
 
 export type ParsedGeneric = Domain | Nameserver | Entity | AutonomousNumber | IpNetwork;
 export type ObjectProps = {

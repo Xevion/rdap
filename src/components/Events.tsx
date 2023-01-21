@@ -1,5 +1,5 @@
 import type {FunctionComponent} from "react";
-import type {Event} from "@/responses";
+import type {Event} from "@/schema";
 import {Fragment} from "react";
 
 export type EventsProps = {

@@ -1,6 +1,6 @@
 import {type NextPage} from "next";
 import Head from "next/head";
-import type {ObjectType} from "@/types";
+import type {ObjectType, Register} from "@/types";
 import {placeholders, registryURLs} from "@/constants";
 import {domainMatch, getBestURL, getType} from "@/rdap";
 import type {FormEvent} from "react";
@@ -10,8 +10,7 @@ import axios from "axios";
 import type {ParsedGeneric} from "@/components/Generic";
 import Generic from "@/components/Generic";
 import type {ZodSchema} from "zod";
-import type {Register} from "@/responses";
-import {DomainSchema, RegisterSchema} from "@/responses";
+import {DomainSchema, RegisterSchema} from "@/schema";
 
 const Index: NextPage = () => {
     const [requestJSContact, setRequestJSContact] = useState(false);
@@ -144,7 +143,9 @@ const Index: NextPage = () => {
             data = schema.parse(JSON.parse(url.substring(7)))
         } else {
             try {
-                const response = await axios.get(url, {responseType: "json"})
+                const response = await axios.get(url, {responseType: "json", headers: {
+                    'Referrer-Policy': 'no-referrer'
+                }})
                 if (response.status == 404)
                     setError('This object does not exist.');
                 else if (response.status != 200)

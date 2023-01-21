@@ -1,7 +1,7 @@
 import type {FunctionComponent, ReactNode} from "react";
 import React, {Fragment} from "react";
 import {rdapStatusInfo} from "@/constants";
-import type {Domain} from "@/responses";
+import type {Domain} from "@/schema";
 import Events from "@/components/Events"
 
 export type DomainProps = {

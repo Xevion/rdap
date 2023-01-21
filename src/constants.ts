@@ -1,5 +1,5 @@
 // see https://www.iana.org/assignments/rdap-json-values
-import type {ExtendedUri, RdapStatusType, ObjectType} from "@/types";
+import type {RegistryType, RdapStatusType, ObjectType} from "@/types";
 
 export const rdapStatusInfo: Record<RdapStatusType, string> = {
     "validated": "Signifies that the data of the object instance has been found to be accurate. This type of status is usually found on entity object instances to note the validity of identifying contact information.",
@@ -39,7 +39,7 @@ export const rdapStatusInfo: Record<RdapStatusType, string> = {
 };
 
 // list of RDAP bootstrap registry URLs
-export const registryURLs: Record<string, ExtendedUri> = {
+export const registryURLs: Record<string, RegistryType> = {
     "https://data.iana.org/rdap/asn.json": "autnum",
     "https://data.iana.org/rdap/dns.json": "domain",
     "https://data.iana.org/rdap/ipv4.json": "ip4",

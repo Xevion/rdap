@@ -9,7 +9,6 @@ export const LinkSchema = z.object({
     href: z.string(),
     type: z.string()
 })
-export type Link = z.infer<typeof LinkSchema>;
 
 
 export const EntitySchema = z.object({
@@ -21,20 +20,17 @@ export const EntitySchema = z.object({
         identifier: z.string(),
     })).optional()
 })
-export type Entity = z.infer<typeof EntitySchema>;
 
 export const NameserverSchema = z.object({
     objectClassName: z.literal('nameserver'),
     ldhName: z.string()
 })
-export type Nameserver = z.infer<typeof NameserverSchema>;
 
 export const EventSchema = z.object({
     eventAction: z.string(),
     eventActor: z.string().optional(),
     eventDate: z.string()
 })
-export type Event = z.infer<typeof EventSchema>;
 
 export const NoticeSchema = z.object({
     title: z.string().optional(),
@@ -63,7 +59,6 @@ export const IpNetworkSchema = z.object({
     port43: z.any().optional(),
     events: z.array(EventSchema)
 })
-export type IpNetwork = z.infer<typeof IpNetworkSchema>;
 
 
 export const AutonomousNumberSchema = z.object({
@@ -80,7 +75,6 @@ export const AutonomousNumberSchema = z.object({
     roles: z.array(z.string()),
     links: z.array(LinkSchema)
 })
-export type AutonomousNumber = z.infer<typeof AutonomousNumberSchema>;
 
 export const DomainSchema = z.object({
     objectClassName: z.literal('domain'),
@@ -97,7 +91,6 @@ export const DomainSchema = z.object({
     notices: z.array(NoticeSchema),
     network: IpNetworkSchema.optional(),
 })
-export type Domain = z.infer<typeof DomainSchema>;
 
 
 const RegistrarSchema = z.tuple([
@@ -115,4 +108,3 @@ export const RegisterSchema = z.object({
     services: z.array(RegistrarSchema),
     version: z.string()
 });
-export type Register = z.infer<typeof RegisterSchema>;

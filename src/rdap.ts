@@ -1,4 +1,4 @@
-import type {ObjectType} from "@/types";
+import type {RegistryType, ObjectType} from "@/types";
 
 // keeps track of how many registries we've loaded
 const loadedRegistries = 0;
@@ -762,20 +762,19 @@ export function createRDAPLink(url, title) {
 }
 */
 
-const URIPatterns: [RegExp, ObjectType][] = [
+const URIPatterns: [RegExp, RegistryType][] = [
     [/^\d+$/, "autnum"],
-    [/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/?\d*$/, "ip"],
-    [/^[0-9a-f:]{2,}\/?\d*$/, "ip"],
+    [/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/?\d*$/, "ip4"],
+    [/^[0-9a-f:]{2,}\/?\d*$/, "ip6"],
     [/^https?:/, "url"],
     [/^{/, "json"],
     [/./, "domain"],
 ];
 
-// guess the type from the input value
-export function getType(value: string): ObjectType | null {
-    for (let i = 0; i < URIPatterns.length; i++)
-        if (URIPatterns[i]![0].test(value)) {
-            return URIPatterns[i]![1];
-        }
+export function getType(value: string): RegistryType | null {
+    for (const [pattern, type] of URIPatterns) {
+        if (pattern.test(value))
+            return type;
+    }
     return null;
 }
