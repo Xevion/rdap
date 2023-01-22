@@ -1,6 +1,7 @@
 import type {FunctionComponent} from "react";
-import type {Event} from "@/schema";
+import type {Event} from "@/types";
 import {Fragment} from "react";
+import DynamicDate from "@/components/DynamicDate";
 
 export type EventsProps = {
     data: Event[];
@@ -13,9 +14,7 @@ const Events: FunctionComponent<EventsProps> = ({data}) => {
                     {eventAction}:
                 </dt>
                 <dd>
-                    <span
-                        title={eventDate.toString()}>{eventDate.toString()}
-                    </span>
+                    <DynamicDate value={new Date(eventDate)}/>
                     {eventActor != null ? ` (by ${eventActor})` : null}
                 </dd>
             </Fragment>
