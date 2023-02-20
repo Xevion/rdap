@@ -1,10 +1,4 @@
-import type {RegistryType, ObjectType} from "@/types";
-
-// keeps track of how many registries we've loaded
-const loadedRegistries = 0;
-
-// registry data is stored in this
-const registryData = {};
+import type {TargetType} from "@/types";
 
 // keeps track of the elements we've created so we can assign a unique ID
 // let elementCounter = 123456;
@@ -16,6 +10,10 @@ const cardTitles = {
     "entity": "Entity",
     "autnum": "AS Number",
 };
+
+export function domainMatchPredicate(domain: string): (tld: string) => boolean {
+    return (tld) => domainMatch(tld, domain);
+}
 
 export function domainMatch(tld: string, domain: string): boolean {
     return domain.toUpperCase().endsWith(`.${tld.toUpperCase()}`);
@@ -762,16 +760,18 @@ export function createRDAPLink(url, title) {
 }
 */
 
-const URIPatterns: [RegExp, RegistryType][] = [
+// TODO: Provide full domain, TLD, Ipv4 & Ipv6 validators
+const URIPatterns: [RegExp, TargetType][] = [
     [/^\d+$/, "autnum"],
     [/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/?\d*$/, "ip4"],
     [/^[0-9a-f:]{2,}\/?\d*$/, "ip6"],
     [/^https?:/, "url"],
     [/^{/, "json"],
-    [/./, "domain"],
+    [/^\.\w+$/, "tld"],
+    [/[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?/, "domain"],
 ];
 
-export function getType(value: string): RegistryType | null {
+export function getType(value: string): TargetType | null {
     for (const [pattern, type] of URIPatterns) {
         if (pattern.test(value))
             return type;
