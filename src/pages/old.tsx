@@ -1,6 +1,6 @@
 import {type NextPage} from "next";
 import Head from "next/head";
-import type {ObjectType, Register} from "@/types";
+import type {Register, TargetType} from "@/types";
 import {placeholders, registryURLs} from "@/constants";
 import {domainMatch, getBestURL, getType} from "@/rdap";
 import type {FormEvent} from "react";
@@ -12,7 +12,7 @@ import Generic from "@/components/Generic";
 import type {ZodSchema} from "zod";
 import {DomainSchema, RegisterSchema} from "@/schema";
 
-const Index: NextPage = () => {
+const Old: NextPage = () => {
     const [requestJSContact, setRequestJSContact] = useState(false);
     const [followReferral, setFollowReferral] = useState(false);
     const [object, setObject] = useState<string>("");
@@ -22,27 +22,24 @@ const Index: NextPage = () => {
     const [registryData, setRegistryData] = useState<Record<string, Register> | null>(null);
 
     // Change the selected type automatically
-    const uriType = useMemo<ObjectType>(function () {
+    const uriType = useMemo<TargetType>(function () {
         return getType(object) ?? 'domain';
     }, [object]);
 
     async function loadRegistryData() {
         setLoading(true);
 
-        console.log('Retrieving registry  ..')
         let registersLoaded = 0;
         const totalRegisters = Object.keys(registryURLs).length;
-        const responses = await Promise.all(Object.entries(registryURLs).map(async ([url, registryType]) => {
+        const responses = await Promise.all(Object.entries(registryURLs).map(async ([registryType, url]) => {
             const response = await axios.get(url);
             registersLoaded++;
-            console.log(`Registered loaded ${registersLoaded}/${totalRegisters}`)
             return {
                 registryType,
                 response: RegisterSchema.parse(response.data)
             };
         }))
 
-        console.log('Registry data set.')
         setRegistryData(() => {
             return Object.fromEntries(
                 responses.map(({registryType, response}) => [registryType, response])
@@ -143,9 +140,7 @@ const Index: NextPage = () => {
             data = schema.parse(JSON.parse(url.substring(7)))
         } else {
             try {
-                const response = await axios.get(url, {responseType: "json", headers: {
-                    'Referrer-Policy': 'no-referrer'
-                }})
+                const response = await axios.get(url, {responseType: "json"})
                 if (response.status == 404)
                     setError('This object does not exist.');
                 else if (response.status != 200)
@@ -201,12 +196,11 @@ const Index: NextPage = () => {
         if (params.has('follow-referral') && truthy(params.get('follow-referral')))
             setFollowReferral(true);
 
+        loadRegistryData().catch(console.error);
         if (params.has('object') && (params.get('object')?.length ?? 0) > 0) {
             setObject(params.get('object')!);
-            // submit(null);
+            // submit().catch(console.error);
         }
-
-        loadRegistryData().catch(console.error);
     }, [])
 
     return (
@@ -263,7 +257,8 @@ const Index: NextPage = () => {
                                 <div className="input-group-prepend">
                                     <select onChange={() => {
                                         return false;
-                                    }} className="custom-select bg-zinc-800 border-zinc-700 text-zinc-200" id="type" name="type"
+                                    }} className="custom-select bg-zinc-800 border-zinc-700 text-zinc-200" id="type"
+                                            name="type"
                                             value={uriType}>
                                         <option value="domain">Domain</option>
                                         <option value="tld">TLD</option>
@@ -276,13 +271,14 @@ const Index: NextPage = () => {
                                     </select>
                                 </div>
 
-                                <input className="form-control bg-zinc-800 focus:bg-zinc-700 focus:border-zinc-600 border-zinc-700 text-zinc-200"
-                                       type="text"
-                                       placeholder={placeholders[uriType]}
-                                       disabled={loading}
-                                       onChange={(e) => {
-                                           setObject(e.target.value);
-                                       }} required/>
+                                <input
+                                    className="form-control bg-zinc-800 focus:bg-zinc-700 focus:border-zinc-600 border-zinc-700 text-zinc-200"
+                                    type="text"
+                                    placeholder={placeholders[uriType]}
+                                    disabled={loading}
+                                    onChange={(e) => {
+                                        setObject(e.target.value);
+                                    }} required/>
 
                                 <div className="input-group-append">
                                     <input id="button" type="button" value="Submit" onClick={(event) => {
@@ -363,4 +359,4 @@ const Index: NextPage = () => {
     );
 };
 
-export default Index;
+export default Old;
