@@ -1,5 +1,5 @@
 import type {FunctionComponent} from "react";
-import DomainCard from "@/components/DomainCard";
+import DomainCard from "@/components/lookup/DomainCard";
 import type {Domain, AutonomousNumber, Entity, Nameserver, IpNetwork} from "@/types";
 
 export type ParsedGeneric = Domain | Nameserver | Entity | AutonomousNumber | IpNetwork;

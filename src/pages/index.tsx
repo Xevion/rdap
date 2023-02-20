@@ -1,10 +1,11 @@
 import {type NextPage} from "next";
 import Head from "next/head";
-import {useRef, useState} from "react";
-import Generic, {type ParsedGeneric} from "@/components/Generic";
+import {useState} from "react";
+import Generic, {type ParsedGeneric} from "@/components/lookup/Generic";
 import useLookup from "@/hooks/useLookup";
 import {onPromise} from "@/helpers";
 import {OGP} from "react-ogp";
+import LookupInput from "@/components/form/LookupInput";
 
 const Index: NextPage = () => {
     const {error, setTarget, submit, currentType} = useLookup();
@@ -61,6 +62,7 @@ const Index: NextPage = () => {
                   </span>
                 </nav>
                 <div className="container py-12 mx-auto max-w-screen-lg">
+                    <LookupInput />
                     <form onSubmit={onPromise(async function (e) {
                         e.preventDefault()
 

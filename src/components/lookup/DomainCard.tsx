@@ -2,8 +2,8 @@ import type {FunctionComponent} from "react";
 import React from "react";
 import {rdapStatusInfo} from "@/constants";
 import type {Domain} from "@/types";
-import Events from "@/components/Events"
-import Property from "@/components/Property";
+import Events from "@/components/lookup/Events"
+import Property from "@/components/common/Property";
 
 export type DomainProps = {
     data: Domain;

@@ -1,7 +1,7 @@
 import type {FunctionComponent} from "react";
 import type {Event} from "@/types";
 import {Fragment} from "react";
-import DynamicDate from "@/components/DynamicDate";
+import DynamicDate from "@/components/common/DynamicDate";
 
 export type EventsProps = {
     data: Event[];

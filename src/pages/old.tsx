@@ -6,8 +6,7 @@ import {domainMatch, getBestURL, getType} from "@/rdap";
 import type {FormEvent} from "react";
 import {useEffect, useMemo, useState} from "react";
 import {truthy} from "@/helpers";
-import type {ParsedGeneric} from "@/components/Generic";
-import Generic from "@/components/Generic";
+import Generic, {type ParsedGeneric} from "@/components/lookup/Generic";
 import type {ZodSchema} from "zod";
 import {DomainSchema, RegisterSchema} from "@/schema";
 
@@ -144,7 +143,7 @@ const Old: NextPage = () => {
                     setError('This object does not exist.');
                 else if (response.status != 200)
                     setError(`Error ${response.status}: ${response.statusText}`)
-                data = schema.parse(response.data);
+                data = schema.parse(await response.json());
             } catch (e) {
                 console.log(e);
                 setLoading(false);
