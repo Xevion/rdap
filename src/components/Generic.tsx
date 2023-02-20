@@ -1,6 +1,6 @@
 import type {FunctionComponent} from "react";
 import DomainCard from "@/components/DomainCard";
-import type {Domain, AutonomousNumber, Entity, Nameserver, IpNetwork} from "@/schema";
+import type {Domain, AutonomousNumber, Entity, Nameserver, IpNetwork} from "@/types";
 
 export type ParsedGeneric = Domain | Nameserver | Entity | AutonomousNumber | IpNetwork;
 export type ObjectProps = {
@@ -17,7 +17,10 @@ const Generic: FunctionComponent<ObjectProps> = ({data}: ObjectProps) => {
         case "nameserver":
         default:
             return <div className="card my-2">
-                <div className="card-header">Not implemented</div>
+                <div className="card-header">Not implemented. (
+                    <pre>{data.objectClassName ?? "null"}</pre>
+                    )
+                </div>
             </div>
     }
 
