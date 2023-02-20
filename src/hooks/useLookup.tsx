@@ -2,11 +2,10 @@ import React, {useEffect, useMemo, useRef, useState} from "react";
 import {domainMatchPredicate, getBestURL, getType} from "@/rdap";
 import type {AutonomousNumber, Domain, IpNetwork, Register, RootRegistryType, TargetType} from "@/types";
 import {registryURLs} from "@/constants";
-import axios from "axios";
 import {AutonomousNumberSchema, DomainSchema, IpNetworkSchema, RegisterSchema, RootRegistryEnum} from "@/schema";
 import {truncated} from "@/helpers";
-import {ZodSchema} from "zod";
-import {ParsedGeneric} from "@/components/Generic";
+import type {ZodSchema} from "zod";
+import type {ParsedGeneric} from "@/components/Generic";
 
 export type WarningHandler = (warning: { message: string }) => void;
 
@@ -26,14 +25,14 @@ const useLookup = (warningHandler?: WarningHandler) => {
             return;
 
         // Fetch the bootstrapping file from the registry
-        const response = await axios.get(registryURLs[type]);
+        const response = await fetch(registryURLs[type]);
         if (response.status != 200)
             throw new Error(`Error: ${response.statusText}`)
 
         // Parse it, so we don't make any false assumptions during development & while maintaining the tool.
-        const parsedRegister = RegisterSchema.safeParse(response.data);
+        const parsedRegister = RegisterSchema.safeParse(await response.json());
         if (!parsedRegister.success)
-            throw new Error(`Could not parse IANA bootstrap response (${type}).`)
+            throw new Error(`Could not parse IANA bootstrap response (type: ${type}).`)
 
         // Set it in state so we can use it.
         registryDataRef.current = {
@@ -99,9 +98,9 @@ const useLookup = (warningHandler?: WarningHandler) => {
     }, [target]);
 
     async function getAndParse<T>(url: string, schema: ZodSchema): Promise<T | undefined> {
-        const response = await axios.get(url);
+        const response = await fetch(url);
         if (response.status == 200)
-            return schema.parse(response.data) as T
+            return schema.parse(await response.json()) as T
     }
 
     async function submitInternal(): Promise<ParsedGeneric | undefined> {

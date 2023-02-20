@@ -6,7 +6,6 @@ import {domainMatch, getBestURL, getType} from "@/rdap";
 import type {FormEvent} from "react";
 import {useEffect, useMemo, useState} from "react";
 import {truthy} from "@/helpers";
-import axios from "axios";
 import type {ParsedGeneric} from "@/components/Generic";
 import Generic from "@/components/Generic";
 import type {ZodSchema} from "zod";
@@ -32,11 +31,11 @@ const Old: NextPage = () => {
         let registersLoaded = 0;
         const totalRegisters = Object.keys(registryURLs).length;
         const responses = await Promise.all(Object.entries(registryURLs).map(async ([registryType, url]) => {
-            const response = await axios.get(url);
+            const response = await fetch(url);
             registersLoaded++;
             return {
                 registryType,
-                response: RegisterSchema.parse(response.data)
+                response: RegisterSchema.parse(await response.json())
             };
         }))
 
@@ -140,7 +139,7 @@ const Old: NextPage = () => {
             data = schema.parse(JSON.parse(url.substring(7)))
         } else {
             try {
-                const response = await axios.get(url, {responseType: "json"})
+                const response = await fetch(url)
                 if (response.status == 404)
                     setError('This object does not exist.');
                 else if (response.status != 200)
