@@ -6,6 +6,7 @@ import axios from "axios";
 import {AutonomousNumberSchema, DomainSchema, IpNetworkSchema, RegisterSchema, RootRegistryEnum} from "@/schema";
 import {truncated} from "@/helpers";
 import {ZodSchema} from "zod";
+import {ParsedGeneric} from "@/components/Generic";
 
 export type WarningHandler = (warning: { message: string }) => void;
 type BootstrapMatcher = (value: string) => boolean;
@@ -20,7 +21,11 @@ const useLookup = (warningHandler?: WarningHandler) => {
     }, [target]);
 
     // Fetch & load a specific registry's data into memory.
-    async function loadBootstrap(type: RootRegistryType) {
+    async function loadBootstrap(type: RootRegistryType, force = false) {
+        // Early preload exit condition
+        if (registryData[type] != null && !force)
+            return;
+
         // Fetch the bootstrapping file from the registry
         const response = await axios.get(registryURLs[type]);
         if (response.status != 200)
@@ -38,32 +43,37 @@ const useLookup = (warningHandler?: WarningHandler) => {
         }));
     }
 
-    function getURL(type: RootRegistryType, lookupTarget: string): string {
+    function getRegistryURL(type: RootRegistryType, lookupTarget: string): string {
         const bootstrap = registryData[type];
         if (bootstrap == null) throw new Error(`Cannot acquire RDAP URL without bootstrap data for ${type} lookup.`)
 
-        switch (type) {
-            case "domain":
-                for (const bootstrapItem of bootstrap.services) {
-                    if (bootstrapItem[0].some(domainMatchPredicate))
-                        return getBestURL(bootstrapItem[1]);
-                }
-                throw new Error(`No matching domain found.`)
-            case "ip4":
-                throw new Error(`No matching ip4 found.`)
-                break;
-            case "ip6":
-                throw new Error(`No matching ip6 found.`)
-                break;
-            case "entity":
-                throw new Error(`No matching entity found.`)
-                break;
-            case "autnum":
-                throw new Error(`No matching autnum found.`)
-                break;
-            default:
-                throw new Error("")
-        }
+        let url: string | null = null;
+
+        typeSwitch:
+            switch (type) {
+                case "domain":
+                    for (const bootstrapItem of bootstrap.services) {
+                        if (bootstrapItem[0].some(domainMatchPredicate(lookupTarget))) {
+                            url = getBestURL(bootstrapItem[1]);
+                            break typeSwitch;
+                        }
+                    }
+                    throw new Error(`No matching domain found.`)
+                case "ip4":
+                    throw new Error(`No matching ip4 found.`)
+                case "ip6":
+                    throw new Error(`No matching ip6 found.`)
+                case "entity":
+                    throw new Error(`No matching entity found.`)
+                case "autnum":
+                    throw new Error(`No matching autnum found.`)
+                default:
+                    throw new Error("Invalid lookup target provided.")
+            }
+
+        if (url == null) throw new Error('No lookup target was resolved.')
+
+        return `${url}${type}/${lookupTarget}`;
     }
 
     useEffect(() => {
@@ -95,7 +105,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
             return schema.parse(response.data) as T
     }
 
-    async function submitInternal() {
+    async function submitInternal(): Promise<ParsedGeneric | undefined> {
         if (target == null)
             throw new Error("A target must be given in order to execute a lookup.")
 
@@ -105,23 +115,23 @@ const useLookup = (warningHandler?: WarningHandler) => {
             // Block scoped case to allow url const reuse
             case "ip4": {
                 await loadBootstrap("ip4");
-                const url = getURL(targetType, target);
-                return getAndParse<IpNetwork>(url, IpNetworkSchema)
+                const url = getRegistryURL(targetType, target);
+                return await getAndParse<IpNetwork>(url, IpNetworkSchema)
             }
             case "ip6": {
                 await loadBootstrap("ip6");
-                const url = getURL(targetType, target);
-                return getAndParse<IpNetwork>(url, IpNetworkSchema);
+                const url = getRegistryURL(targetType, target);
+                return await getAndParse<IpNetwork>(url, IpNetworkSchema);
             }
             case "domain": {
                 await loadBootstrap("domain");
-                const url = getURL(targetType, target);
-                return getAndParse<Domain>(url, DomainSchema);
+                const url = getRegistryURL(targetType, target);
+                return await getAndParse<Domain>(url, DomainSchema);
             }
             case "autnum": {
                 await loadBootstrap("autnum");
-                const url = getURL(targetType, target);
-                return getAndParse<AutonomousNumber>(url, AutonomousNumberSchema);
+                const url = getRegistryURL(targetType, target);
+                return await getAndParse<AutonomousNumber>(url, AutonomousNumberSchema);
             }
             case null:
                 throw new Error("The type could not be detected given the target.")
@@ -134,13 +144,18 @@ const useLookup = (warningHandler?: WarningHandler) => {
         }
     }
 
-    async function submit() {
+    async function submit(): Promise<ParsedGeneric | undefined> {
         try {
-            const data = await submitInternal();
+            const response = await submitInternal();
+            if (response == undefined)
+                throw new Error("Internal submission failed to yield any data.")
+
+            setError(null);
+            return response;
         } catch (e) {
             if (!(e instanceof Error))
-                return setError("An unknown, unprocessable error has occurred.");
-            return setError(e.message);
+                setError("An unknown, unprocessable error has occurred.");
+            setError((e as Error).message);
         }
     }
 
