@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {domainMatchPredicate, getBestURL, getType} from "@/rdap";
 import type {AutonomousNumber, Domain, IpNetwork, Register, RootRegistryType, TargetType} from "@/types";
 import {registryURLs} from "@/constants";
@@ -9,10 +9,9 @@ import {ZodSchema} from "zod";
 import {ParsedGeneric} from "@/components/Generic";
 
 export type WarningHandler = (warning: { message: string }) => void;
-type BootstrapMatcher = (value: string) => boolean;
 
 const useLookup = (warningHandler?: WarningHandler) => {
-    const [registryData, setRegistryData] = useState<Record<RootRegistryType, Register | null>>({} as Record<TargetType, Register>);
+    const registryDataRef = useRef<Record<RootRegistryType, Register | null>>({} as Record<TargetType, Register>)
     const [error, setError] = useState<string | null>(null);
     const [target, setTarget] = useState<string>("");
 
@@ -23,7 +22,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
     // Fetch & load a specific registry's data into memory.
     async function loadBootstrap(type: RootRegistryType, force = false) {
         // Early preload exit condition
-        if (registryData[type] != null && !force)
+        if (registryDataRef.current[type] != null && !force)
             return;
 
         // Fetch the bootstrapping file from the registry
@@ -37,14 +36,14 @@ const useLookup = (warningHandler?: WarningHandler) => {
             throw new Error(`Could not parse IANA bootstrap response (${type}).`)
 
         // Set it in state so we can use it.
-        setRegistryData((prev) => ({
-            ...prev,
+        registryDataRef.current = {
+            ...registryDataRef.current,
             [type]: parsedRegister.data
-        }));
+        }
     }
 
     function getRegistryURL(type: RootRegistryType, lookupTarget: string): string {
-        const bootstrap = registryData[type];
+        const bootstrap = registryDataRef.current[type];
         if (bootstrap == null) throw new Error(`Cannot acquire RDAP URL without bootstrap data for ${type} lookup.`)
 
         let url: string | null = null;
@@ -81,8 +80,8 @@ const useLookup = (warningHandler?: WarningHandler) => {
             if (uriType === 'unknown') return;
             const registryUri = RootRegistryEnum.safeParse(uriType);
             if (!registryUri.success) return;
-            console.log({registryData, registryUri: registryUri.data});
-            if (registryData[registryUri.data] != null) return;
+            console.log({registryData: registryDataRef.current, registryUri: registryUri.data});
+            if (registryDataRef.current[registryUri.data] != null) return;
 
             try {
                 await loadBootstrap(registryUri.data);
