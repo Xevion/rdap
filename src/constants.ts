@@ -1,5 +1,5 @@
 // see https://www.iana.org/assignments/rdap-json-values
-import type {RegistryType, RdapStatusType, ObjectType} from "@/types";
+import type {RdapStatusType, RootRegistryType, TargetType} from "@/types";
 
 export const rdapStatusInfo: Record<RdapStatusType, string> = {
     "validated": "Signifies that the data of the object instance has been found to be accurate. This type of status is usually found on entity object instances to note the validity of identifying contact information.",
@@ -39,16 +39,17 @@ export const rdapStatusInfo: Record<RdapStatusType, string> = {
 };
 
 // list of RDAP bootstrap registry URLs
-export const registryURLs: Record<string, RegistryType> = {
-    "https://data.iana.org/rdap/asn.json": "autnum",
-    "https://data.iana.org/rdap/dns.json": "domain",
-    "https://data.iana.org/rdap/ipv4.json": "ip4",
-    "https://data.iana.org/rdap/ipv6.json": "ip6",
-    "https://data.iana.org/rdap/object-tags.json": "entity",
+export const registryURLs: Record<RootRegistryType, string> = {
+    "autnum": "https://data.iana.org/rdap/asn.json",
+    "domain": "https://data.iana.org/rdap/dns.json",
+    "ip4": "https://data.iana.org/rdap/ipv4.json",
+    "ip6": "https://data.iana.org/rdap/ipv6.json",
+    "entity": "https://data.iana.org/rdap/object-tags.json",
 };
 
-export const placeholders: Record<ObjectType, string> = {
-    'ip': '192.168.0.1/16',
+export const placeholders: Record<TargetType, string> = {
+    'ip4': '192.168.0.1/16',
+    'ip6': 'TODO: Complete this placeholder',
     'autnum': '65535',
     'entity': 'ABC123-EXAMPLE',
     'url': 'https://rdap.org/domain/example.com',

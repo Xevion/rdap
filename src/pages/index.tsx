@@ -8,7 +8,6 @@ import {OGP} from "react-ogp";
 
 const Index: NextPage = () => {
     const {error, setTarget, submit, currentType} = useLookup();
-    const inputRef = useRef<HTMLInputElement>();
     const [response, setResponse] = useState<ParsedGeneric | null>();
 
     return (
