@@ -1,11 +1,11 @@
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import {domainMatchPredicate, getBestURL, getType} from "@/rdap";
 import type {AutonomousNumber, Domain, IpNetwork, Register, RootRegistryType, TargetType} from "@/types";
 import {registryURLs} from "@/constants";
 import {AutonomousNumberSchema, DomainSchema, IpNetworkSchema, RegisterSchema, RootRegistryEnum} from "@/schema";
 import {truncated} from "@/helpers";
 import type {ZodSchema} from "zod";
-import type {ParsedGeneric} from "@/components/Generic";
+import type {ParsedGeneric} from "@/components/lookup/Generic";
 
 export type WarningHandler = (warning: { message: string }) => void;
 
