@@ -1,28 +1,45 @@
-@import "bootstrap.css";
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 dd {
-    margin: 0.5em 0 1em 2em;
+  margin: 0.5em 0 1em 2em;
 }
 
 [title]:not(.no-title) {
-    border-bottom: 1px dashed silver;
+  border-bottom: 1px dashed silver;
 }
 
 body {
-    @apply bg-zinc-900 text-white;
+  @apply bg-zinc-900 text-white;
 }
 
 .card {
-    @apply bg-zinc-800;
-    .card-header {
-        @apply bg-zinc-700;
-    }
+  @apply bg-zinc-800 mb-4;
+  .card-header {
+    @apply bg-zinc-700;
+  }
 }
 
 .navbar {
-    @apply bg-zinc-850;
+  @apply bg-zinc-850;
+}
+
+dl {
+  margin: 0;
+}
+
+.rdap-status-code, .rdap-event-time {
+  border-bottom: 1px dashed silver;
+}
+
+#object {
+  text-transform: lowercase;
+}
+
+#spinner-msg {
+  height: 2em;
+  display: inline-block;
+  margin: -0.25em 0 0 0;
+  padding: 0.25em 0 0 0;
 }
