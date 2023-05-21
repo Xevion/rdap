@@ -1,22 +1,22 @@
-import type {TargetType} from "@/types";
+import type { TargetType } from "@/types";
 
 // keeps track of the elements we've created so we can assign a unique ID
 // let elementCounter = 123456;
 
 const cardTitles = {
-    "domain": "Domain Name",
-    "ip network": "IP Network",
-    "nameserver": "Nameserver",
-    "entity": "Entity",
-    "autnum": "AS Number",
+  domain: "Domain Name",
+  "ip network": "IP Network",
+  nameserver: "Nameserver",
+  entity: "Entity",
+  autnum: "AS Number",
 };
 
 export function domainMatchPredicate(domain: string): (tld: string) => boolean {
-    return (tld) => domainMatch(tld, domain);
+  return (tld) => domainMatch(tld, domain);
 }
 
 export function domainMatch(tld: string, domain: string): boolean {
-    return domain.toUpperCase().endsWith(`.${tld.toUpperCase()}`);
+  return domain.toUpperCase().endsWith(`.${tld.toUpperCase()}`);
 }
 
 /*
@@ -45,11 +45,10 @@ export function ipMatch(prefix: string, ip: string) {
 
 // return the first HTTPS url, or the first URL
 export function getBestURL(urls: string[]): string {
-    urls.forEach((url) => {
-        if (url.startsWith('https://'))
-            return url;
-    })
-    return urls[0]!;
+  urls.forEach((url) => {
+    if (url.startsWith("https://")) return url;
+  });
+  return urls[0]!;
 }
 
 // given a URL, injects that URL into the query input,
@@ -736,7 +735,7 @@ export function processUnknown(object, dl, toplevel = false) {
 }
 */
 
-// given an object, return the "self" URL (if any) 
+// given an object, return the "self" URL (if any)
 /*
 export function getSelfLink(object) {
     if (object.links) for (let i = 0; i < object.links.length; i++) if ('self' == object.links[i].rel) return object.links[i].href;
@@ -762,19 +761,21 @@ export function createRDAPLink(url, title) {
 
 // TODO: Provide full domain, TLD, Ipv4 & Ipv6 validators
 const URIPatterns: [RegExp, TargetType][] = [
-    [/^\d+$/, "autnum"],
-    [/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/?\d*$/, "ip4"],
-    [/^[0-9a-f:]{2,}\/?\d*$/, "ip6"],
-    [/^https?:/, "url"],
-    [/^{/, "json"],
-    [/^\.\w+$/, "tld"],
-    [/[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?/, "domain"],
+  [/^\d+$/, "autnum"],
+  [/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/?\d*$/, "ip4"],
+  [/^[0-9a-f:]{2,}\/?\d*$/, "ip6"],
+  [/^https?:/, "url"],
+  [/^{/, "json"],
+  [/^\.\w+$/, "tld"],
+  [
+    /[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?/,
+    "domain",
+  ],
 ];
 
 export function getType(value: string): TargetType | null {
-    for (const [pattern, type] of URIPatterns) {
-        if (pattern.test(value))
-            return type;
-    }
-    return null;
+  for (const [pattern, type] of URIPatterns) {
+    if (pattern.test(value)) return type;
+  }
+  return null;
 }

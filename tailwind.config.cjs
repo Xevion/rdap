@@ -5,8 +5,8 @@ module.exports = {
     extend: {
       colors: {
         zinc: {
-          850: "#1D1D20"
-        }
+          850: "#1D1D20",
+        },
       },
     },
   },
