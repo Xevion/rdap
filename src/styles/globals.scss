@@ -14,16 +14,6 @@ body {
   @apply bg-zinc-900 text-white;
 }
 
-.card {
-  @apply bg-zinc-800 mb-4;
-  .card-header {
-    @apply bg-zinc-700;
-  }
-}
-
-.navbar {
-  @apply bg-zinc-850;
-}
 
 dl {
   margin: 0;

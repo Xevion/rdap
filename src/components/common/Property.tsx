@@ -17,7 +17,7 @@ const Property: FunctionComponent<PropertyProps> = ({
 }) => {
   return (
     <>
-      <dt className={titleClass}>{title}:</dt>
+      <dt className={classNames("font-medium", titleClass)}>{title}:</dt>
       <dd className={classNames("mt-2 mb-2 ml-6", valueClass)}>{children}</dd>
     </>
   );

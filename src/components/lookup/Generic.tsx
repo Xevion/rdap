@@ -28,10 +28,8 @@ const Generic: FunctionComponent<ObjectProps> = ({ data }: ObjectProps) => {
     case "nameserver":
     default:
       return (
-        <div className="card my-2">
-          <div className="card-header">
-            Not implemented. (<pre>{data.objectClassName ?? "null"}</pre>)
-          </div>
+        <div className="my-2">
+          Not implemented. (<pre>{data.objectClassName ?? "null"}</pre>)
         </div>
       );
   }

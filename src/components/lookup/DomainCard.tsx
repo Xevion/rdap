@@ -11,11 +11,12 @@ export type DomainProps = {
 
 const DomainCard: FunctionComponent<DomainProps> = ({ data }: DomainProps) => {
   return (
-    <div className="card">
-      <div className="card-header">
-        {data.ldhName ?? data.unicodeName} ({data.handle})
+    <div className="mb-4 bg-zinc-800">
+      <div className="bg-zinc-700 p-2 pl-5">
+        <span className="font-mono">{data.ldhName ?? data.unicodeName}</span> (
+        {data.handle})
       </div>
-      <div className="card-body">
+      <div className="p-2 px-4">
         <dl>
           {data.unicodeName != undefined ? (
             <Property title="Unicode Name">{data.unicodeName}</Property>
