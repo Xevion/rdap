@@ -6,6 +6,7 @@ import type {
   IpNetwork,
   Register,
   RootRegistryType,
+  SubmitProps,
   TargetType,
 } from "@/types";
 import { registryURLs } from "@/constants";
@@ -172,8 +173,11 @@ const useLookup = (warningHandler?: WarningHandler) => {
     }
   }
 
-  async function submit(): Promise<ParsedGeneric | undefined> {
+  async function submit(
+    props: SubmitProps
+  ): Promise<ParsedGeneric | undefined> {
     try {
+      setTarget(props.target);
       const response = await submitInternal();
       if (response == undefined)
         throw new Error("Internal submission failed to yield any data.");
