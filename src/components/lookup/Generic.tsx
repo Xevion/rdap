@@ -7,6 +7,7 @@ import type {
   Nameserver,
   IpNetwork,
 } from "@/types";
+import AbstractCard from "@/components/common/AbstractCard";
 
 export type ParsedGeneric =
   | Domain
@@ -28,9 +29,9 @@ const Generic: FunctionComponent<ObjectProps> = ({ data }: ObjectProps) => {
     case "nameserver":
     default:
       return (
-        <div className="my-2">
+        <AbstractCard>
           Not implemented. (<pre>{data.objectClassName ?? "null"}</pre>)
-        </div>
+        </AbstractCard>
       );
   }
 
