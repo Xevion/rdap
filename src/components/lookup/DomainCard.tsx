@@ -14,6 +14,7 @@ export type DomainProps = {
 const DomainCard: FunctionComponent<DomainProps> = ({ data }: DomainProps) => {
   return (
     <AbstractCard
+      data={data}
       header={
         <>
           <span className="font-mono">{data.ldhName ?? data.unicodeName}</span>
