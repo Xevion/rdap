@@ -4,6 +4,8 @@ import { rdapStatusInfo } from "@/constants";
 import type { Domain } from "@/types";
 import Events from "@/components/lookup/Events";
 import Property from "@/components/common/Property";
+import PropertyList from "@/components/common/PropertyList";
+import AbstractCard from "@/components/common/AbstractCard";
 
 export type DomainProps = {
   data: Domain;
@@ -11,35 +13,34 @@ export type DomainProps = {
 
 const DomainCard: FunctionComponent<DomainProps> = ({ data }: DomainProps) => {
   return (
-    <div className="mb-4 overflow-clip rounded bg-zinc-800">
-      <div className="bg-zinc-700 p-2 pl-5">
-        <span className="font-mono">{data.ldhName ?? data.unicodeName}</span> (
-        {data.handle})
-      </div>
-      <div className="p-2 px-4">
-        <dl>
-          {data.unicodeName != undefined ? (
-            <Property title="Unicode Name">{data.unicodeName}</Property>
-          ) : null}
-          <Property title={data.unicodeName != undefined ? "LHD Name" : "Name"}>
-            {data.ldhName}
-          </Property>
-          <Property title="Handle">{data.handle}</Property>
-          <Property title="Events">
-            <Events key={0} data={data.events} />
-          </Property>
-          <Property title="Status">
-            <ul key={2} className="list-disc">
-              {data.status.map((statusKey, index) => (
-                <li key={index}>
-                  <span title={rdapStatusInfo[statusKey]}>{statusKey}</span>
-                </li>
-              ))}
-            </ul>
-          </Property>
-        </dl>
-      </div>
-    </div>
+    <AbstractCard
+      header={
+        <>
+          <span className="font-mono">{data.ldhName ?? data.unicodeName}</span>
+          <span>({data.handle})</span>
+        </>
+      }
+    >
+      <dl>
+        {data.unicodeName != undefined ? (
+          <Property title="Unicode Name">{data.unicodeName}</Property>
+        ) : null}
+        <Property title={data.unicodeName != undefined ? "LHD Name" : "Name"}>
+          {data.ldhName}
+        </Property>
+        <Property title="Handle">{data.handle}</Property>
+        <Property title="Events">
+          <Events key={0} data={data.events} />
+        </Property>
+        <PropertyList title="Status">
+          {data.status.map((statusKey, index) => (
+            <PropertyList.Item key={index} title={rdapStatusInfo[statusKey]}>
+              {statusKey}
+            </PropertyList.Item>
+          ))}
+        </PropertyList>
+      </dl>
+    </AbstractCard>
   );
 };
 
