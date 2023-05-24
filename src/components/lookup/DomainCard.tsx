@@ -11,7 +11,7 @@ export type DomainProps = {
 
 const DomainCard: FunctionComponent<DomainProps> = ({ data }: DomainProps) => {
   return (
-    <div className="mb-4 bg-zinc-800">
+    <div className="mb-4 overflow-clip rounded bg-zinc-800">
       <div className="bg-zinc-700 p-2 pl-5">
         <span className="font-mono">{data.ldhName ?? data.unicodeName}</span> (
         {data.handle})
