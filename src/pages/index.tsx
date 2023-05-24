@@ -38,13 +38,15 @@ const Index: NextPage = () => {
       <div className="mx-auto max-w-screen-sm px-5 lg:max-w-screen-md xl:max-w-screen-lg">
         <div className="dark container mx-auto w-full py-6 md:py-12 ">
           <LookupInput
-            onRegistry={async (type) => {
-              // await setTarget(type);
+            onChange={(target) => {
+              setTarget(target);
             }}
             onSubmit={async (props) => {
-              setTarget(props.target);
-              const response = await submit(props);
-              setResponse(response);
+              try {
+                setResponse(await submit(props));
+              } catch (e) {
+                setResponse(null);
+              }
             }}
           />
           {error != null ? (
