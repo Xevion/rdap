@@ -10,14 +10,17 @@ type LookupInputProps = {
   onRegistry?: (type: TargetType) => Promise<any>;
   // When a user hits submit, this is called.
   onSubmit?: (props: SubmitProps) => Promise<any>;
+  onChange?: (target: string) => any;
 };
 
 const LookupInput: FunctionComponent<LookupInputProps> = ({
   isLoading,
   onSubmit,
+  onChange,
 }: LookupInputProps) => {
-  const { register, handleSubmit } = useForm<SubmitProps>({
+  const { register, handleSubmit, getValues } = useForm<SubmitProps>({
     defaultValues: {
+      target: "",
       followReferral: false,
       requestJSContact: false,
     },
@@ -48,7 +51,12 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
             disabled={isLoading}
             placeholder="A domain, an IP address, a TLD, an RDAP URL..."
             type="search"
-            {...register("target", { required: true })}
+            {...register("target", {
+              required: true,
+              onChange: () => {
+                if (onChange != undefined) onChange(getValues("target"));
+              },
+            })}
           />
         </div>
       </div>
