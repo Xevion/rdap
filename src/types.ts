@@ -26,3 +26,9 @@ export type IpNetwork = z.infer<typeof IpNetworkSchema>;
 export type AutonomousNumber = z.infer<typeof AutonomousNumberSchema>;
 export type Register = z.infer<typeof RegisterSchema>;
 export type Domain = z.infer<typeof DomainSchema>;
+
+export type SubmitProps = {
+  target: string;
+  requestJSContact: boolean;
+  followReferral: boolean;
+};

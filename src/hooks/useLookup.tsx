@@ -177,7 +177,6 @@ const useLookup = (warningHandler?: WarningHandler) => {
     props: SubmitProps
   ): Promise<ParsedGeneric | undefined> {
     try {
-      setTarget(props.target);
       const response = await submitInternal();
       if (response == undefined)
         throw new Error("Internal submission failed to yield any data.");

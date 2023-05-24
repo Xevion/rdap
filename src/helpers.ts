@@ -37,3 +37,7 @@ export function truncated(input: string, maxLength: number, ellipsis = "...") {
 export function classNames(...classes: (string | null | undefined)[]) {
   return classes.filter(Boolean).join(" ");
 }
+
+export function preventDefault(event: SyntheticEvent | Event) {
+  event.preventDefault();
+}
