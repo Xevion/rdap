@@ -53,23 +53,27 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
         </div>
       </div>
       <div className="col p-0">
-        <div className="flex pt-3 pb-1 text-sm">
-          <input
-            className="ml-2 mr-1 text-zinc-800 accent-zinc-700"
-            type="checkbox"
-            {...register("requestJSContact")}
-          />
-          <label className="" htmlFor="requestJSContact">
-            Request JSContact
-          </label>
-          <input
-            className="ml-2 mr-1 bg-zinc-500 text-inherit accent-zinc-700"
-            type="checkbox"
-            {...register("followReferral")}
-          />
-          <label className="" htmlFor="followReferral">
-            Follow referral to registrar&apos;s RDAP record
-          </label>
+        <div className="flex flex-wrap pt-3 pb-1 text-sm">
+          <div className="whitespace-nowrap">
+            <input
+              className="ml-2 mr-1 whitespace-nowrap text-zinc-800 accent-zinc-700"
+              type="checkbox"
+              {...register("requestJSContact")}
+            />
+            <label className="" htmlFor="requestJSContact">
+              Request JSContact
+            </label>
+          </div>
+          <div className="whitespace-nowrap">
+            <input
+              className="ml-2 mr-1 bg-zinc-500 text-inherit accent-zinc-700"
+              type="checkbox"
+              {...register("followReferral")}
+            />
+            <label className="" htmlFor="followReferral">
+              Follow referral to registrar&apos;s RDAP record
+            </label>
+          </div>
         </div>
       </div>
     </form>
