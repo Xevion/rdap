@@ -135,7 +135,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
   }
 
   async function submitInternal(): Promise<ParsedGeneric | undefined> {
-    if (target == null)
+    if (target == null || target.length == 0)
       throw new Error("A target must be given in order to execute a lookup.");
 
     const targetType = getType(target);
@@ -173,9 +173,9 @@ const useLookup = (warningHandler?: WarningHandler) => {
     }
   }
 
-  async function submit(
-    props: SubmitProps
-  ): Promise<ParsedGeneric | undefined> {
+  async function submit({
+    target,
+  }: SubmitProps): Promise<ParsedGeneric | undefined> {
     try {
       const response = await submitInternal();
       if (response == undefined)
