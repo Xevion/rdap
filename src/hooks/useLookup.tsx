@@ -163,7 +163,11 @@ const useLookup = (warningHandler?: WarningHandler) => {
         return await getAndParse<AutonomousNumber>(url, AutonomousNumberSchema);
       }
       case null:
-        throw new Error("The type could not be detected given the target.");
+        throw new Error(
+          `The type could not be detected given the target (${JSON.stringify(
+            target
+          )}).`
+        );
       case "url":
       case "tld":
       case "registrar":
