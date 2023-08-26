@@ -32,7 +32,7 @@ const Index: NextPage = () => {
       <nav className="bg-zinc-850 px-5 py-4 shadow-sm">
         <span className="text-white" style={{ fontSize: "larger" }}>
           <a className="text-xl font-medium" href="#">
-            rdap.xevion.dev
+            rdap<span className="text-zinc-400">.xevion.dev</span>
           </a>
         </span>
       </nav>
