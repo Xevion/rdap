@@ -190,21 +190,21 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
         <div className="flex flex-wrap pt-3 pb-1 text-sm">
           <div className="whitespace-nowrap">
             <input
-              className="ml-2 mr-1 whitespace-nowrap text-zinc-800 accent-zinc-700"
+              className="ml-2 mr-1 whitespace-nowrap text-zinc-800 accent-blue-700"
               type="checkbox"
               {...register("requestJSContact")}
             />
-            <label className="" htmlFor="requestJSContact">
+            <label className="text-zinc-300" htmlFor="requestJSContact">
               Request JSContact
             </label>
           </div>
           <div className="whitespace-nowrap">
             <input
-              className="ml-2 mr-1 bg-zinc-500 text-inherit accent-zinc-700"
+              className="ml-2 mr-1 bg-zinc-500 text-inherit accent-blue-700"
               type="checkbox"
               {...register("followReferral")}
             />
-            <label className="" htmlFor="followReferral">
+            <label className="text-zinc-300" htmlFor="followReferral">
               Follow referral to registrar&apos;s RDAP record
             </label>
           </div>
