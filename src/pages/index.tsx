@@ -38,7 +38,7 @@ const Index: NextPage = () => {
       <div className="mx-auto max-w-screen-sm px-5 lg:max-w-screen-md xl:max-w-screen-lg">
         <div className="dark container mx-auto w-full py-6 md:py-12 ">
           <LookupInput
-            onChange={(target) => {
+            onChange={({ target, targetType }) => {
               setTarget(target);
             }}
             onSubmit={async (props) => {
