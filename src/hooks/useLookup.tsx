@@ -30,6 +30,9 @@ const useLookup = (warningHandler?: WarningHandler) => {
   const [error, setError] = useState<string | null>(null);
   const [target, setTarget] = useState<string>("");
 
+  // Used to allow repeatable lookups when weird errors happen.
+  const repeatableRef = useRef<string>("");
+
   const uriType = useMemo<TargetType | "unknown">(
     function () {
       return getType(target) ?? "unknown";
@@ -155,6 +158,15 @@ const useLookup = (warningHandler?: WarningHandler) => {
       case "domain": {
         await loadBootstrap("domain");
         const url = getRegistryURL(targetType, target);
+
+        if (url.startsWith("http://") && url != repeatableRef.current) {
+          repeatableRef.current = url;
+          throw new Error(
+            "The registry this domain belongs to uses HTTP, which is not secure. " +
+              "In order to prevent a cryptic error from appearing due to mixed active content, " +
+              "or worse, a CORS error, this lookup has been blocked. Try again to force the lookup."
+          );
+        }
         return await getAndParse<Domain>(url, DomainSchema);
       }
       case "autnum": {
