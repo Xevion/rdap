@@ -52,8 +52,8 @@ const Index: NextPage = () => {
           />
           {error != null ? (
             <ErrorCard
-              title="An error ocurred while performing a lookup."
-              issues={[error]}
+              title="An error occurred while performing a lookup."
+              description={error}
             />
           ) : null}
           {response != null ? <Generic data={response} /> : null}
