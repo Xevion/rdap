@@ -11,7 +11,8 @@ dd {
 }
 
 body {
-  @apply bg-zinc-900 text-white;
+    color-scheme: dark;
+    @apply bg-zinc-900 text-white;
 }
 
 dd, dl {
