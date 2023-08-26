@@ -5,6 +5,7 @@ import Generic, { type ParsedGeneric } from "@/components/lookup/Generic";
 import useLookup from "@/hooks/useLookup";
 import { OGP } from "react-ogp";
 import LookupInput from "@/components/form/LookupInput";
+import ErrorCard from "@/components/common/ErrorCard";
 
 const Index: NextPage = () => {
   const { error, setTarget, submit } = useLookup();
@@ -50,9 +51,10 @@ const Index: NextPage = () => {
             }}
           />
           {error != null ? (
-            <div className="my-3 mx-7 rounded border-2 border-red-800/40 bg-zinc-700 p-2 text-zinc-300">
-              {error}
-            </div>
+            <ErrorCard
+              title="An error ocurred while performing a lookup."
+              issues={[error]}
+            />
           ) : null}
           {response != null ? <Generic data={response} /> : null}
         </div>
