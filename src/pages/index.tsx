@@ -42,9 +42,13 @@ const Index: NextPage = () => {
             onChange={({ target, targetType }) => {
               setTarget(target);
             }}
-            onSubmit={async (props) => {
+            onSubmit={async function (props) {
               try {
-                setResponse(await submit(props));
+                const result = await submit(props);
+                if (result.isJust)
+                  setResponse(result.value);
+                else
+                  setResponse(null);
               } catch (e) {
                 setResponse(null);
               }
