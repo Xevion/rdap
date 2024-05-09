@@ -21,7 +21,6 @@ import { truncated } from "@/helpers";
 import type { ZodSchema } from "zod";
 import type { ParsedGeneric } from "@/components/lookup/Generic";
 import { Maybe, Result } from "true-myth";
-import { err } from "true-myth/dist/es/result";
 
 export type WarningHandler = (warning: { message: string }) => void;
 

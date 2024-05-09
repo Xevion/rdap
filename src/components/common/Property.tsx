@@ -1,6 +1,6 @@
 import type { FunctionComponent, ReactFragment, ReactNode } from "react";
 import React from "react";
-import { classNames } from "@/helpers";
+import clsx from "clsx";
 
 type PropertyProps = {
   title: string | ReactNode | ReactFragment;
@@ -17,8 +17,8 @@ const Property: FunctionComponent<PropertyProps> = ({
 }) => {
   return (
     <>
-      <dt className={classNames("font-medium", titleClass)}>{title}:</dt>
-      <dd className={classNames("mt-2 mb-2 ml-6", valueClass)}>{children}</dd>
+      <dt className={clsx("font-medium", titleClass)}>{title}:</dt>
+      <dd className={clsx("mt-2 mb-2 ml-6", valueClass)}>{children}</dd>
     </>
   );
 };

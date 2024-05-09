@@ -1,15 +1,16 @@
 import { useForm } from "react-hook-form";
 import type { FunctionComponent } from "react";
 import { Fragment, useState } from "react";
-import { classNames, onPromise, preventDefault } from "@/helpers";
+import { onPromise, preventDefault } from "@/helpers";
 import type { SubmitProps, TargetType } from "@/types";
-import { ObjectType } from "@/types";
+import type { ObjectType } from "@/types";
 import {
   CheckIcon,
   ChevronUpDownIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/20/solid";
 import { Listbox, Transition } from "@headlessui/react";
+import clsx from "clsx";
 
 type LookupInputProps = {
   isLoading?: boolean;
@@ -84,7 +85,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
             />
           </div>
           <input
-            className={classNames(
+            className={clsx(
               "lg:py-4.5 custom-select block w-full rounded-l-md border border-transparent",
               "bg-zinc-700 py-2 pl-10 pr-3 text-sm placeholder-zinc-400 placeholder:translate-y-2 focus:text-zinc-200",
               " focus:outline-none sm:text-sm md:py-3 md:text-base lg:text-lg"
@@ -116,9 +117,9 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
             }}
             disabled={isLoading}
           >
-            <div className="relative min-w-[10rem]">
+            <div className="relative md:min-w-[10rem]">
               <Listbox.Button
-                className={classNames(
+                className={clsx(
                   "relative h-full w-full cursor-default rounded-r-lg bg-zinc-700 py-2 pl-3 pr-10",
                   "text-left focus:outline-none focus-visible:border-indigo-500 sm:text-sm",
                   "focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 "
@@ -142,7 +143,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
                 leaveTo="opacity-0"
               >
                 <Listbox.Options
-                  className={classNames(
+                  className={clsx(
                     "scrollbar-thin absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-zinc-700 py-1",
                     "text-zinc-200 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
                   )}
@@ -151,7 +152,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
                     <Listbox.Option
                       key={key}
                       className={({ active }) =>
-                        classNames(
+                        clsx(
                           "relative cursor-default select-none py-2 pl-10 pr-4",
                           active ? "bg-zinc-800 text-zinc-300" : null
                         )
@@ -161,7 +162,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
                       {({ selected }) => (
                         <>
                           <span
-                            className={classNames(
+                            className={clsx(
                               "block",
                               selected ? "font-medium" : null
                             )}
