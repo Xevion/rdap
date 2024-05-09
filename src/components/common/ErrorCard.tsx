@@ -21,7 +21,7 @@ const ErrorCard: FunctionComponent<ErrorCardProps> = ({
         <div className="ml-3 text-sm text-red-300">
           <h3 className="font-medium text-red-200">{title}</h3>
           {description != undefined ? (
-            <div className="mt-2">{description}</div>
+            <div className="mt-2 whitespace-pre-wrap" >{description}</div>
           ) : null}
           <div className="mt-2">
             {issues != undefined ? (

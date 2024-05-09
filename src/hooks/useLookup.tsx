@@ -134,17 +134,37 @@ const useLookup = (warningHandler?: WarningHandler) => {
   async function getAndParse<T>(
     url: string,
     schema: ZodSchema
-  ): Promise<Maybe<T>> {
+  ): Promise<Result<T, Error>> {
     const response = await fetch(url);
+
     if (response.status == 200) {
-      const safeValue = schema.safeParse(await response.json());
-      if (safeValue.success) return Maybe.just(safeValue.data);
-      else {
-        console.error(safeValue.error);
-        return Maybe.nothing();
+      const result = schema.safeParse(await response.json());
+
+      if (result.success === false) {
+        // flatten the errors to make them more readable and simple
+        const flatErrors = result.error.flatten(function (issue) {
+          const path = issue.path.map((value => value.toString())).join('.');
+          return `${path}: ${issue.message}`;
+        });
+
+        console.log(flatErrors);
+
+        // combine them all, wrap them in a new error, and return it
+        return Result.err(new Error([
+          "Could not parse the response from the registry.",
+          ...flatErrors.formErrors,
+          ...Object.values(flatErrors.fieldErrors).flat(),
+        ].join('\n')));
       }
+
+      return Result.ok(result.data);
     }
-    return Maybe.nothing();
+
+    return Result.err(
+      new Error(
+        `The registry did not return an OK status code: ${response.status}.`
+      )
+    );
   }
 
   async function submitInternal(): Promise<Result<ParsedGeneric, Error>> {
@@ -169,16 +189,16 @@ const useLookup = (warningHandler?: WarningHandler) => {
         await loadBootstrap("ip4");
         const url = getRegistryURL(targetType.value, target);
         const result = await getAndParse<IpNetwork>(url, IpNetworkSchema);
-        if (result.isNothing)
-          return Result.err(new Error("No data was returned from the lookup."));
+        if (result.isErr)
+          return Result.err(result.error);
         return Result.ok(result.value);
       }
       case "ip6": {
         await loadBootstrap("ip6");
         const url = getRegistryURL(targetType.value, target);
         const result = await getAndParse<IpNetwork>(url, IpNetworkSchema);
-        if (result.isNothing)
-          return Result.err(new Error("No data was returned from the lookup."));
+        if (result.isErr)
+          return Result.err(result.error);
         return Result.ok(result.value);
       }
       case "domain": {
@@ -196,8 +216,9 @@ const useLookup = (warningHandler?: WarningHandler) => {
           );
         }
         const result = await getAndParse<Domain>(url, DomainSchema);
-        if (result.isNothing)
-          return Result.err(new Error("No data was returned from the lookup."));
+        if (result.isErr)
+          return Result.err(result.error);
+
         return Result.ok(result.value);
       }
       case "autnum": {
@@ -207,8 +228,8 @@ const useLookup = (warningHandler?: WarningHandler) => {
           url,
           AutonomousNumberSchema
         );
-        if (result.isNothing)
-          return Result.err(new Error("No data was returned from the lookup."));
+        if (result.isErr)
+          return Result.err(result.error);
         return Result.ok(result.value);
       }
       case "url":
