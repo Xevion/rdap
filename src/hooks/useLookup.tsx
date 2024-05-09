@@ -35,7 +35,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
 
   const uriType = useMemo<TargetType | "unknown">(
     function () {
-      return getType(target) ?? "unknown";
+      return getType(target).unwrapOr("unknown");
     },
     [target]
   );
@@ -143,21 +143,29 @@ const useLookup = (warningHandler?: WarningHandler) => {
 
     const targetType = getType(target);
 
-    switch (targetType) {
+    if (targetType.isNothing) {
+      throw new Error(
+        `The type could not be detected given the target (${JSON.stringify(
+          target
+        )}).`
+      );
+    }
+
+    switch (targetType.value) {
       // Block scoped case to allow url const reuse
       case "ip4": {
         await loadBootstrap("ip4");
-        const url = getRegistryURL(targetType, target);
+        const url = getRegistryURL(targetType.value, target);
         return await getAndParse<IpNetwork>(url, IpNetworkSchema);
       }
       case "ip6": {
         await loadBootstrap("ip6");
-        const url = getRegistryURL(targetType, target);
+        const url = getRegistryURL(targetType.value, target);
         return await getAndParse<IpNetwork>(url, IpNetworkSchema);
       }
       case "domain": {
         await loadBootstrap("domain");
-        const url = getRegistryURL(targetType, target);
+        const url = getRegistryURL(targetType.value, target);
 
         if (url.startsWith("http://") && url != repeatableRef.current) {
           repeatableRef.current = url;
@@ -171,15 +179,9 @@ const useLookup = (warningHandler?: WarningHandler) => {
       }
       case "autnum": {
         await loadBootstrap("autnum");
-        const url = getRegistryURL(targetType, target);
+        const url = getRegistryURL(targetType.value, target);
         return await getAndParse<AutonomousNumber>(url, AutonomousNumberSchema);
       }
-      case null:
-        throw new Error(
-          `The type could not be detected given the target (${JSON.stringify(
-            target
-          )}).`
-        );
       case "url":
       case "tld":
       case "registrar":

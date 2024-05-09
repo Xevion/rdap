@@ -2312,6 +2312,11 @@ to-regex-range@^5.0.1:
   dependencies:
     is-number "^7.0.0"
 
+"true-myth@^7.1.0":
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/true-myth/-/true-myth-7.1.0.tgz#79077b5f1848af1ea0c241234aec2c4d0c11b91a"
+  integrity sha512-DcdyFRHfNyG31HgNtxqrVAHmBf7y1w4YZCpU7IR2Ohytm4LITv+u075Vc3dLyK9cdEPq6K9398iao6YpkU8hHA==
+
 tsconfig-paths@^3.14.1:
   version "3.14.1"
   resolved "https://registry.yarnpkg.com/tsconfig-paths/-/tsconfig-paths-3.14.1.tgz#ba0734599e8ea36c862798e920bcf163277b137a"
