@@ -154,7 +154,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
           "Could not parse the response from the registry.",
           ...flatErrors.formErrors,
           ...Object.values(flatErrors.fieldErrors).flat(),
-        ].join('\n')));
+        ].join('\n\t')));
       }
 
       return Result.ok(result.data);
