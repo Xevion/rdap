@@ -54,6 +54,7 @@ const Index: NextPage = () => {
             <ErrorCard
               title="An error occurred while performing a lookup."
               description={error}
+              className="mb-2"
             />
           ) : null}
           {response != null ? <Generic data={response} /> : null}

@@ -1,19 +1,22 @@
-import { FunctionComponent, ReactNode } from "react";
+import type { FunctionComponent, ReactNode } from "react";
 import { XCircleIcon } from "@heroicons/react/20/solid";
+import clsx from "clsx";
 
 export type ErrorCardProps = {
   title: ReactNode;
   description?: ReactNode;
   issues?: ReactNode[];
+  className?: string;
 };
 
 const ErrorCard: FunctionComponent<ErrorCardProps> = ({
   title,
   description,
   issues,
+  className,
 }) => {
   return (
-    <div className="rounded-md border border-red-700/30 bg-zinc-800 p-4">
+    <div className={clsx(className, "rounded-md border border-red-700/30 bg-zinc-800 p-4")}>
       <div className="flex">
         <div className="flex-shrink-0">
           <XCircleIcon className="h-5 w-5 text-red-300" aria-hidden="true" />
