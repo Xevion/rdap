@@ -1,5 +1,5 @@
 import type { TargetType } from "@/types";
-import { Maybe } from "true-myth";
+import { Result } from "true-myth";
 
 // keeps track of the elements we've created so we can assign a unique ID
 // let elementCounter = 123456;
@@ -774,9 +774,9 @@ const URIPatterns: [RegExp, TargetType][] = [
   ],
 ];
 
-export function getType(value: string): Maybe<TargetType> {
+export function getType(value: string): Result<TargetType, Error> {
   for (const [pattern, type] of URIPatterns) {
-    if (pattern.test(value)) return Maybe.of(type);
+    if (pattern.test(value)) return Result.ok(type);
   }
-  return Maybe.nothing();
+  return Result.err(new Error("No patterns matched the input"));
 }

@@ -20,6 +20,8 @@ import {
 import { truncated } from "@/helpers";
 import type { ZodSchema } from "zod";
 import type { ParsedGeneric } from "@/components/lookup/Generic";
+import { Maybe, Result } from "true-myth";
+import { err } from "true-myth/dist/es/result";
 
 export type WarningHandler = (warning: { message: string }) => void;
 
@@ -132,22 +134,32 @@ const useLookup = (warningHandler?: WarningHandler) => {
   async function getAndParse<T>(
     url: string,
     schema: ZodSchema
-  ): Promise<T | undefined> {
+  ): Promise<Maybe<T>> {
     const response = await fetch(url);
-    if (response.status == 200) return schema.parse(await response.json()) as T;
+    if (response.status == 200) {
+      const safeValue = schema.safeParse(await response.json());
+      if (safeValue.success) return Maybe.just(safeValue.data);
+      else {
+        console.error(safeValue.error);
+        return Maybe.nothing();
+      }
+    }
+    return Maybe.nothing();
   }
 
-  async function submitInternal(): Promise<ParsedGeneric | undefined> {
+  async function submitInternal(): Promise<Result<ParsedGeneric, Error>> {
     if (target == null || target.length == 0)
-      throw new Error("A target must be given in order to execute a lookup.");
+      return Result.err(
+        new Error("A target must be given in order to execute a lookup.")
+      );
 
     const targetType = getType(target);
 
-    if (targetType.isNothing) {
-      throw new Error(
-        `The type could not be detected given the target (${JSON.stringify(
-          target
-        )}).`
+    if (targetType.isErr) {
+      return Result.err(
+        new Error("Unable to determine type, unable to send query", {
+          cause: targetType.error,
+        })
       );
     }
 
@@ -156,12 +168,18 @@ const useLookup = (warningHandler?: WarningHandler) => {
       case "ip4": {
         await loadBootstrap("ip4");
         const url = getRegistryURL(targetType.value, target);
-        return await getAndParse<IpNetwork>(url, IpNetworkSchema);
+        const result = await getAndParse<IpNetwork>(url, IpNetworkSchema);
+        if (result.isNothing)
+          return Result.err(new Error("No data was returned from the lookup."));
+        return Result.ok(result.value);
       }
       case "ip6": {
         await loadBootstrap("ip6");
         const url = getRegistryURL(targetType.value, target);
-        return await getAndParse<IpNetwork>(url, IpNetworkSchema);
+        const result = await getAndParse<IpNetwork>(url, IpNetworkSchema);
+        if (result.isNothing)
+          return Result.err(new Error("No data was returned from the lookup."));
+        return Result.ok(result.value);
       }
       case "domain": {
         await loadBootstrap("domain");
@@ -169,42 +187,60 @@ const useLookup = (warningHandler?: WarningHandler) => {
 
         if (url.startsWith("http://") && url != repeatableRef.current) {
           repeatableRef.current = url;
-          throw new Error(
-            "The registry this domain belongs to uses HTTP, which is not secure. " +
-              "In order to prevent a cryptic error from appearing due to mixed active content, " +
-              "or worse, a CORS error, this lookup has been blocked. Try again to force the lookup."
+          return Result.err(
+            new Error(
+              "The registry this domain belongs to uses HTTP, which is not secure. " +
+                "In order to prevent a cryptic error from appearing due to mixed active content, " +
+                "or worse, a CORS error, this lookup has been blocked. Try again to force the lookup."
+            )
           );
         }
-        return await getAndParse<Domain>(url, DomainSchema);
+        const result = await getAndParse<Domain>(url, DomainSchema);
+        if (result.isNothing)
+          return Result.err(new Error("No data was returned from the lookup."));
+        return Result.ok(result.value);
       }
       case "autnum": {
         await loadBootstrap("autnum");
         const url = getRegistryURL(targetType.value, target);
-        return await getAndParse<AutonomousNumber>(url, AutonomousNumberSchema);
+        const result = await getAndParse<AutonomousNumber>(
+          url,
+          AutonomousNumberSchema
+        );
+        if (result.isNothing)
+          return Result.err(new Error("No data was returned from the lookup."));
+        return Result.ok(result.value);
       }
       case "url":
       case "tld":
       case "registrar":
       case "json":
       default:
-        throw new Error("The type detected has not been implemented.");
+        return Result.err(
+          new Error("The type detected has not been implemented.")
+        );
     }
   }
 
   async function submit({
     target,
-  }: SubmitProps): Promise<ParsedGeneric | undefined> {
+  }: SubmitProps): Promise<Maybe<ParsedGeneric>> {
     try {
       const response = await submitInternal();
-      if (response == undefined)
-        throw new Error("Internal submission failed to yield any data.");
+      if (response.isErr) {
+        setError(response.error.message);
+        console.error(response.error);
+      }
+      else setError(null);
 
-      setError(null);
-      return response;
+      return response.isOk ? Maybe.just(response.value) : Maybe.nothing();
     } catch (e) {
       if (!(e instanceof Error))
         setError("An unknown, unprocessable error has occurred.");
-      setError((e as Error).message);
+      else
+        setError(e.message);
+      console.error(e);
+      return Maybe.nothing();
     }
   }
 
