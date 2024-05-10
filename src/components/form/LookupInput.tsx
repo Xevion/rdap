@@ -2,8 +2,7 @@ import { useForm } from "react-hook-form";
 import type { FunctionComponent } from "react";
 import { Fragment, useState } from "react";
 import { onPromise, preventDefault } from "@/helpers";
-import type { SubmitProps, TargetType } from "@/types";
-import type { ObjectType } from "@/types";
+import type { SimplifiedTargetType, SubmitProps, TargetType } from "@/types";
 import {
   CheckIcon,
   ChevronUpDownIcon,
@@ -38,9 +37,9 @@ type LookupInputProps = {
    */
   onChange?: (target: {
     target: string;
-    targetType: ObjectType | null;
+    targetType: TargetType | null;
   }) => void;
-  detectedType: Maybe<ObjectType>;
+  detectedType: Maybe<TargetType>;
 };
 
 const LookupInput: FunctionComponent<LookupInputProps> = ({
@@ -59,12 +58,12 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
   });
 
   /**
-   * Mapping of object types to their corresponding display names.
+   * A mapping of available (simple) target types to their long-form human-readable names.
    */
-  const objectNames: Record<ObjectType | "auto", string> = {
+  const objectNames: Record<SimplifiedTargetType | "auto", string> = {
     auto: "Autodetect",
     domain: "Domain",
-    ip: "IP/CIDR",
+    ip: "IP/CIDR", // IPv4/IPv6 are combined into this option
     tld: "TLD",
     autnum: "AS Number",
     entity: "Entity Handle",
@@ -74,23 +73,38 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
   };
 
   /**
+   * Mapping of precise target types to their simplified short-form names.
+   */
+  const targetShortNames: Record<TargetType, string> = {
+    domain: "Domain",
+    tld: "TLD",
+    ip4: "IPv4",
+    ip6: "IPv6",
+    autnum: "ASN",
+    entity: "Entity",
+    registrar: "Registrar",
+    url: "URL",
+    json: "JSON",
+  };
+
+  /**
    * Represents the selected value in the LookupInput component.
    */
-  const [selected, setSelected] = useState<ObjectType | "auto">("auto");
+  const [selected, setSelected] = useState<TargetType | "auto">("auto");
 
   /**
    * Retrieves the target type based on the provided value.
    * @param value - The value to retrieve the target type for.
    * @returns The target type as ObjectType or null.
    */
-  function retrieveTargetType(value?: string | null): ObjectType | null {
+  function retrieveTargetType(value?: string | null): TargetType | null {
     // If the value is null and the selected value is null, return null.
     if (value == null) value = selected;
 
     // 'auto' means 'do whatever' so we return null.
     if (value == "auto") return null;
 
-    return value as ObjectType;
+    return value as TargetType;
   }
 
   const searchIcon = (
@@ -114,7 +128,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
   const searchInput = (
     <input
       className={clsx(
-        "lg:py-4.5 custom-select block w-full rounded-l-md border border-transparent",
+        "lg:py-4.5 block w-full rounded-l-md border border-transparent",
         "bg-zinc-700 py-2 pl-10 pr-3 text-sm placeholder-zinc-400 placeholder:translate-y-2 focus:text-zinc-200",
         " focus:outline-none sm:text-sm md:py-3 md:text-base lg:text-lg"
       )}
@@ -162,8 +176,8 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
           <span className="block">
             {selected == "auto"
               // If the detected type was provided, then notate which in parentheses. Compact object naming might be better in the future. 
-              ? (detectedType.isJust ? `Auto (${objectNames[detectedType.value]})` : objectNames["auto"])
-              : objectNames[selected]}
+              ? (detectedType.isJust ? `Auto (${targetShortNames[detectedType.value]})` : objectNames["auto"])
+              : targetShortNames[selected]}
           </span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <ChevronUpDownIcon
