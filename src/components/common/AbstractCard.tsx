@@ -26,7 +26,7 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
   return (
     <div className="mb-4 overflow-clip rounded bg-zinc-800 shadow">
       {header != undefined || data != undefined ? (
-        <div className="flex bg-zinc-700 p-2 pl-5">
+        <div className="flex bg-zinc-700 p-2 pl-3 md:pl-5">
           <div className="grow space-x-2">{header}</div>
           {data != undefined ? (
             <div className="pr-1">
