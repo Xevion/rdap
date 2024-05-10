@@ -1,15 +1,17 @@
 import { z } from "zod";
 
-export const ObjectTypeEnum = z.enum([
-  "ip",
+export const TargetTypeEnum = z.enum([
   "autnum",
+  "domain",
+  "ip4",
+  "ip6",
   "entity",
   "url",
   "tld",
   "registrar",
   "json",
-  "domain",
 ]);
+
 export const RootRegistryEnum = z.enum([
   "autnum",
   "domain",
@@ -17,6 +19,7 @@ export const RootRegistryEnum = z.enum([
   "ip6",
   "entity",
 ]);
+
 export const StatusEnum = z.enum([
   "validated",
   "renew prohibited",
@@ -63,7 +66,7 @@ export const LinkSchema = z.object({
 
 export const EntitySchema = z.object({
   objectClassName: z.literal("entity"),
-  handle: z.string(),
+  handle: z.string().optional(),
   roles: z.array(z.string()),
   publicIds: z
     .array(

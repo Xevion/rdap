@@ -7,15 +7,20 @@ import type {
   IpNetworkSchema,
   LinkSchema,
   NameserverSchema,
-  ObjectTypeEnum,
+  TargetTypeEnum,
   RegisterSchema,
   StatusEnum,
   RootRegistryEnum,
 } from "@/schema";
 
-export type ObjectType = z.infer<typeof ObjectTypeEnum>;
+// All precise target types that can be placed in the search bar.
+export type TargetType = z.infer<typeof TargetTypeEnum>;
+
+// Target types that can be selected by the user; IPv4 and IPv6 are combined into a single type for simplicity (IP/CIDR)
+export type SimplifiedTargetType = Exclude<TargetType, "ip4" | "ip6"> | "ip";
+
+// Root registry types that associate with a bootstrap file provided by the RDAP registry.
 export type RootRegistryType = z.infer<typeof RootRegistryEnum>;
-export type TargetType = Exclude<ObjectType, "ip"> | "ip4" | "ip6";
 
 export type RdapStatusType = z.infer<typeof StatusEnum>;
 export type Link = z.infer<typeof LinkSchema>;
