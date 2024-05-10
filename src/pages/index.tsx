@@ -7,12 +7,12 @@ import { OGP } from "react-ogp";
 import LookupInput from "@/components/form/LookupInput";
 import ErrorCard from "@/components/common/ErrorCard";
 import { Maybe } from "true-myth";
-import type { ObjectType } from "@/types";
+import type { TargetType } from "@/types";
 import { getType } from "@/rdap";
 
 const Index: NextPage = () => {
-  const { error, setTarget, submit } = useLookup();
-  const [detectedType, setDetectedType] = useState<Maybe<ObjectType>>(Maybe.nothing());
+  const { error, setTarget, setTargetType, submit } = useLookup();
+  const [detectedType, setDetectedType] = useState<Maybe<TargetType>>(Maybe.nothing());
   const [response, setResponse] = useState<ParsedGeneric | null>();
   const [isLoading, setLoading] = useState<boolean>(false);
 
@@ -47,14 +47,11 @@ const Index: NextPage = () => {
             detectedType={detectedType}
             onChange={({ target, targetType }) => {
               setTarget(target);
+              setTargetType(targetType);
 
               const detectResult = getType(target);
               if (detectResult.isOk) {
-                const value = detectResult.value;
-                if (value == "ip4" || value == "ip6")
-                  setDetectedType(Maybe.just("ip"));
-                else
-                  setDetectedType(Maybe.just(value));
+                setDetectedType(Maybe.just(detectResult.value));
               } else {
                 setDetectedType(Maybe.nothing());
               }
