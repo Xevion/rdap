@@ -22,7 +22,7 @@ const DynamicDate: FunctionComponent<DynamicDateProps> = ({
   const date = new Date(value);
   return (
     <button onClick={toggleFormat}>
-      <span title={date.toISOString()}>
+      <span className="dashed" title={date.toISOString()}>
         {showAbsolute
           ? format(date, absoluteFormat ?? "LLL do, y HH:mm:ss xxx")
           : <TimeAgo date={date} />}
