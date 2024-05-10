@@ -9,12 +9,17 @@ import AbstractCard from "@/components/common/AbstractCard";
 
 export type DomainProps = {
   data: Domain;
+  url?: string;
 };
 
-const DomainCard: FunctionComponent<DomainProps> = ({ data }: DomainProps) => {
+const DomainCard: FunctionComponent<DomainProps> = ({
+  data,
+  url,
+}: DomainProps) => {
   return (
     <AbstractCard
       data={data}
+      url={url}
       header={
         <>
           <span className="font-mono tracking-tighter">DOMAIN</span>

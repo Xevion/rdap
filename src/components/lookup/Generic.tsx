@@ -17,19 +17,20 @@ export type ParsedGeneric =
   | IpNetwork;
 export type ObjectProps = {
   data: ParsedGeneric;
+  url?: string;
 };
 
-const Generic: FunctionComponent<ObjectProps> = ({ data }: ObjectProps) => {
+const Generic: FunctionComponent<ObjectProps> = ({ data, url }: ObjectProps) => {
   switch (data.objectClassName) {
     case "domain":
-      return <DomainCard data={data} />;
+      return <DomainCard url={url} data={data} />;
     case "autnum":
     case "entity":
     case "ip network":
     case "nameserver":
     default:
       return (
-        <AbstractCard>
+        <AbstractCard url={url}>
           Not implemented. (<pre>{data.objectClassName ?? "null"}</pre>)
         </AbstractCard>
       );

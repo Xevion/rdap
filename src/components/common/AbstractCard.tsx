@@ -1,16 +1,21 @@
 import type { FunctionComponent, ReactNode } from "react";
 import React from "react";
 import { useBoolean } from "usehooks-ts";
-import { CodeBracketIcon } from "@heroicons/react/24/solid";
+import {
+  LinkIcon,
+  CodeBracketIcon,
+} from "@heroicons/react/24/outline";
 
 type AbstractCardProps = {
   children?: ReactNode;
   header?: ReactNode;
   footer?: ReactNode;
   data?: object;
+  url?: string;
 };
 
 const AbstractCard: FunctionComponent<AbstractCardProps> = ({
+  url,
   children,
   header,
   footer,
@@ -29,6 +34,11 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
                 onClick={toggleRaw}
                 className="h-6 w-6 cursor-pointer"
               />
+          {url != undefined ? (
+            <div className="pr-2">
+              <a href={url} target="_blank" rel="noreferrer">
+                <LinkIcon className="h-5 w-5 mt-1 cursor-pointer" />
+              </a>
             </div>
           ) : null}
         </div>

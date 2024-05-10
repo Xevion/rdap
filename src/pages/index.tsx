@@ -81,7 +81,7 @@ const Index: NextPage = () => {
               className="mb-2"
             />
           ) : null}
-          {response != null ? <Generic data={response} /> : null}
+          {response != null ? <Generic url={"https://google.com"} data={response} /> : null}
         </div>
       </div>
     </>
