@@ -12,7 +12,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { Listbox, Transition } from "@headlessui/react";
 import clsx from "clsx";
-import { Maybe } from "true-myth";
+import type { Maybe } from "true-myth";
 
 /**
  * Props for the LookupInput component.
@@ -52,6 +52,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
   const { register, handleSubmit, getValues } = useForm<SubmitProps>({
     defaultValues: {
       target: "",
+      // Not used at this time.
       followReferral: false,
       requestJSContact: false,
     },

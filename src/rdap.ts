@@ -1,9 +1,6 @@
 import type { TargetType } from "@/types";
 import { Result } from "true-myth";
 
-// keeps track of the elements we've created so we can assign a unique ID
-// let elementCounter = 123456;
-
 const cardTitles = {
   domain: "Domain Name",
   "ip network": "IP Network",
@@ -774,6 +771,13 @@ const URIPatterns: [RegExp, TargetType][] = [
   ],
 ];
 
+/**
+ * Retrieves the type of a given value based on matching patterns.
+ *
+ * @param value - The value to determine the type for.
+ * @returns A `Result` object containing the determined `TargetType` if a match is found,
+ *          otherwise an `Error` object.
+ */
 export function getType(value: string): Result<TargetType, Error> {
   for (const [pattern, type] of URIPatterns) {
     if (pattern.test(value)) return Result.ok(type);

@@ -1,4 +1,5 @@
-import React, { FunctionComponent, ReactNode } from "react";
+import type { FunctionComponent, ReactNode } from "react";
+import React from "react";
 import { useBoolean } from "usehooks-ts";
 import { CodeBracketIcon } from "@heroicons/react/24/solid";
 
