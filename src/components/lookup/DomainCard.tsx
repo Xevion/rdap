@@ -17,8 +17,9 @@ const DomainCard: FunctionComponent<DomainProps> = ({ data }: DomainProps) => {
       data={data}
       header={
         <>
-          <span className="font-mono">{data.ldhName ?? data.unicodeName}</span>
-          <span>({data.handle})</span>
+          <span className="font-mono tracking-tighter">DOMAIN</span>
+          <span className="font-mono tracking-wide">{data.ldhName ?? data.unicodeName}</span>
+          <span className="whitespace-nowrap">({data.handle})</span>
         </>
       }
     >
