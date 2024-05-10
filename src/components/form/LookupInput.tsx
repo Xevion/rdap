@@ -152,7 +152,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
       <div className="relative">
         <Listbox.Button
           className={clsx(
-            "relative h-full w-full cursor-default rounded-r-lg bg-zinc-700 py-2 pl-3 pr-10 text-right",
+            "relative h-full w-full cursor-default rounded-r-lg bg-zinc-700 py-2 pl-3 pr-10 text-right whitespace-nowrap",
             "text-left text-xs focus:outline-none focus-visible:border-indigo-500 sm:text-sm md:text-base lg:text-lg",
             "focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 "
           )}
@@ -160,7 +160,8 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
           {/* Fetch special text for 'auto' mode, otherwise just use the options. */}
           <span className="block">
             {selected == "auto"
-              ? detectedType.unwrapOr("???")
+              // If the detected type was provided, then notate which in parentheses. Compact object naming might be better in the future. 
+              ? (detectedType.isJust ? `Auto (${objectNames[detectedType.value]})` : objectNames["auto"])
               : objectNames[selected]}
           </span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
