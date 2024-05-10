@@ -1,6 +1,6 @@
 import type { FunctionComponent } from "react";
 import { useBoolean } from "usehooks-ts";
-import { format, formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 import TimeAgo from "react-timeago";
 
 type DynamicDateProps = {

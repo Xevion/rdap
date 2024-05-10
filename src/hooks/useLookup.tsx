@@ -143,7 +143,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
     };
 
     preload().catch(console.error);
-  }, [target]);
+  }, [target, uriType, warningHandler]);
 
   async function getAndParse<T>(
     url: string,
@@ -181,7 +181,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
     );
   }
 
-  async function submitInternal(): Promise<Result<ParsedGeneric, Error>> {
+  async function submitInternal(target: string): Promise<Result<ParsedGeneric, Error>> {
     if (target == null || target.length == 0)
       return Result.err(
         new Error("A target must be given in order to execute a lookup.")
@@ -219,6 +219,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
         await loadBootstrap("domain");
         const url = getRegistryURL(targetType.value, target);
 
+        // HTTP
         if (url.startsWith("http://") && url != repeatableRef.current) {
           repeatableRef.current = url;
           return Result.err(
@@ -261,7 +262,9 @@ const useLookup = (warningHandler?: WarningHandler) => {
     target,
   }: SubmitProps): Promise<Maybe<ParsedGeneric>> {
     try {
-      const response = await submitInternal();
+      // target is already set in state, but it's also provided by the form callback, so we'll use it.
+      const response = await submitInternal(target);
+
       if (response.isErr) {
         setError(response.error.message);
         console.error(response.error);

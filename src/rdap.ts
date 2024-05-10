@@ -42,11 +42,11 @@ export function ipMatch(prefix: string, ip: string) {
 */
 
 // return the first HTTPS url, or the first URL
-export function getBestURL(urls: string[]): string {
+export function getBestURL(urls: [string, ...string[]]): string {
   urls.forEach((url) => {
     if (url.startsWith("https://")) return url;
   });
-  return urls[0]!;
+  return urls[0];
 }
 
 // given a URL, injects that URL into the query input,
