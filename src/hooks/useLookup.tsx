@@ -175,11 +175,45 @@ const useLookup = (warningHandler?: WarningHandler) => {
       return Result.ok(result.data);
     }
 
-    return Result.err(
-      new Error(
-        `The registry did not return an OK status code: ${response.status}.`
-      )
-    );
+    switch (response.status) {
+      case 302:
+        return Result.err(
+          new Error(
+            "The registry indicated that the resource requested is available at a different location."
+          )
+        );
+      case 400:
+        return Result.err(
+          new Error(
+            "The registry indicated that the request was malformed or could not be processed. Check that you typed in the correct information and try again."
+          )
+        );
+      case 403:
+        return Result.err(
+          new Error(
+            "The registry indicated that the request was forbidden. This could be due to rate limiting, abusive behavior, or other reasons. Try again later or contact the registry for more information."
+          )
+        );
+
+      case 404:
+        return Result.err(
+          new Error(
+            "The registry indicated that the resource requested could not be found; the resource either does not exist, or is something that the registry does not track (i.e. this software queried incorrectly, which is unlikely)."
+          )
+        );
+      case 500:
+        return Result.err(
+          new Error(
+            "The registry indicated that an internal server error occurred. This could be due to a misconfiguration, a bug, or other reasons. Try again later or contact the registry for more information."
+          )
+        );
+      default:
+        return Result.err(
+          new Error(
+            `The registry did not return an OK status code: ${response.status}.`
+          )
+        );
+    }
   }
 
   async function submitInternal(target: string): Promise<Result<ParsedGeneric, Error>> {
