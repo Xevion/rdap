@@ -109,7 +109,10 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 
   const searchIcon = (
     <>
-      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+      <button type="submit" className={clsx({
+        "absolute inset-y-0 left-0 flex items-center pl-3": true,
+        "pointer-events-none": isLoading,
+      })}>
         {isLoading ? (
           <ArrowPathIcon
             className="h-5 w-5 text-zinc-400 animate-spin"
@@ -121,7 +124,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
             aria-hidden="true"
           />
         )}
-      </div>
+      </button>
     </>
   );
 
