@@ -90,7 +90,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
   /**
    * Represents the selected value in the LookupInput component.
    */
-  const [selected, setSelected] = useState<TargetType | "auto">("auto");
+  const [selected, setSelected] = useState<SimplifiedTargetType | "auto">("auto");
 
   /**
    * Retrieves the target type based on the provided value.
@@ -180,7 +180,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
             {selected == "auto"
               // If the detected type was provided, then notate which in parentheses. Compact object naming might be better in the future. 
               ? (detectedType.isJust ? `Auto (${targetShortNames[detectedType.value]})` : objectNames["auto"])
-              : targetShortNames[selected]}
+              : objectNames[selected]}
           </span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <ChevronUpDownIcon
