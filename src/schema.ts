@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { z } from "zod";
 
 export const TargetTypeEnum = z.enum([
@@ -58,10 +59,13 @@ export const StatusEnum = z.enum([
 ]);
 
 export const LinkSchema = z.object({
-  value: z.string().optional(),
-  rel: z.string(),
+  value: z.string().optional(), // de-facto optional
+  rel: z.string().optional(), // de-facto optional
   href: z.string(),
-  type: z.string(),
+  hrefLang: z.array(z.string()).optional(),
+  title: z.string().optional(),
+  media: z.string().optional(),
+  type: z.string().optional(),
 });
 
 export const EntitySchema = z.object({
@@ -90,16 +94,9 @@ export const EventSchema = z.object({
 });
 
 export const NoticeSchema = z.object({
+  description: z.string().array(), // de jure required
   title: z.string().optional(),
-  description: z.string().array(),
-  links: z
-    .array(
-      z.object({
-        href: z.string(),
-        type: z.string(),
-      })
-    )
-    .optional(),
+  links: z.array(LinkSchema).optional()
 });
 export type Notice = z.infer<typeof NoticeSchema>;
 
