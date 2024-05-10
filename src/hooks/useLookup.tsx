@@ -25,9 +25,14 @@ import { Maybe, Result } from "true-myth";
 export type WarningHandler = (warning: { message: string }) => void;
 
 const useLookup = (warningHandler?: WarningHandler) => {
+  /**
+   * A reference to the registry data, which is used to cache the registry data in memory.
+   * This uses TargetType as the key, meaning v4/v6 IP/CIDR lookups are differentiated.
+   */
   const registryDataRef = useRef<Record<RootRegistryType, Register | null>>(
-    {} as Record<TargetType, Register>
+    {}  as Record<RootRegistryType, Register>
   );
+
   const [error, setError] = useState<string | null>(null);
   const [target, setTarget] = useState<string>("");
   // Used by a callback on LookupInput to forcibly set the type of the lookup.
