@@ -30,15 +30,22 @@ const useLookup = (warningHandler?: WarningHandler) => {
   );
   const [error, setError] = useState<string | null>(null);
   const [target, setTarget] = useState<string>("");
+  // Used by a callback on LookupInput to forcibly set the type of the lookup.
+  const [currentType, setTargetType] = useState<TargetType | null>(null);
 
   // Used to allow repeatable lookups when weird errors happen.
   const repeatableRef = useRef<string>("");
 
-  const uriType = useMemo<TargetType | "unknown">(
+  /** */
+  const uriType = useMemo<Maybe<TargetType>>(
     function () {
-      return getType(target).unwrapOr("unknown");
+      if (currentType != null) return Maybe.just(currentType);
+      return getType(target).mapOr(
+        Maybe.nothing(),
+        (type) => Maybe.just(type)
+      );
     },
-    [target]
+    [target, currentType]
   );
 
   // Fetch & load a specific registry's data into memory.
@@ -105,10 +112,13 @@ const useLookup = (warningHandler?: WarningHandler) => {
 
   useEffect(() => {
     const preload = async () => {
-      if (uriType === "unknown") return;
-      const registryUri = RootRegistryEnum.safeParse(uriType);
+      if (uriType.isNothing) return;
+
+      const registryUri = RootRegistryEnum.safeParse(uriType.value);
       if (!registryUri.success) return;
+
       console.log({
+        uriType: uriType.value,
         registryData: registryDataRef.current,
         registryUri: registryUri.data,
       });
@@ -264,7 +274,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
     }
   }
 
-  return { error, setTarget, submit, currentType: uriType };
+  return { error, setTarget, setTargetType, submit, currentType: uriType };
 };
 
 export default useLookup;
