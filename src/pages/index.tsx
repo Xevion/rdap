@@ -10,6 +10,7 @@ import ErrorCard from "@/components/common/ErrorCard";
 const Index: NextPage = () => {
   const { error, setTarget, submit } = useLookup();
   const [response, setResponse] = useState<ParsedGeneric | null>();
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   return (
     <>
@@ -39,18 +40,23 @@ const Index: NextPage = () => {
       <div className="mx-auto max-w-screen-sm px-5 lg:max-w-screen-md xl:max-w-screen-lg">
         <div className="dark container mx-auto w-full py-6 md:py-12 ">
           <LookupInput
+            isLoading={isLoading}
+            detectedType={Maybe.nothing()}
             onChange={({ target, targetType }) => {
               setTarget(target);
             }}
             onSubmit={async function (props) {
               try {
+                setLoading(true);
                 const result = await submit(props);
                 if (result.isJust)
                   setResponse(result.value);
                 else
                   setResponse(null);
+                setLoading(false);
               } catch (e) {
                 setResponse(null);
+                setLoading(false);
               }
             }}
           />

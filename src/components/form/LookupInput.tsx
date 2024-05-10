@@ -8,6 +8,7 @@ import {
   CheckIcon,
   ChevronUpDownIcon,
   MagnifyingGlassIcon,
+  ArrowPathIcon,
 } from "@heroicons/react/20/solid";
 import { Listbox, Transition } from "@headlessui/react";
 import clsx from "clsx";
@@ -89,10 +90,17 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
   const searchIcon = (
     <>
       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-        <MagnifyingGlassIcon
-          className="h-5 w-5 text-zinc-400"
-          aria-hidden="true"
-        />
+        {isLoading ? (
+          <ArrowPathIcon
+            className="h-5 w-5 text-zinc-400 animate-spin"
+            aria-hidden="true"
+          />
+        ) : (
+          <MagnifyingGlassIcon
+            className="h-5 w-5 text-zinc-400"
+            aria-hidden="true"
+          />
+        )}
       </div>
     </>
   );
