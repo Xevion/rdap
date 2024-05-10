@@ -36,7 +36,10 @@ type LookupInputProps = {
    * @param target - The target object containing the search target and target type.
    * @returns Nothing.
    */
-  onChange?: (target: { target: string; targetType: ObjectType | null }) => void;
+  onChange?: (target: {
+    target: string;
+    targetType: ObjectType | null;
+  }) => void;
   detectedType: Maybe<ObjectType>;
 };
 
@@ -54,7 +57,10 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
     },
   });
 
-  const options: Record<ObjectType | "auto", string> = {
+  /**
+   * Mapping of object types to their corresponding display names.
+   */
+  const objectNames: Record<ObjectType | "auto", string> = {
     auto: "Autodetect",
     domain: "Domain",
     ip: "IP/CIDR",
@@ -66,7 +72,6 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
     json: "JSON",
   };
 
-  
   /**
    * Represents the selected value in the LookupInput component.
    */
@@ -82,7 +87,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
     if (value == null) value = selected;
 
     // 'auto' means 'do whatever' so we return null.
-    if (value == "auto" ) return null;
+    if (value == "auto") return null;
 
     return value as ObjectType;
   }
@@ -154,7 +159,9 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
         >
           {/* Fetch special text for 'auto' mode, otherwise just use the options. */}
           <span className="block">
-            {selected == "auto" ? detectedType.unwrapOr("???") : options[selected]}
+            {selected == "auto"
+              ? detectedType.unwrapOr("???")
+              : objectNames[selected]}
           </span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <ChevronUpDownIcon
@@ -175,7 +182,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
               "text-zinc-200 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
             )}
           >
-            {Object.entries(options).map(([key, value]) => (
+            {Object.entries(objectNames).map(([key, value]) => (
               <Listbox.Option
                 key={key}
                 className={({ active }) =>
