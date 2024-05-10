@@ -93,7 +93,8 @@ const useLookup = (warningHandler?: WarningHandler) => {
       case "domain":
         for (const bootstrapItem of bootstrap.services) {
           if (bootstrapItem[0].some(domainMatchPredicate(lookupTarget))) {
-            url = getBestURL(bootstrapItem[1]);
+            // min length of 1 is validated in zod schema
+            url = getBestURL(bootstrapItem[1] as [string, ...string[]]);
             break typeSwitch;
           }
         }
