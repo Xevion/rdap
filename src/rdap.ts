@@ -758,18 +758,20 @@ export function createRDAPLink(url, title) {
 */
 
 // TODO: Provide full domain, TLD, Ipv4 & Ipv6 validators
-const URIPatterns: [RegExp, TargetType][] = [
-  [/^\d+$/, "autnum"],
-  [/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/?\d*$/, "ip4"],
-  [/^[0-9a-f:]{2,}\/?\d*$/, "ip6"],
-  [/^https?:/, "url"],
-  [/^{/, "json"],
-  [/^\.\w+$/, "tld"],
-  [
-    /[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?/,
-    "domain",
-  ],
-];
+const TypeValidators: Record<TargetType, (value: string) => boolean> = {
+  autnum: (value) => /^\d+$/.test(value),
+  ip4: (value) => /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/?\d*$/.test(value),
+  ip6: (value) => /^[0-9a-f:]{2,}\/?\d*$/.test(value),
+  url: (value) => /^https?:/.test(value),
+  json: (value) => /^{/.test(value),
+  tld: (value) => /^\.\w+$/.test(value),
+  domain: (value) =>
+    /[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?/.test(
+      value
+    ),
+  entity: (value) => false,
+  registrar: (value) => false,
+};
 
 /**
  * Retrieves the precise type of a given value based on matching patterns.
@@ -779,8 +781,8 @@ const URIPatterns: [RegExp, TargetType][] = [
  *          otherwise an `Error` object.
  */
 export function getType(value: string): Result<TargetType, Error> {
-  for (const [pattern, type] of URIPatterns) {
-    if (pattern.test(value)) return Result.ok(type);
+  for (const [type, validator] of Object.entries(TypeValidators)) {
+    if (validator(value)) return Result.ok(type);
   }
   return Result.err(new Error("No patterns matched the input"));
 }

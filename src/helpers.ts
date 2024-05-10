@@ -1,4 +1,11 @@
 import type { SyntheticEvent } from "react";
+import type { Entries } from "type-fest";
+
+declare global {
+  interface ObjectConstructor {
+    entries<T extends object>(o: T): Entries<T>
+  }  
+}
 
 export function truthy(value: string | null | undefined) {
   if (value == undefined) return false;
