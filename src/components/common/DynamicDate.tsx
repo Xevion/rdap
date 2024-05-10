@@ -1,6 +1,7 @@
 import type { FunctionComponent } from "react";
 import { useBoolean } from "usehooks-ts";
 import { format, formatDistanceToNow } from "date-fns";
+import TimeAgo from "react-timeago";
 
 type DynamicDateProps = {
   value: Date | number;
@@ -23,11 +24,8 @@ const DynamicDate: FunctionComponent<DynamicDateProps> = ({
     <button onClick={toggleFormat}>
       <span title={date.toISOString()}>
         {showAbsolute
-          ? format(date, absoluteFormat ?? "LLL do, y HH:mm:ss")
-          : formatDistanceToNow(date, {
-              includeSeconds: true,
-              addSuffix: true,
-            })}
+          ? format(date, absoluteFormat ?? "LLL do, y HH:mm:ss xxx")
+          : <TimeAgo date={date} />}
       </span>
     </button>
   );

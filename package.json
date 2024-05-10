@@ -20,6 +20,7 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.42.1",
     "react-ogp": "^0.0.3",
+    "react-timeago": "^7.2.0",
     "sass": "^1.57.1",
     "true-myth": "^7.1.0",
     "usehooks-ts": "^2.9.1",
