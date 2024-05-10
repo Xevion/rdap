@@ -1,5 +1,5 @@
 // see https://www.iana.org/assignments/rdap-json-values
-import type { RdapStatusType, RootRegistryType, TargetType } from "@/types";
+import type { RdapStatusType, RootRegistryType, SimplifiedTargetType, TargetType } from "@/types";
 
 export const rdapStatusInfo: Record<RdapStatusType, string> = {
   validated:
@@ -79,9 +79,9 @@ export const registryURLs: Record<RootRegistryType, string> = {
   entity: "https://data.iana.org/rdap/object-tags.json",
 };
 
-export const placeholders: Record<TargetType, string> = {
-  ip4: "192.168.0.1/16",
-  ip6: "TODO: Complete this placeholder",
+export const placeholders: Record<SimplifiedTargetType | "auto", string> = {
+  auto: "A domain, an IP address, a TLD, an RDAP URL...",
+  ip: "192.168.0.1/16 or 2001:db8::/32",
   autnum: "65535",
   entity: "ABC123-EXAMPLE",
   url: "https://rdap.org/domain/example.com",

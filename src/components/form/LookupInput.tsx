@@ -12,6 +12,7 @@ import {
 import { Listbox, Transition } from "@headlessui/react";
 import clsx from "clsx";
 import type { Maybe } from "true-myth";
+import { placeholders } from "@/constants";
 
 /**
  * Props for the LookupInput component.
@@ -136,7 +137,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
         " focus:outline-none sm:text-sm md:py-3 md:text-base lg:text-lg"
       )}
       disabled={isLoading}
-      placeholder="A domain, an IP address, a TLD, an RDAP URL..."
+      placeholder={placeholders[selected]}
       type="search"
       {...register("target", {
         required: true,
