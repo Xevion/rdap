@@ -132,7 +132,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
     <input
       className={clsx(
         "lg:py-4.5 block w-full rounded-l-md border border-transparent",
-        "bg-zinc-700 py-2 pl-10 pr-3 text-sm placeholder-zinc-400 placeholder:translate-y-2 focus:text-zinc-200",
+        "bg-zinc-700 py-2 pl-10 pr-1.5 text-sm placeholder-zinc-400 placeholder:translate-y-2 focus:text-zinc-200",
         " focus:outline-none sm:text-sm md:py-3 md:text-base lg:text-lg"
       )}
       disabled={isLoading}
@@ -170,7 +170,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
       <div className="relative">
         <Listbox.Button
           className={clsx(
-            "relative h-full w-full cursor-default rounded-r-lg bg-zinc-700 py-2 pl-3 pr-10 text-right whitespace-nowrap",
+            "relative h-full w-full cursor-default rounded-r-lg bg-zinc-700 py-2 pl-1 pr-10 text-right whitespace-nowrap",
             "text-left text-xs focus:outline-none focus-visible:border-indigo-500 sm:text-sm md:text-base lg:text-lg",
             "focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 "
           )}
