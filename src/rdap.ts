@@ -1,13 +1,13 @@
 import type { TargetType } from "@/types";
 import { Result } from "true-myth";
 
-const cardTitles = {
-  domain: "Domain Name",
-  "ip network": "IP Network",
-  nameserver: "Nameserver",
-  entity: "Entity",
-  autnum: "AS Number",
-};
+// const cardTitles = {
+//   domain: "Domain Name",
+//   "ip network": "IP Network",
+//   nameserver: "Nameserver",
+//   entity: "Entity",
+//   autnum: "AS Number",
+// };
 
 export function domainMatchPredicate(domain: string): (tld: string) => boolean {
   return (tld) => domainMatch(tld, domain);
@@ -222,7 +222,7 @@ export function processCommonObjectProperties(object, dl) {
     if (object.links) processLinks(object.links, dl);
     if (object.lang) addProperty(dl, 'Language:', object.lang);
     if (object.port43) addProperty(dl, 'Whois Server:', object.port43);
-    if (object.rdapConformance) processrdapConformance(object.rdapConformance, dl);
+    if (object.rdapConformance) processRdapConformance(object.rdapConformance, dl);
 
     const div = document.createElement('div');
     div.id = 'element-' + ++elementCounter;
@@ -274,7 +274,7 @@ export function createList(list) {
 
 // add the RDAP conformance of the response
 /*
-export function processrdapConformance(rdapConformance, dl) {
+export function processRdapConformance(rdapConformance, dl) {
     addProperty(dl, 'Conformance:', createList(rdapConformance));
 }
 */
@@ -399,7 +399,7 @@ export function processRemarksOrNotices(things) {
 
         if (things[i].description) for (let j = 0; j < things[i].description.length; j++) {
             const p = document.createElement('p');
-            p.innerHTML = convertURLstoLinks(things[i].description[j]);
+            p.innerHTML = convertUrlsToLinks(things[i].description[j]);
             body.appendChild(p);
         }
 
@@ -416,7 +416,7 @@ export function processRemarksOrNotices(things) {
 
 // naively match URLs in plain text and convert to links
 /*
-export function convertURLstoLinks(str) {
+export function convertUrlsToLinks(str) {
     return str.replace(
         /(https?:\/\/[^\s]+[^\.])/g,
         '<a href="$1" target="_new" rel="noopener">$1</a>'
@@ -470,7 +470,7 @@ export function processNameserver(object, dl, toplevel = false) {
     if (toplevel) document.title = 'Nameserver ' + object.ldhName + ' - RDAP Lookup';
 
     addProperty(dl, 'Host Name:', object.ldhName);
-    if (object.unicodeName) addProperty(dl, 'Internationalised Domain Name:', object.unicodeName);
+    if (object.unicodeName) addProperty(dl, 'Internationalized Domain Name:', object.unicodeName);
     if (object.handle) addProperty(dl, 'Handle:', object.handle);
 
     if (object.ipAddresses) {
@@ -772,7 +772,7 @@ const URIPatterns: [RegExp, TargetType][] = [
 ];
 
 /**
- * Retrieves the type of a given value based on matching patterns.
+ * Retrieves the precise type of a given value based on matching patterns.
  *
  * @param value - The value to determine the type for.
  * @returns A `Result` object containing the determined `TargetType` if a match is found,
