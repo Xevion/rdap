@@ -6,6 +6,7 @@ import useLookup from "@/hooks/useLookup";
 import { OGP } from "react-ogp";
 import LookupInput from "@/components/form/LookupInput";
 import ErrorCard from "@/components/common/ErrorCard";
+import { Maybe } from "true-myth";
 
 const Index: NextPage = () => {
   const { error, setTarget, submit } = useLookup();
@@ -24,7 +25,6 @@ const Index: NextPage = () => {
           type="website"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="shortcut icon" href="/shortcut-icon.svg" />
         <meta
           name="keywords"
           content="xevion, rdap, whois, rdap, domain name, dns, ip address"
