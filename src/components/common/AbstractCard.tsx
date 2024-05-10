@@ -43,7 +43,7 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
           ) : null}
         </div>
       ) : null}
-      <div className="max-w-full p-2 px-4">
+      <div className="max-w-full p-2 px-4 overflow-x-auto">
         {showRaw ? (
           <pre className="scrollbar-thin m-2 max-h-[40rem] max-w-full overflow-y-auto whitespace-pre-wrap rounded">
             {JSON.stringify(data, null, 4)}
