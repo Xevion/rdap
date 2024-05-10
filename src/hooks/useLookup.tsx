@@ -23,6 +23,11 @@ import type { ParsedGeneric } from "@/components/lookup/Generic";
 import { Maybe, Result } from "true-myth";
 
 export type WarningHandler = (warning: { message: string }) => void;
+export type MetaParsedGeneric = {
+  data: ParsedGeneric;
+  url: string;
+  completeTime: Date;
+};
 
 const useLookup = (warningHandler?: WarningHandler) => {
   /**
@@ -30,7 +35,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
    * This uses TargetType as the key, meaning v4/v6 IP/CIDR lookups are differentiated.
    */
   const registryDataRef = useRef<Record<RootRegistryType, Register | null>>(
-    {}  as Record<RootRegistryType, Register>
+    {} as Record<RootRegistryType, Register>
   );
 
   const [error, setError] = useState<string | null>(null);
@@ -41,14 +46,10 @@ const useLookup = (warningHandler?: WarningHandler) => {
   // Used to allow repeatable lookups when weird errors happen.
   const repeatableRef = useRef<string>("");
 
-  /** */
   const uriType = useMemo<Maybe<TargetType>>(
     function () {
       if (currentType != null) return Maybe.just(currentType);
-      return getType(target).mapOr(
-        Maybe.nothing(),
-        (type) => Maybe.just(type)
-      );
+      return getType(target).mapOr(Maybe.nothing(), (type) => Maybe.just(type));
     },
     [target, currentType]
   );
@@ -158,18 +159,22 @@ const useLookup = (warningHandler?: WarningHandler) => {
       if (result.success === false) {
         // flatten the errors to make them more readable and simple
         const flatErrors = result.error.flatten(function (issue) {
-          const path = issue.path.map((value => value.toString())).join('.');
+          const path = issue.path.map((value) => value.toString()).join(".");
           return `${path}: ${issue.message}`;
         });
 
         console.log(flatErrors);
 
         // combine them all, wrap them in a new error, and return it
-        return Result.err(new Error([
-          "Could not parse the response from the registry.",
-          ...flatErrors.formErrors,
-          ...Object.values(flatErrors.fieldErrors).flat(),
-        ].join('\n\t')));
+        return Result.err(
+          new Error(
+            [
+              "Could not parse the response from the registry.",
+              ...flatErrors.formErrors,
+              ...Object.values(flatErrors.fieldErrors).flat(),
+            ].join("\n\t")
+          )
+        );
       }
 
       return Result.ok(result.data);
@@ -216,7 +221,9 @@ const useLookup = (warningHandler?: WarningHandler) => {
     }
   }
 
-  async function submitInternal(target: string): Promise<Result<ParsedGeneric, Error>> {
+  async function submitInternal(
+    target: string
+  ): Promise<Result<{data: ParsedGeneric, url: string}, Error>> {
     if (target == null || target.length == 0)
       return Result.err(
         new Error("A target must be given in order to execute a lookup.")
@@ -238,17 +245,15 @@ const useLookup = (warningHandler?: WarningHandler) => {
         await loadBootstrap("ip4");
         const url = getRegistryURL(targetType.value, target);
         const result = await getAndParse<IpNetwork>(url, IpNetworkSchema);
-        if (result.isErr)
-          return Result.err(result.error);
-        return Result.ok(result.value);
+        if (result.isErr) return Result.err(result.error);
+        return Result.ok({data: result.value, url});
       }
       case "ip6": {
         await loadBootstrap("ip6");
         const url = getRegistryURL(targetType.value, target);
         const result = await getAndParse<IpNetwork>(url, IpNetworkSchema);
-        if (result.isErr)
-          return Result.err(result.error);
-        return Result.ok(result.value);
+        if (result.isErr) return Result.err(result.error);
+        return Result.ok({data: result.value, url});
       }
       case "domain": {
         await loadBootstrap("domain");
@@ -266,10 +271,9 @@ const useLookup = (warningHandler?: WarningHandler) => {
           );
         }
         const result = await getAndParse<Domain>(url, DomainSchema);
-        if (result.isErr)
-          return Result.err(result.error);
+        if (result.isErr) return Result.err(result.error);
 
-        return Result.ok(result.value);
+        return Result.ok({data: result.value, url});
       }
       case "autnum": {
         await loadBootstrap("autnum");
@@ -278,9 +282,8 @@ const useLookup = (warningHandler?: WarningHandler) => {
           url,
           AutonomousNumberSchema
         );
-        if (result.isErr)
-          return Result.err(result.error);
-        return Result.ok(result.value);
+        if (result.isErr) return Result.err(result.error);
+        return Result.ok({data: result.value, url});
       }
       case "url":
       case "tld":
@@ -295,7 +298,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
 
   async function submit({
     target,
-  }: SubmitProps): Promise<Maybe<ParsedGeneric>> {
+  }: SubmitProps): Promise<Maybe<MetaParsedGeneric>> {
     try {
       // target is already set in state, but it's also provided by the form callback, so we'll use it.
       const response = await submitInternal(target);
@@ -303,15 +306,19 @@ const useLookup = (warningHandler?: WarningHandler) => {
       if (response.isErr) {
         setError(response.error.message);
         console.error(response.error);
-      }
-      else setError(null);
+      } else setError(null);
 
-      return response.isOk ? Maybe.just(response.value) : Maybe.nothing();
+      return response.isOk ? Maybe.just(
+        {
+          data: response.value.data,
+          url: response.value.url,
+          completeTime: new Date(),
+        }
+      ) : Maybe.nothing();
     } catch (e) {
       if (!(e instanceof Error))
         setError("An unknown, unprocessable error has occurred.");
-      else
-        setError(e.message);
+      else setError(e.message);
       console.error(e);
       return Maybe.nothing();
     }

@@ -1,7 +1,8 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import { useState } from "react";
-import Generic, { type ParsedGeneric } from "@/components/lookup/Generic";
+import Generic from "@/components/lookup/Generic";
+import type { MetaParsedGeneric } from "@/hooks/useLookup";
 import useLookup from "@/hooks/useLookup";
 import { OGP } from "react-ogp";
 import LookupInput from "@/components/form/LookupInput";
@@ -12,8 +13,10 @@ import { getType } from "@/rdap";
 
 const Index: NextPage = () => {
   const { error, setTarget, setTargetType, submit } = useLookup();
-  const [detectedType, setDetectedType] = useState<Maybe<TargetType>>(Maybe.nothing());
-  const [response, setResponse] = useState<ParsedGeneric | null>();
+  const [detectedType, setDetectedType] = useState<Maybe<TargetType>>(
+    Maybe.nothing()
+  );
+  const [response, setResponse] = useState<Maybe<MetaParsedGeneric>>(Maybe.nothing());
   const [isLoading, setLoading] = useState<boolean>(false);
 
   return (
@@ -59,14 +62,11 @@ const Index: NextPage = () => {
             onSubmit={async function (props) {
               try {
                 setLoading(true);
-                const result = await submit(props);
-                if (result.isJust)
-                  setResponse(result.value);
-                else
-                  setResponse(null);
+                setResponse(await submit(props));
                 setLoading(false);
               } catch (e) {
-                setResponse(null);
+                console.error(e);
+                setResponse(Maybe.nothing());
                 setLoading(false);
               }
             }}
@@ -78,7 +78,9 @@ const Index: NextPage = () => {
               className="mb-2"
             />
           ) : null}
-          {response != null ? <Generic url={"https://google.com"} data={response} /> : null}
+          {response.isJust ? (
+            <Generic url={response.value.url} data={response.value.data} />
+          ) : null}
         </div>
       </div>
     </>
