@@ -29,6 +29,9 @@ export type MetaParsedGeneric = {
   completeTime: Date;
 };
 
+// An array of schemas to try and parse unknown JSON data with.
+const schemas = [DomainSchema, AutonomousNumberSchema, IpNetworkSchema];
+
 const useLookup = (warningHandler?: WarningHandler) => {
   /**
    * A reference to the registry data, which is used to cache the registry data in memory.
@@ -223,7 +226,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
 
   async function submitInternal(
     target: string
-  ): Promise<Result<{data: ParsedGeneric, url: string}, Error>> {
+  ): Promise<Result<{ data: ParsedGeneric; url: string }, Error>> {
     if (target == null || target.length == 0)
       return Result.err(
         new Error("A target must be given in order to execute a lookup.")
@@ -246,14 +249,14 @@ const useLookup = (warningHandler?: WarningHandler) => {
         const url = getRegistryURL(targetType.value, target);
         const result = await getAndParse<IpNetwork>(url, IpNetworkSchema);
         if (result.isErr) return Result.err(result.error);
-        return Result.ok({data: result.value, url});
+        return Result.ok({ data: result.value, url });
       }
       case "ip6": {
         await loadBootstrap("ip6");
         const url = getRegistryURL(targetType.value, target);
         const result = await getAndParse<IpNetwork>(url, IpNetworkSchema);
         if (result.isErr) return Result.err(result.error);
-        return Result.ok({data: result.value, url});
+        return Result.ok({ data: result.value, url });
       }
       case "domain": {
         await loadBootstrap("domain");
@@ -273,7 +276,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
         const result = await getAndParse<Domain>(url, DomainSchema);
         if (result.isErr) return Result.err(result.error);
 
-        return Result.ok({data: result.value, url});
+        return Result.ok({ data: result.value, url });
       }
       case "autnum": {
         await loadBootstrap("autnum");
@@ -283,12 +286,50 @@ const useLookup = (warningHandler?: WarningHandler) => {
           AutonomousNumberSchema
         );
         if (result.isErr) return Result.err(result.error);
-        return Result.ok({data: result.value, url});
+        return Result.ok({ data: result.value, url });
       }
-      case "url":
-      case "tld":
-      case "registrar":
-      case "json":
+      case "tld": {
+        // remove the leading dot
+        const value = target.startsWith(".") ? target.slice(1) : target;
+        const url = `https://root.rdap.org/domain/${value}`;
+        const result = await getAndParse<Domain>(url, DomainSchema);
+        if (result.isErr) return Result.err(result.error);
+        return Result.ok({ data: result.value, url });
+      }
+      case "url": {
+        const response = await fetch(target);
+
+        if (response.status != 200)
+          return Result.err(
+            new Error(
+              `The URL provided returned a non-200 status code: ${response.status}.`
+            )
+          );
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const data = await response.json();
+
+        // Try each schema until one works
+        for (const schema of schemas) {
+          const result = schema.safeParse(data);
+          if (result.success)
+            return Result.ok({ data: result.data, url: target });
+        }
+
+        return Result.err(
+          new Error("No schema was able to parse the response.")
+        );
+      }
+      case "json": {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const data = JSON.parse(target);
+        for (const schema of schemas) {
+          const result = schema.safeParse(data);
+          if (result.success) return Result.ok({ data: result.data, url: "" });
+        }
+      }
+      case "registrar": {
+      }
       default:
         return Result.err(
           new Error("The type detected has not been implemented.")
@@ -308,13 +349,13 @@ const useLookup = (warningHandler?: WarningHandler) => {
         console.error(response.error);
       } else setError(null);
 
-      return response.isOk ? Maybe.just(
-        {
-          data: response.value.data,
-          url: response.value.url,
-          completeTime: new Date(),
-        }
-      ) : Maybe.nothing();
+      return response.isOk
+        ? Maybe.just({
+            data: response.value.data,
+            url: response.value.url,
+            completeTime: new Date(),
+          })
+        : Maybe.nothing();
     } catch (e) {
       if (!(e instanceof Error))
         setError("An unknown, unprocessable error has occurred.");
