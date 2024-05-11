@@ -15,6 +15,7 @@ export type ParsedGeneric =
   | Entity
   | AutonomousNumber
   | IpNetwork;
+
 export type ObjectProps = {
   data: ParsedGeneric;
   url?: string;
