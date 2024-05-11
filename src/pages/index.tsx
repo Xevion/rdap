@@ -37,10 +37,8 @@ const Index: NextPage = () => {
         />
       </Head>
       <nav className="bg-zinc-850 px-5 py-4 shadow-sm">
-        <span className="text-white" style={{ fontSize: "larger" }}>
-          <a className="text-xl font-medium" href="https://github.com/Xevion/rdap">
-            rdap<a href={"https://xevion.dev"} className="text-zinc-400 hover:animate-pulse">.xevion.dev</a>
-          </a>
+        <span className="text-white text-xl font-medium" style={{ fontSize: "larger" }}>
+          <a href="https://github.com/Xevion/rdap">rdap</a><a href={"https://xevion.dev"} className="text-zinc-400 hover:animate-pulse">.xevion.dev</a>
         </span>
       </nav>
       <div className="mx-auto max-w-screen-sm px-5 lg:max-w-screen-md xl:max-w-screen-lg">
