@@ -46,5 +46,6 @@
   },
   "ct3aMetadata": {
     "initVersion": "7.2.0"
-  }
+  },
+  "packageManager": "yarn@4.2.2"
 }
