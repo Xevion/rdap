@@ -6,10 +6,17 @@ import type { SimplifiedTargetType, SubmitProps, TargetType } from "@/types";
 import {
   CheckIcon,
   ChevronUpDownIcon,
+  LockClosedIcon,
   MagnifyingGlassIcon,
   ArrowPathIcon,
 } from "@heroicons/react/20/solid";
-import { Listbox, ListboxButton, ListboxOptions, ListboxOption, Transition } from "@headlessui/react";
+import {
+  Listbox,
+  ListboxButton,
+  ListboxOptions,
+  ListboxOption,
+  Transition,
+} from "@headlessui/react";
 import clsx from "clsx";
 import type { Maybe } from "true-myth";
 import { placeholders } from "@/constants";
@@ -174,7 +181,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
       disabled={isLoading}
     >
       <div className="relative">
-      <ListboxButton
+        <ListboxButton
           className={clsx(
             "relative h-full w-full cursor-default whitespace-nowrap rounded-r-lg bg-zinc-700 py-2 pl-1 pr-10 text-right",
             "text-xs focus:outline-none focus-visible:border-indigo-500 sm:text-sm md:text-base lg:text-lg",
@@ -183,12 +190,22 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
         >
           {/* Fetch special text for 'auto' mode, otherwise just use the options. */}
           <span className="block">
-            {selected == "auto"
-              ? // If the detected type was provided, then notate which in parentheses. Compact object naming might be better in the future.
-                detectedType.isJust
-                ? `Auto (${targetShortNames[detectedType.value]})`
-                : objectNames["auto"]
-              : objectNames[selected]}
+            {selected == "auto" ? (
+              // If the detected type was provided, then notate which in parentheses. Compact object naming might be better in the future.
+              detectedType.isJust ? (
+                `Auto (${targetShortNames[detectedType.value]})`
+              ) : (
+                objectNames["auto"]
+              )
+            ) : (
+              <>
+                <LockClosedIcon
+                  className="mr-2.5 mb-1 inline h-4 w-4 animate-pulse text-zinc-500"
+                  aria-hidden
+                />
+                {objectNames[selected]}
+              </>
+            )}
           </span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <ChevronUpDownIcon
@@ -235,10 +252,13 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
                         <CheckIcon className="h-5 w-5" aria-hidden="true" />
                       </span>
                     ) : (
-                      <button onClick={(e) => {
-                        e.preventDefault();
-                        console.log("TODO: Show Help Explanation")
-                      }} className="absolute inset-y-0 left-0 flex items-center pl-4 text-lg font-bold opacity-20 hover:animate-pulse">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          console.log("TODO: Show Help Explanation");
+                        }}
+                        className="absolute inset-y-0 left-0 flex items-center pl-4 text-lg font-bold opacity-20 hover:animate-pulse"
+                      >
                         ?
                       </button>
                     )}
