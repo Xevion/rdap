@@ -83,7 +83,7 @@ export const placeholders: Record<SimplifiedTargetType | "auto", string> = {
   auto: "A domain, an IP address, a TLD, an RDAP URL...",
   ip: "192.168.0.1/16 or 2001:db8::/32",
   autnum: "AS27594",
-  entity: "ABC123-EXAMPLE",
+  entity: "OPS4-RIPE",
   url: "https://rdap.org/domain/example.com",
   tld: ".dev",
   registrar: "9999",

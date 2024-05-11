@@ -757,7 +757,6 @@ export function createRDAPLink(url, title) {
 }
 */
 
-// TODO: Provide full domain, TLD, Ipv4 & Ipv6 validators
 const TypeValidators: Record<TargetType, (value: string) => boolean> = {
   autnum: (value) => /^AS\d+$/.test(value),
   ip4: (value) => /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/?\d*$/.test(value),

@@ -193,7 +193,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
             {selected == "auto" ? (
               // If the detected type was provided, then notate which in parentheses. Compact object naming might be better in the future.
               detectedType.isJust ? (
-                `Auto (${targetShortNames[detectedType.value]})`
+                <>Auto (<span className="animate-pulse">{targetShortNames[detectedType.value]}</span>)</>
               ) : (
                 objectNames["auto"]
               )
