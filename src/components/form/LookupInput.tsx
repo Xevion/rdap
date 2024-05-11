@@ -9,7 +9,7 @@ import {
   MagnifyingGlassIcon,
   ArrowPathIcon,
 } from "@heroicons/react/20/solid";
-import { Listbox, Transition } from "@headlessui/react";
+import { Listbox, ListboxButton, ListboxOptions, ListboxOption, Transition } from "@headlessui/react";
 import clsx from "clsx";
 import type { Maybe } from "true-myth";
 import { placeholders } from "@/constants";
@@ -91,7 +91,9 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
   /**
    * Represents the selected value in the LookupInput component.
    */
-  const [selected, setSelected] = useState<SimplifiedTargetType | "auto">("auto");
+  const [selected, setSelected] = useState<SimplifiedTargetType | "auto">(
+    "auto"
+  );
 
   /**
    * Retrieves the target type based on the provided value.
@@ -110,13 +112,16 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 
   const searchIcon = (
     <>
-      <button type="submit" className={clsx({
-        "absolute inset-y-0 left-0 flex items-center pl-3": true,
-        "pointer-events-none": isLoading,
-      })}>
+      <button
+        type="submit"
+        className={clsx({
+          "absolute inset-y-0 left-0 flex items-center pl-3": true,
+          "pointer-events-none": isLoading,
+        })}
+      >
         {isLoading ? (
           <ArrowPathIcon
-            className="h-5 w-5 text-zinc-400 animate-spin"
+            className="h-5 w-5 animate-spin text-zinc-400"
             aria-hidden="true"
           />
         ) : (
@@ -169,18 +174,20 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
       disabled={isLoading}
     >
       <div className="relative">
-        <Listbox.Button
+      <ListboxButton
           className={clsx(
-            "relative h-full w-full cursor-default rounded-r-lg bg-zinc-700 py-2 pl-1 pr-10 text-right whitespace-nowrap",
-            "text-left text-xs focus:outline-none focus-visible:border-indigo-500 sm:text-sm md:text-base lg:text-lg",
+            "relative h-full w-full cursor-default whitespace-nowrap rounded-r-lg bg-zinc-700 py-2 pl-1 pr-10 text-right",
+            "text-xs focus:outline-none focus-visible:border-indigo-500 sm:text-sm md:text-base lg:text-lg",
             "focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 "
           )}
         >
           {/* Fetch special text for 'auto' mode, otherwise just use the options. */}
           <span className="block">
             {selected == "auto"
-              // If the detected type was provided, then notate which in parentheses. Compact object naming might be better in the future. 
-              ? (detectedType.isJust ? `Auto (${targetShortNames[detectedType.value]})` : objectNames["auto"])
+              ? // If the detected type was provided, then notate which in parentheses. Compact object naming might be better in the future.
+                detectedType.isJust
+                ? `Auto (${targetShortNames[detectedType.value]})`
+                : objectNames["auto"]
               : objectNames[selected]}
           </span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -189,26 +196,26 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
               aria-hidden="true"
             />
           </span>
-        </Listbox.Button>
+        </ListboxButton>
         <Transition
           as={Fragment}
           leave="transition ease-in duration-100"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options
+          <ListboxOptions
             className={clsx(
               "scrollbar-thin absolute right-0 mt-1 max-h-60 min-w-full overflow-auto rounded-md bg-zinc-700 py-1",
               "text-zinc-200 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
             )}
           >
             {Object.entries(objectNames).map(([key, value]) => (
-              <Listbox.Option
+              <ListboxOption
                 key={key}
-                className={({ active }) =>
+                className={({ focus }) =>
                   clsx(
                     "relative cursor-default select-none py-2 pl-10 pr-4",
-                    active ? "bg-zinc-800 text-zinc-300" : null
+                    focus ? "bg-zinc-800 text-zinc-300" : null
                   )
                 }
                 value={key}
@@ -227,12 +234,19 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
                       <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-500">
                         <CheckIcon className="h-5 w-5" aria-hidden="true" />
                       </span>
-                    ) : null}
+                    ) : (
+                      <button onClick={(e) => {
+                        e.preventDefault();
+                        console.log("TODO: Show Help Explanation")
+                      }} className="absolute inset-y-0 left-0 flex items-center pl-4 text-lg font-bold opacity-20 hover:animate-pulse">
+                        ?
+                      </button>
+                    )}
                   </>
                 )}
-              </Listbox.Option>
+              </ListboxOption>
             ))}
-          </Listbox.Options>
+          </ListboxOptions>
         </Transition>
       </div>
     </Listbox>
