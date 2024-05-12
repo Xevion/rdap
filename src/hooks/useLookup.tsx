@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect useRef, useState } from "react";
 import { domainMatchPredicate, getBestURL, getType } from "@/rdap";
 import type {
   AutonomousNumber,
@@ -55,7 +55,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
     if (currentType != null) return Maybe.just(currentType);
     const uri: Maybe<TargetType> = (await getTypeEasy(target)).mapOr(Maybe.nothing(), (type) => Maybe.just(type));
     setUriType(uri);
-  }, [target, currentType])
+  }, [target, currentType, getTypeEasy])
 
   // Fetch & load a specific registry's data into memory.
   async function loadBootstrap(type: RootRegistryType, force = false) {
@@ -83,11 +83,12 @@ const useLookup = (warningHandler?: WarningHandler) => {
 
   async function getRegistry(type: RootRegistryType): Promise<Register> {
     if (registryDataRef.current[type] == null) await loadBootstrap(type);
-    if (registryDataRef.current[type] == null)
+    const registry = registryDataRef.current[type];
+    if (registry == null)
       throw new Error(
         `Could not load bootstrap data for ${type} registry.`
       );
-    return registryDataRef.current[type];
+    return registry;
   }
 
   async function getTypeEasy(target: string): Promise<Result<TargetType, Error>> {
