@@ -87,6 +87,6 @@ export const placeholders: Record<SimplifiedTargetType | "auto", string> = {
   url: "https://rdap.org/domain/example.com",
   tld: ".dev",
   registrar: "9999",
-  json: "{ (paste JSON) }",
+  json: `{"objectClassName":"domain", ... }`,
   domain: "example.com",
 };
