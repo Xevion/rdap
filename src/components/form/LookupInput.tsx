@@ -46,7 +46,7 @@ type LookupInputProps = {
   onChange?: (target: {
     target: string;
     targetType: TargetType | null;
-  }) => void;
+  }) => Promise<void>;
   detectedType: Maybe<TargetType>;
 };
 
@@ -155,7 +155,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
         required: true,
         onChange: () => {
           if (onChange != undefined)
-            onChange({
+            void onChange({
               target: getValues("target"),
               // dropdown target will be pulled from state anyways, so no need to provide it here
               targetType: retrieveTargetType(null),
@@ -172,7 +172,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
         setSelected(value);
 
         if (onChange != undefined)
-          onChange({
+          void onChange({
             target: getValues("target"),
             // we provide the value as the state will not have updated yet for this context
             targetType: retrieveTargetType(value),

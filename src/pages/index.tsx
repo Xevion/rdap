@@ -9,10 +9,9 @@ import LookupInput from "@/components/form/LookupInput";
 import ErrorCard from "@/components/common/ErrorCard";
 import { Maybe } from "true-myth";
 import type { TargetType } from "@/types";
-import { getType } from "@/rdap";
 
 const Index: NextPage = () => {
-  const { error, setTarget, setTargetType, submit } = useLookup();
+  const { error, setTarget, setTargetType, submit, getType } = useLookup();
   const [detectedType, setDetectedType] = useState<Maybe<TargetType>>(
     Maybe.nothing()
   );
@@ -46,11 +45,11 @@ const Index: NextPage = () => {
           <LookupInput
             isLoading={isLoading}
             detectedType={detectedType}
-            onChange={({ target, targetType }) => {
+            onChange={async ({ target, targetType }) => {
               setTarget(target);
               setTargetType(targetType);
 
-              const detectResult = getType(target);
+              const detectResult = await getType(target);
               if (detectResult.isOk) {
                 setDetectedType(Maybe.just(detectResult.value));
               } else {

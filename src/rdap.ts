@@ -1,4 +1,4 @@
-import type { TargetType } from "@/types";
+import type { Register, RootRegistryType, TargetType } from "@/types";
 import { Result } from "true-myth";
 
 // const cardTitles = {
@@ -757,19 +757,54 @@ export function createRDAPLink(url, title) {
 }
 */
 
-const TypeValidators: Record<TargetType, (value: string) => boolean> = {
-  autnum: (value) => /^AS\d+$/.test(value),
-  ip4: (value) => /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/?\d*$/.test(value),
-  ip6: (value) => /^[0-9a-f:]{2,}\/?\d*$/.test(value),
-  url: (value) => /^https?:/.test(value),
-  json: (value) => /^{/.test(value),
-  tld: (value) => /^\.\w+$/.test(value),
-  domain: (value) =>
-    /[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?/.test(
-      value
-    ),
-  entity: (value) => false,
-  registrar: (value) => false,
+type ValidatorArgs = {
+  value: string;
+  getRegistry: (type: RootRegistryType) => Promise<Register>;
+};
+
+const TypeValidators: Record<
+  TargetType,
+  (args: ValidatorArgs) => Promise<boolean>
+> = {
+  autnum: ({ value }) => Promise.resolve(/^AS\d+$/.test(value)),
+  ip4: ({ value }) =>
+    Promise.resolve(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/?\d*$/.test(value)),
+  ip6: ({ value }) => Promise.resolve(/^[0-9a-f:]{2,}\/?\d*$/.test(value)),
+  url: ({ value }) => Promise.resolve(/^https?:/.test(value)),
+  json: ({ value }) => Promise.resolve(/^{/.test(value)),
+  tld: ({ value }) => Promise.resolve(/^\.\w+$/.test(value)),
+  domain: ({ value }) => {
+    return Promise.resolve(
+      /[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?/.test(
+        value
+      )
+    );
+  },
+  entity: async ({ value, getRegistry }) => {
+    // Ensure the entity handle is in the correct format
+    const result = value.match(/^\w+-(\w+)$/);
+    if (result === null || result.length <= 1 || result[1] == undefined) return false;
+
+    // Check if the entity object tag is real
+    try {
+        const registry = await getRegistry("entity");
+
+        // Check each service to see if tag starts with inputted value
+        for (const service of registry.services) {
+            const tags = service[1];
+            console.log({tags, result});
+            if (tags.some((tag) => tag.startsWith(result[1] as string))) return true;
+        }
+
+        return false;
+    } catch (e) {
+        console.error(new Error("Failed to fetch entity registry", {cause: e}));
+        return false;
+    }
+
+    return true;
+  },
+  registrar: ({ }) => Promise.resolve(false),
 };
 
 /**
@@ -779,9 +814,12 @@ const TypeValidators: Record<TargetType, (value: string) => boolean> = {
  * @returns A `Result` object containing the determined `TargetType` if a match is found,
  *          otherwise an `Error` object.
  */
-export function getType(value: string): Result<TargetType, Error> {
+export async function getType(
+  value: string,
+  getRegistry: (type: RootRegistryType) => Promise<Register>
+): Promise<Result<TargetType, Error>> {
   for (const [type, validator] of Object.entries(TypeValidators)) {
-    if (validator(value)) return Result.ok(type);
+    if (await validator({ value, getRegistry })) return Result.ok(type);
   }
   return Result.err(new Error("No patterns matched the input"));
 }

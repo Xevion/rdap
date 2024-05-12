@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { domainMatchPredicate, getBestURL, getType } from "@/rdap";
 import type {
   AutonomousNumber,
@@ -43,19 +43,19 @@ const useLookup = (warningHandler?: WarningHandler) => {
 
   const [error, setError] = useState<string | null>(null);
   const [target, setTarget] = useState<string>("");
+  const [uriType, setUriType] = useState<Maybe<TargetType>>(Maybe.nothing());
+
   // Used by a callback on LookupInput to forcibly set the type of the lookup.
   const [currentType, setTargetType] = useState<TargetType | null>(null);
 
   // Used to allow repeatable lookups when weird errors happen.
   const repeatableRef = useRef<string>("");
 
-  const uriType = useMemo<Maybe<TargetType>>(
-    function () {
-      if (currentType != null) return Maybe.just(currentType);
-      return getType(target).mapOr(Maybe.nothing(), (type) => Maybe.just(type));
-    },
-    [target, currentType]
-  );
+  useCallback(async () => {
+    if (currentType != null) return Maybe.just(currentType);
+    const uri: Maybe<TargetType> = (await getTypeEasy(target)).mapOr(Maybe.nothing(), (type) => Maybe.just(type));
+    setUriType(uri);
+  }, [target, currentType])
 
   // Fetch & load a specific registry's data into memory.
   async function loadBootstrap(type: RootRegistryType, force = false) {
@@ -80,6 +80,20 @@ const useLookup = (warningHandler?: WarningHandler) => {
       [type]: parsedRegister.data,
     };
   }
+
+  async function getRegistry(type: RootRegistryType): Promise<Register> {
+    if (registryDataRef.current[type] == null) await loadBootstrap(type);
+    if (registryDataRef.current[type] == null)
+      throw new Error(
+        `Could not load bootstrap data for ${type} registry.`
+      );
+    return registryDataRef.current[type];
+  }
+
+  async function getTypeEasy(target: string): Promise<Result<TargetType, Error>> {
+    return getType(target, getRegistry);
+  }
+
 
   function getRegistryURL(
     type: RootRegistryType,
@@ -232,7 +246,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
         new Error("A target must be given in order to execute a lookup.")
       );
 
-    const targetType = getType(target);
+    const targetType = await getTypeEasy(target);
 
     if (targetType.isErr) {
       return Result.err(
@@ -365,7 +379,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
     }
   }
 
-  return { error, setTarget, setTargetType, submit, currentType: uriType };
+  return { error, setTarget, setTargetType, submit, currentType: uriType, getType: getTypeEasy };
 };
 
 export default useLookup;
