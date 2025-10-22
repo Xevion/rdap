@@ -25,7 +25,7 @@ const LinksSection: FunctionComponent<LinksSectionProps> = ({ links }) => {
 					<Table.Row key={index}>
 						<Table.Cell>
 							<Link href={link.href} target="_blank" rel="noreferrer" size="2">
-								{link.value || link.href}
+								{link.href}
 							</Link>
 						</Table.Cell>
 						<Table.Cell>
