@@ -1,11 +1,11 @@
 import { useForm, Controller } from "react-hook-form";
 import type { FunctionComponent } from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { onPromise, preventDefault } from "@/lib/utils";
 import type { SimplifiedTargetType, SubmitProps, TargetType } from "@/rdap/schemas";
 import { TargetTypeEnum } from "@/rdap/schemas";
 import { MagnifyingGlassIcon, ReloadIcon, LockClosedIcon } from "@radix-ui/react-icons";
-import { TextField, Select, Flex, Checkbox, Text, IconButton } from "@radix-ui/themes";
+import { TextField, Select, Flex, Checkbox, Text, IconButton, Badge } from "@radix-ui/themes";
 import type { Maybe } from "true-myth";
 import { placeholders } from "@/rdap/constants";
 
@@ -86,6 +86,17 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 	const [selected, setSelected] = useState<SimplifiedTargetType | "auto">("auto");
 
 	/**
+	 * Tracks the current input value to determine if the field is empty.
+	 */
+	const [inputValue, setInputValue] = useState<string>("");
+
+	/**
+	 * Tracks whether we're waiting for type detection after transitioning from empty to non-empty input.
+	 * Prevents badge from flickering during initial input.
+	 */
+	const [showingPlaceholder, setShowingPlaceholder] = useState<boolean>(false);
+
+	/**
 	 * Retrieves the target type based on the provided value.
 	 * @param value - The value to retrieve the target type for.
 	 * @returns The target type as ObjectType or null.
@@ -101,6 +112,16 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 		const result = TargetTypeEnum.safeParse(value);
 		return result.success ? result.data : null;
 	}
+
+	/**
+	 * Clear the placeholder flag when type detection completes.
+	 * This prevents badge flickering when transitioning from empty to non-empty input.
+	 */
+	useEffect(() => {
+		if (showingPlaceholder) {
+			setShowingPlaceholder(false);
+		}
+	}, [detectedType]);
 
 	return (
 		<form
@@ -120,9 +141,22 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 						{...register("target", {
 							required: true,
 							onChange: () => {
+								const targetValue = getValues("target");
+								const oldIsEmpty = inputValue.trim() === "";
+								const newIsEmpty = targetValue.trim() === "";
+
+								// Transitioning from empty to non-empty - show placeholder until detection completes
+								if (oldIsEmpty && !newIsEmpty) {
+									setShowingPlaceholder(true);
+								} else if (newIsEmpty) {
+									// Input is now empty - clear placeholder
+									setShowingPlaceholder(false);
+								}
+
+								setInputValue(targetValue);
 								if (onChange != undefined)
 									void onChange({
-										target: getValues("target"),
+										target: targetValue,
 										targetType: retrieveTargetType(null),
 									});
 							},
@@ -177,14 +211,26 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 							}}
 						>
 							{selected == "auto" ? (
-								detectedType.isJust ? (
-									<Text>Auto ({targetShortNames[detectedType.value]})</Text>
-								) : (
+								showingPlaceholder || inputValue.trim() === "" ? (
 									objectNames["auto"]
+								) : detectedType.isJust ? (
+									<Flex align="center" gap="2">
+										<Badge color="green">Auto</Badge>
+										{targetShortNames[detectedType.value]}
+									</Flex>
+								) : (
+									<Flex align="center" gap="2">
+										<Badge color="red">Auto</Badge>
+										Unknown
+									</Flex>
 								)
 							) : (
 								<Flex align="center" gap="2">
-									<LockClosedIcon width="14" height="14" />
+									<LockClosedIcon
+										width="16"
+										height="16"
+										style={{ color: "var(--blue-9)" }}
+									/>
 									{objectNames[selected]}
 								</Flex>
 							)}
