@@ -32,7 +32,7 @@ const Events: FunctionComponent<EventsProps> = ({ data }) => {
 									{eventActor}
 								</Text>
 							) : (
-								<Text size="2" style={{ color: "var(--gray-a6)" }}>
+								<Text size="2" style={{ color: "var(--gray-a4)" }}>
 									—
 								</Text>
 							)}

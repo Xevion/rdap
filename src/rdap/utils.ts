@@ -176,3 +176,34 @@ export async function getType(
 
 	return Result.err(new Error("No patterns matched the input"));
 }
+
+/**
+ * Validates if a given input matches a specific target type.
+ * Used to warn users when their explicit type selection doesn't match the input format.
+ *
+ * @param value - The input value to validate
+ * @param type - The expected target type
+ * @param getRegistry - Function to fetch registry data
+ * @returns A Result containing true if valid, or an error message if invalid
+ */
+export async function validateInputForType(
+	value: string,
+	type: TargetType,
+	getRegistry: (type: RootRegistryType) => Promise<Register>
+): Promise<Result<true, string>> {
+	const validator = TypeValidators.get(type);
+	if (!validator) {
+		return Result.err(`Unknown type: ${type}`);
+	}
+
+	const result = await validator({ value, getRegistry });
+
+	if (result === true) {
+		return Result.ok(true);
+	} else if (result === false) {
+		return Result.err(`Input "${value}" does not match the format for type "${type}"`);
+	} else {
+		// result is an error message string
+		return Result.err(result);
+	}
+}

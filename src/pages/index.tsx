@@ -70,11 +70,14 @@ const Index: NextPage = () => {
 							setTarget(target);
 							setTargetType(targetType);
 
-							const detectResult = await getType(target);
-							if (detectResult.isOk) {
-								setDetectedType(Maybe.just(detectResult.value));
-							} else {
-								setDetectedType(Maybe.nothing());
+							// Only run autodetection when in autodetect mode (targetType is null)
+							if (targetType === null) {
+								const detectResult = await getType(target);
+								if (detectResult.isOk) {
+									setDetectedType(Maybe.just(detectResult.value));
+								} else {
+									setDetectedType(Maybe.nothing());
+								}
 							}
 						}}
 						onSubmit={async function (props) {

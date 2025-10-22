@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getType } from "@/rdap/utils";
+import { getType, validateInputForType } from "@/rdap/utils";
 import type { AutonomousNumber, Domain, IpNetwork, SubmitProps, TargetType } from "@/rdap/schemas";
 import {
 	AutonomousNumberSchema,
@@ -75,35 +75,56 @@ const useLookup = (warningHandler?: WarningHandler) => {
 		if (target == null || target.length == 0)
 			return Result.err(new Error("A target must be given in order to execute a lookup."));
 
-		const targetType = await getTypeEasy(target);
+		let targetType: TargetType;
 
-		if (targetType.isErr) {
-			return Result.err(
-				new Error("Unable to determine type, unable to send query", {
-					cause: targetType.error,
-				})
-			);
+		if (currentType != null) {
+			// User has explicitly selected a type
+			targetType = currentType;
+
+			// Validate the input matches the selected type
+			const validation = await validateInputForType(target, currentType, getRegistry);
+			if (validation.isErr) {
+				// Show warning but proceed with user's selection
+				if (warningHandler != undefined) {
+					warningHandler({
+						message: `Warning: ${validation.error}. Proceeding with selected type "${currentType}".`,
+					});
+				}
+			}
+		} else {
+			// Autodetect mode
+			const detectedType = await getTypeEasy(target);
+
+			if (detectedType.isErr) {
+				return Result.err(
+					new Error("Unable to determine type, unable to send query", {
+						cause: detectedType.error,
+					})
+				);
+			}
+
+			targetType = detectedType.value;
 		}
 
-		switch (targetType.value) {
+		switch (targetType) {
 			// Block scoped case to allow url const reuse
 			case "ip4": {
 				await loadBootstrap("ip4");
-				const url = getRegistryURL(targetType.value, target);
+				const url = getRegistryURL(targetType, target);
 				const result = await getAndParse<IpNetwork>(url, IpNetworkSchema);
 				if (result.isErr) return Result.err(result.error);
 				return Result.ok({ data: result.value, url });
 			}
 			case "ip6": {
 				await loadBootstrap("ip6");
-				const url = getRegistryURL(targetType.value, target);
+				const url = getRegistryURL(targetType, target);
 				const result = await getAndParse<IpNetwork>(url, IpNetworkSchema);
 				if (result.isErr) return Result.err(result.error);
 				return Result.ok({ data: result.value, url });
 			}
 			case "domain": {
 				await loadBootstrap("domain");
-				const url = getRegistryURL(targetType.value, target);
+				const url = getRegistryURL(targetType, target);
 
 				// HTTP
 				if (url.startsWith("http://") && url != repeatableRef.current) {
@@ -123,7 +144,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
 			}
 			case "autnum": {
 				await loadBootstrap("autnum");
-				const url = getRegistryURL(targetType.value, target);
+				const url = getRegistryURL(targetType, target);
 				const result = await getAndParse<AutonomousNumber>(url, AutonomousNumberSchema);
 				if (result.isErr) return Result.err(result.error);
 				return Result.ok({ data: result.value, url });

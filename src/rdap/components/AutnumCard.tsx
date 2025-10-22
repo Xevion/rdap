@@ -6,6 +6,9 @@ import Property from "@/components/Property";
 import CopyButton from "@/components/CopyButton";
 import StatusBadge from "@/components/StatusBadge";
 import AbstractCard from "@/components/AbstractCard";
+import EntitiesSection from "@/rdap/components/EntitiesSection";
+import LinksSection from "@/rdap/components/LinksSection";
+import RemarksSection from "@/rdap/components/RemarksSection";
 import { Flex, Text, DataList, Badge, Code } from "@radix-ui/themes";
 
 export type AutnumCardProps = {
@@ -50,21 +53,51 @@ const AutnumCard: FunctionComponent<AutnumCardProps> = ({ data, url }: AutnumCar
 						</Flex>
 					</DataList.Value>
 				</DataList.Item>
-				<Property title="Type">{data.type}</Property>
-				<Property title="Country">{data.country.toUpperCase()}</Property>
-				<Property title="Events">
-					<Events key={0} data={data.events} />
-				</Property>
-				<DataList.Item align="center">
-					<DataList.Label>Status</DataList.Label>
-					<DataList.Value>
-						<Flex gap="2" wrap="wrap">
-							{data.status.map((status, index) => (
-								<StatusBadge key={index} status={status} />
-							))}
-						</Flex>
-					</DataList.Value>
-				</DataList.Item>
+				{data.type && <Property title="Type">{data.type}</Property>}
+				{data.country && <Property title="Country">{data.country.toUpperCase()}</Property>}
+				{data.status && data.status.length > 0 && (
+					<DataList.Item>
+						<DataList.Label>Status</DataList.Label>
+						<DataList.Value>
+							<Flex gap="2" wrap="wrap">
+								{data.status.map((status, index) => (
+									<StatusBadge key={index} status={status} />
+								))}
+							</Flex>
+						</DataList.Value>
+					</DataList.Item>
+				)}
+				{data.port43 && (
+					<DataList.Item>
+						<DataList.Label>WHOIS Server</DataList.Label>
+						<DataList.Value>
+							<Flex align="center" gap="2">
+								<Code variant="ghost">{data.port43}</Code>
+								<CopyButton value={data.port43} />
+							</Flex>
+						</DataList.Value>
+					</DataList.Item>
+				)}
+				{data.entities && data.entities.length > 0 && (
+					<Property title="Entities">
+						<EntitiesSection entities={data.entities} />
+					</Property>
+				)}
+				{data.events && data.events.length > 0 && (
+					<Property title="Events">
+						<Events data={data.events} />
+					</Property>
+				)}
+				{data.links && data.links.length > 0 && (
+					<Property title="Links">
+						<LinksSection links={data.links} />
+					</Property>
+				)}
+				{data.remarks && data.remarks.length > 0 && (
+					<Property title="Remarks">
+						<RemarksSection remarks={data.remarks} />
+					</Property>
+				)}
 			</DataList.Root>
 		</AbstractCard>
 	);

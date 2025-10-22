@@ -2,7 +2,7 @@ import type { FunctionComponent, ReactNode } from "react";
 import React from "react";
 import { useBoolean } from "usehooks-ts";
 import { Link2Icon, CodeIcon, DownloadIcon, ClipboardIcon } from "@radix-ui/react-icons";
-import { Card, Flex, Box, IconButton, Code, ScrollArea } from "@radix-ui/themes";
+import { Card, Flex, Box, IconButton, Code, ScrollArea, Tooltip } from "@radix-ui/themes";
 
 type AbstractCardProps = {
 	children?: ReactNode;
@@ -38,72 +38,85 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
 						</Flex>
 						<Flex gap="2" align="center">
 							{url != undefined && (
-								<IconButton variant="ghost" size="2" asChild>
-									<a
-										href={url}
-										target="_blank"
-										rel="noreferrer"
-										aria-label="Open RDAP URL"
-									>
-										<Link2Icon width="18" height="18" />
-									</a>
-								</IconButton>
+								<Tooltip content="Open in new tab">
+									<IconButton variant="ghost" size="2" asChild>
+										<a
+											href={url}
+											target="_blank"
+											rel="noreferrer"
+											aria-label="Open RDAP URL"
+										>
+											<Link2Icon width="18" height="18" />
+										</a>
+									</IconButton>
+								</Tooltip>
 							)}
 							{data != undefined && (
 								<>
-									<IconButton
-										variant="ghost"
-										size="2"
-										onClick={() => {
-											navigator.clipboard
-												.writeText(JSON.stringify(data, null, 4))
-												.then(
-													() => {
-														// Successfully copied to clipboard
-													},
-													(err) => {
-														if (err instanceof Error)
-															console.error(
-																`Failed to copy to clipboard (${err.toString()}).`
-															);
-														else
-															console.error(
-																"Failed to copy to clipboard."
-															);
+									<Tooltip content="Copy JSON to clipboard">
+										<IconButton
+											variant="ghost"
+											size="2"
+											onClick={() => {
+												navigator.clipboard
+													.writeText(JSON.stringify(data, null, 4))
+													.then(
+														() => {
+															// Successfully copied to clipboard
+														},
+														(err) => {
+															if (err instanceof Error)
+																console.error(
+																	`Failed to copy to clipboard (${err.toString()}).`
+																);
+															else
+																console.error(
+																	"Failed to copy to clipboard."
+																);
+														}
+													);
+											}}
+											aria-label="Copy JSON to clipboard"
+										>
+											<ClipboardIcon width="18" height="18" />
+										</IconButton>
+									</Tooltip>
+									<Tooltip content="Download JSON">
+										<IconButton
+											variant="ghost"
+											size="2"
+											onClick={() => {
+												const file = new Blob(
+													[JSON.stringify(data, null, 4)],
+													{
+														type: "application/json",
 													}
 												);
-										}}
-										aria-label="Copy JSON to clipboard"
-									>
-										<ClipboardIcon width="18" height="18" />
-									</IconButton>
-									<IconButton
-										variant="ghost"
-										size="2"
-										onClick={() => {
-											const file = new Blob([JSON.stringify(data, null, 4)], {
-												type: "application/json",
-											});
 
-											const anchor = document.createElement("a");
-											anchor.href = URL.createObjectURL(file);
-											anchor.download = "response.json";
-											anchor.click();
-										}}
-										aria-label="Download JSON"
+												const anchor = document.createElement("a");
+												anchor.href = URL.createObjectURL(file);
+												anchor.download = "response.json";
+												anchor.click();
+											}}
+											aria-label="Download JSON"
+										>
+											<DownloadIcon width="18" height="18" />
+										</IconButton>
+									</Tooltip>
+									<Tooltip
+										content={showRaw ? "Show formatted view" : "Show raw JSON"}
 									>
-										<DownloadIcon width="18" height="18" />
-									</IconButton>
-									<IconButton
-										variant="ghost"
-										size="2"
-										onClick={toggleRaw}
-										aria-label={
-											showRaw ? "Show formatted view" : "Show raw JSON"
-										}
-									>
-										<CodeIcon width="18" height="18" />
-									</IconButton>
+										<IconButton
+											variant="ghost"
+											size="2"
+											onClick={toggleRaw}
+											aria-label={
+												showRaw ? "Show formatted view" : "Show raw JSON"
+											}
+										>
+											<CodeIcon width="18" height="18" />
+										</IconButton>
+									</Tooltip>
 								</>
 							)}
 						</Flex>
