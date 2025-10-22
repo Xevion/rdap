@@ -9,7 +9,9 @@
     "start": "next start",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:run": "vitest run",
+    "test:run": "vitest run --exclude '**/*.integration.test.ts'",
+    "test:integration": "vitest run --include '**/*.integration.test.ts'",
+    "test:all": "vitest run",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -45,7 +47,7 @@
     "eslint-config-next": "13.1.1",
     "happy-dom": "^20.0.8",
     "postcss": "^8.4.14",
-    "prettier": "^2.8.1",
+    "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.2.1",
     "tailwindcss": "^3.2.0",
     "type-fest": "^4.18.2",

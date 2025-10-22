@@ -33,7 +33,7 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
           {url != undefined ? (
             <div className="pr-2">
               <a href={url} target="_blank" rel="noreferrer">
-                <LinkIcon className="h-5 w-5 mt-1 cursor-pointer" />
+                <LinkIcon className="mt-1 h-5 w-5 cursor-pointer" />
               </a>
             </div>
           ) : null}
@@ -43,14 +43,20 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
                 <ClipboardDocumentIcon
                   onClick={() => {
                     // stringify the JSON object, then begin the async clipboard write
-                    navigator.clipboard.writeText(JSON.stringify(data, null, 4)).then(() => {
-                      console.log('Copied to clipboard.');
-                    }, (err) => {
-                      if (err instanceof Error)
-                        console.error(`Failed to copy to clipboard (${err.toString()}).`);
-                      else
-                        console.error("Failed to copy to clipboard.");
-                    });
+                    navigator.clipboard
+                      .writeText(JSON.stringify(data, null, 4))
+                      .then(
+                        () => {
+                          console.log("Copied to clipboard.");
+                        },
+                        (err) => {
+                          if (err instanceof Error)
+                            console.error(
+                              `Failed to copy to clipboard (${err.toString()}).`
+                            );
+                          else console.error("Failed to copy to clipboard.");
+                        }
+                      );
                   }}
                   className="h-6 w-6 cursor-pointer"
                 />
@@ -80,7 +86,7 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
           ) : null}
         </div>
       ) : null}
-      <div className="max-w-full p-2 px-4 overflow-x-auto">
+      <div className="max-w-full overflow-x-auto p-2 px-4">
         {showRaw ? (
           <pre className="scrollbar-thin m-2 max-h-[40rem] max-w-full overflow-y-auto whitespace-pre-wrap rounded">
             {JSON.stringify(data, null, 4)}

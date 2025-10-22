@@ -95,7 +95,7 @@ export const EventSchema = z.object({
 export const NoticeSchema = z.object({
   description: z.string().array(), // de jure required
   title: z.string().optional(),
-  links: z.array(LinkSchema).optional()
+  links: z.array(LinkSchema).optional(),
 });
 export type Notice = z.infer<typeof NoticeSchema>;
 

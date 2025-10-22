@@ -25,6 +25,7 @@ In more simpler terms, it's a tool that lets you look up information about IP ad
 The tool hosted by [rdap.org](https://client.rdap.org) is fantastic, but it's too simple, and isn't as overly-complicated and annoying as I want it to be. So, I built my own. Mine has dark mode.
 
 But in all seriousness, my project does intend to have more features:
+
 - Proxying: Some RDAP servers are inaccessible over the browser, and so proxying requests through a server is necessary.
 - Self Hosting: For those worried about privacy, the project can be self-hosted.
 - No Tracking: The project can't track you, because it's a static site. And in terms of the proxy, you can self-host if you're worried about that.

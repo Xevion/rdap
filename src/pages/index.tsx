@@ -14,17 +14,25 @@ const Index: NextPage = () => {
   const [detectedType, setDetectedType] = useState<Maybe<TargetType>>(
     Maybe.nothing()
   );
-  const [response, setResponse] = useState<Maybe<MetaParsedGeneric>>(Maybe.nothing());
+  const [response, setResponse] = useState<Maybe<MetaParsedGeneric>>(
+    Maybe.nothing()
+  );
   const [isLoading, setLoading] = useState<boolean>(false);
 
   return (
     <>
       <Head>
         <title>rdap.xevion.dev</title>
-        <meta name="description" content="A custom, private RDAP lookup client built by Xevion." />
+        <meta
+          name="description"
+          content="A custom, private RDAP lookup client built by Xevion."
+        />
         <meta property="og:url" content="https://rdap.xevion.dev" />
         <meta property="og:title" content="RDAP | by Xevion.dev" />
-        <meta property="og:description" content="A custom, private RDAP lookup client built by Xevion." />
+        <meta
+          property="og:description"
+          content="A custom, private RDAP lookup client built by Xevion."
+        />
         <meta property="og:site_name" content="rdap.xevion.dev" />
         <meta property="og:type" content="website" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -34,8 +42,17 @@ const Index: NextPage = () => {
         />
       </Head>
       <nav className="bg-zinc-850 px-5 py-4 shadow-sm">
-        <span className="text-white text-xl font-medium" style={{ fontSize: "larger" }}>
-          <a href="https://github.com/Xevion/rdap">rdap</a><a href={"https://xevion.dev"} className="text-zinc-400 hover:animate-pulse">.xevion.dev</a>
+        <span
+          className="text-xl font-medium text-white"
+          style={{ fontSize: "larger" }}
+        >
+          <a href="https://github.com/Xevion/rdap">rdap</a>
+          <a
+            href={"https://xevion.dev"}
+            className="text-zinc-400 hover:animate-pulse"
+          >
+            .xevion.dev
+          </a>
         </span>
       </nav>
       <div className="mx-auto max-w-screen-sm px-5 lg:max-w-screen-md xl:max-w-screen-lg">

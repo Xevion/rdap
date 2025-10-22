@@ -8,7 +8,9 @@ const PropertyListItem: FunctionComponent<{
 }> = ({ title, children }) => {
   return (
     <li>
-      <span className="dashed" title={title}>{children}</span>
+      <span className="dashed" title={title}>
+        {children}
+      </span>
     </li>
   );
 };

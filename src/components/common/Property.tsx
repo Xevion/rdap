@@ -18,7 +18,7 @@ const Property: FunctionComponent<PropertyProps> = ({
   return (
     <>
       <dt className={clsx("font-medium", titleClass)}>{title}:</dt>
-      <dd className={clsx("mt-2 mb-2 ml-6", valueClass)}>{children}</dd>
+      <dd className={clsx("mb-2 ml-6 mt-2", valueClass)}>{children}</dd>
     </>
   );
 };

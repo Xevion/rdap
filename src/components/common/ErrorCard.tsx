@@ -16,15 +16,22 @@ const ErrorCard: FunctionComponent<ErrorCardProps> = ({
   className,
 }) => {
   return (
-    <div className={clsx(className, "rounded-md border border-red-700/30 bg-zinc-800 pt-3 px-3 pb-1")}>
+    <div
+      className={clsx(
+        className,
+        "rounded-md border border-red-700/30 bg-zinc-800 px-3 pb-1 pt-3"
+      )}
+    >
       <div className="flex">
         <div className="flex-shrink-0">
           <XCircleIcon className="h-5 w-5 text-red-300" aria-hidden="true" />
         </div>
-        <div className="ml-3 text-sm text-red-300 w-full">
+        <div className="ml-3 w-full text-sm text-red-300">
           <h3 className="font-medium text-red-200">{title}</h3>
           {description != undefined ? (
-            <div className="mt-2 whitespace-pre-wrap max-h-24 overflow-y-auto w-full" >{description}</div>
+            <div className="mt-2 max-h-24 w-full overflow-y-auto whitespace-pre-wrap">
+              {description}
+            </div>
           ) : null}
           <div className="mt-2">
             {issues != undefined ? (

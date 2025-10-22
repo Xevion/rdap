@@ -1,6 +1,7 @@
 import type { FunctionComponent } from "react";
 import DomainCard from "@/components/lookup/DomainCard";
 import IPCard from "@/components/lookup/IPCard";
+import AutnumCard from "@/components/lookup/AutnumCard";
 import type {
   Domain,
   AutonomousNumber,
@@ -22,13 +23,17 @@ export type ObjectProps = {
   url?: string;
 };
 
-const Generic: FunctionComponent<ObjectProps> = ({ data, url }: ObjectProps) => {
+const Generic: FunctionComponent<ObjectProps> = ({
+  data,
+  url,
+}: ObjectProps) => {
   switch (data.objectClassName) {
     case "domain":
       return <DomainCard url={url} data={data} />;
     case "ip network":
       return <IPCard url={url} data={data} />;
     case "autnum":
+      return <AutnumCard url={url} data={data} />;
     case "entity":
     case "nameserver":
     default:

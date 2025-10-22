@@ -193,14 +193,20 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
             {selected == "auto" ? (
               // If the detected type was provided, then notate which in parentheses. Compact object naming might be better in the future.
               detectedType.isJust ? (
-                <>Auto (<span className="animate-pulse">{targetShortNames[detectedType.value]}</span>)</>
+                <>
+                  Auto (
+                  <span className="animate-pulse">
+                    {targetShortNames[detectedType.value]}
+                  </span>
+                  )
+                </>
               ) : (
                 objectNames["auto"]
               )
             ) : (
               <>
                 <LockClosedIcon
-                  className="mr-2.5 mb-1 inline h-4 w-4 animate-pulse text-zinc-500"
+                  className="mb-1 mr-2.5 inline h-4 w-4 animate-pulse text-zinc-500"
                   aria-hidden
                 />
                 {objectNames[selected]}
@@ -292,7 +298,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
         </div>
       </div>
       <div className="col">
-        <div className="flex flex-wrap pt-3 pb-1 text-sm">
+        <div className="flex flex-wrap pb-1 pt-3 text-sm">
           <div className="whitespace-nowrap">
             <input
               className="ml-2 mr-1 whitespace-nowrap text-zinc-800 accent-blue-700"

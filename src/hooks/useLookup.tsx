@@ -17,7 +17,7 @@ import {
   RegisterSchema,
   RootRegistryEnum,
 } from "@/schema";
-import { truncated, ipv4InCIDR, ipv6InCIDR } from "@/helpers";
+import { truncated, ipv4InCIDR, ipv6InCIDR, asnInRange } from "@/helpers";
 import type { ZodSchema } from "zod";
 import type { ParsedGeneric } from "@/components/lookup/Generic";
 import { Maybe, Result } from "true-myth";
@@ -53,9 +53,12 @@ const useLookup = (warningHandler?: WarningHandler) => {
 
   useCallback(async () => {
     if (currentType != null) return Maybe.just(currentType);
-    const uri: Maybe<TargetType> = (await getTypeEasy(target)).mapOr(Maybe.nothing(), (type) => Maybe.just(type));
+    const uri: Maybe<TargetType> = (await getTypeEasy(target)).mapOr(
+      Maybe.nothing(),
+      (type) => Maybe.just(type)
+    );
     setUriType(uri);
-  }, [target, currentType, getTypeEasy])
+  }, [target, currentType, getTypeEasy]);
 
   // Fetch & load a specific registry's data into memory.
   async function loadBootstrap(type: RootRegistryType, force = false) {
@@ -85,16 +88,15 @@ const useLookup = (warningHandler?: WarningHandler) => {
     if (registryDataRef.current[type] == null) await loadBootstrap(type);
     const registry = registryDataRef.current[type];
     if (registry == null)
-      throw new Error(
-        `Could not load bootstrap data for ${type} registry.`
-      );
+      throw new Error(`Could not load bootstrap data for ${type} registry.`);
     return registry;
   }
 
-  async function getTypeEasy(target: string): Promise<Result<TargetType, Error>> {
+  async function getTypeEasy(
+    target: string
+  ): Promise<Result<TargetType, Error>> {
     return getType(target, getRegistry);
   }
-
 
   function getRegistryURL(
     type: RootRegistryType,
@@ -120,7 +122,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
         throw new Error(`No matching domain found.`);
       case "ip4": {
         // Extract the IP address without CIDR suffix for matching
-        const ipAddress = lookupTarget.split('/')[0] ?? lookupTarget;
+        const ipAddress = lookupTarget.split("/")[0] ?? lookupTarget;
         for (const bootstrapItem of bootstrap.services) {
           // bootstrapItem[0] contains CIDR ranges like ["1.0.0.0/8", "2.0.0.0/8"]
           if (bootstrapItem[0].some((cidr) => ipv4InCIDR(ipAddress, cidr))) {
@@ -132,7 +134,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
       }
       case "ip6": {
         // Extract the IP address without CIDR suffix for matching
-        const ipAddress = lookupTarget.split('/')[0] ?? lookupTarget;
+        const ipAddress = lookupTarget.split("/")[0] ?? lookupTarget;
         for (const bootstrapItem of bootstrap.services) {
           // bootstrapItem[0] contains CIDR ranges like ["2001:0200::/23", "2001:0400::/23"]
           if (bootstrapItem[0].some((cidr) => ipv6InCIDR(ipAddress, cidr))) {
@@ -142,10 +144,29 @@ const useLookup = (warningHandler?: WarningHandler) => {
         }
         throw new Error(`No matching IPv6 registry found for ${lookupTarget}.`);
       }
+      case "autnum": {
+        // Extract ASN number from "AS12345" format
+        const asnMatch = lookupTarget.match(/^AS(\d+)$/i);
+        if (!asnMatch || !asnMatch[1]) {
+          throw new Error(`Invalid ASN format: ${lookupTarget}`);
+        }
+
+        const asnNumber = parseInt(asnMatch[1], 10);
+        if (isNaN(asnNumber)) {
+          throw new Error(`Invalid ASN number: ${lookupTarget}`);
+        }
+
+        for (const bootstrapItem of bootstrap.services) {
+          // bootstrapItem[0] contains ASN ranges like ["64512-65534", "13312-18431"]
+          if (bootstrapItem[0].some((range) => asnInRange(asnNumber, range))) {
+            url = getBestURL(bootstrapItem[1] as [string, ...string[]]);
+            break typeSwitch;
+          }
+        }
+        throw new Error(`No matching registry found for ${lookupTarget}.`);
+      }
       case "entity":
         throw new Error(`No matching entity found.`);
-      case "autnum":
-        throw new Error(`No matching autnum found.`);
       default:
         throw new Error("Invalid lookup target provided.");
     }
@@ -404,7 +425,14 @@ const useLookup = (warningHandler?: WarningHandler) => {
     }
   }
 
-  return { error, setTarget, setTargetType, submit, currentType: uriType, getType: getTypeEasy };
+  return {
+    error,
+    setTarget,
+    setTargetType,
+    submit,
+    currentType: uriType,
+    getType: getTypeEasy,
+  };
 };
 
 export default useLookup;
