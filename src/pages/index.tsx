@@ -4,7 +4,6 @@ import { useState } from "react";
 import Generic from "@/components/lookup/Generic";
 import type { MetaParsedGeneric } from "@/hooks/useLookup";
 import useLookup from "@/hooks/useLookup";
-import { OGP } from "react-ogp";
 import LookupInput from "@/components/form/LookupInput";
 import ErrorCard from "@/components/common/ErrorCard";
 import { Maybe } from "true-myth";
@@ -22,13 +21,12 @@ const Index: NextPage = () => {
     <>
       <Head>
         <title>rdap.xevion.dev</title>
-        <OGP
-          url="https://rdap.xevion.dev"
-          title="RDAP | by Xevion.dev"
-          description="A custom, private RDAP lookup client built by Xevion."
-          siteName="rdap.xevion.dev"
-          type="website"
-        />
+        <meta name="description" content="A custom, private RDAP lookup client built by Xevion." />
+        <meta property="og:url" content="https://rdap.xevion.dev" />
+        <meta property="og:title" content="RDAP | by Xevion.dev" />
+        <meta property="og:description" content="A custom, private RDAP lookup client built by Xevion." />
+        <meta property="og:site_name" content="rdap.xevion.dev" />
+        <meta property="og:type" content="website" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta
           name="keywords"

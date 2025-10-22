@@ -17,7 +17,7 @@ import {
   RegisterSchema,
   RootRegistryEnum,
 } from "@/schema";
-import { truncated } from "@/helpers";
+import { truncated, ipv4InCIDR, ipv6InCIDR } from "@/helpers";
 import type { ZodSchema } from "zod";
 import type { ParsedGeneric } from "@/components/lookup/Generic";
 import { Maybe, Result } from "true-myth";
@@ -118,10 +118,30 @@ const useLookup = (warningHandler?: WarningHandler) => {
           }
         }
         throw new Error(`No matching domain found.`);
-      case "ip4":
-        throw new Error(`No matching ip4 found.`);
-      case "ip6":
-        throw new Error(`No matching ip6 found.`);
+      case "ip4": {
+        // Extract the IP address without CIDR suffix for matching
+        const ipAddress = lookupTarget.split('/')[0] ?? lookupTarget;
+        for (const bootstrapItem of bootstrap.services) {
+          // bootstrapItem[0] contains CIDR ranges like ["1.0.0.0/8", "2.0.0.0/8"]
+          if (bootstrapItem[0].some((cidr) => ipv4InCIDR(ipAddress, cidr))) {
+            url = getBestURL(bootstrapItem[1] as [string, ...string[]]);
+            break typeSwitch;
+          }
+        }
+        throw new Error(`No matching IPv4 registry found for ${lookupTarget}.`);
+      }
+      case "ip6": {
+        // Extract the IP address without CIDR suffix for matching
+        const ipAddress = lookupTarget.split('/')[0] ?? lookupTarget;
+        for (const bootstrapItem of bootstrap.services) {
+          // bootstrapItem[0] contains CIDR ranges like ["2001:0200::/23", "2001:0400::/23"]
+          if (bootstrapItem[0].some((cidr) => ipv6InCIDR(ipAddress, cidr))) {
+            url = getBestURL(bootstrapItem[1] as [string, ...string[]]);
+            break typeSwitch;
+          }
+        }
+        throw new Error(`No matching IPv6 registry found for ${lookupTarget}.`);
+      }
       case "entity":
         throw new Error(`No matching entity found.`);
       case "autnum":
@@ -132,7 +152,11 @@ const useLookup = (warningHandler?: WarningHandler) => {
 
     if (url == null) throw new Error("No lookup target was resolved.");
 
-    return `${url}${type}/${lookupTarget}`;
+    // Map internal types to RDAP endpoint paths
+    // ip4 and ip6 both use the 'ip' endpoint in RDAP
+    const rdapPath = type === "ip4" || type === "ip6" ? "ip" : type;
+
+    return `${url}${rdapPath}/${lookupTarget}`;
   }
 
   useEffect(() => {
