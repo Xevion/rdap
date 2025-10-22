@@ -41,7 +41,7 @@ const Index: NextPage = () => {
           content="xevion, rdap, whois, rdap, domain name, dns, ip address"
         />
       </Head>
-      <nav className="bg-zinc-850 px-5 py-4 shadow-sm">
+      <nav className="bg-zinc-850 px-5 py-4 shadow-xs">
         <span
           className="text-xl font-medium text-white"
           style={{ fontSize: "larger" }}

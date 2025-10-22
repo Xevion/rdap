@@ -29,7 +29,7 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
     <div className="mb-4 overflow-clip rounded bg-zinc-800 shadow">
       {header != undefined || data != undefined ? (
         <div className="flex bg-zinc-700 p-2 pl-3 md:pl-5">
-          <div className="grow space-x-2">{header}</div>
+          <div className="flex grow gap-2">{header}</div>
           {url != undefined ? (
             <div className="pr-2">
               <a href={url} target="_blank" rel="noreferrer">
@@ -96,7 +96,7 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
         )}
       </div>
       {footer != null ? (
-        <div className="space-x-2 bg-zinc-700 p-2 pl-5">{footer}</div>
+        <div className="flex gap-2 bg-zinc-700 p-2 pl-5">{footer}</div>
       ) : null}
     </div>
   );

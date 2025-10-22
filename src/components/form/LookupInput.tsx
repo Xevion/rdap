@@ -146,7 +146,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
       className={clsx(
         "lg:py-4.5 block w-full rounded-l-md border border-transparent",
         "bg-zinc-700 py-2 pl-10 pr-1.5 text-sm placeholder-zinc-400 placeholder:translate-y-2 focus:text-zinc-200",
-        " focus:outline-none sm:text-sm md:py-3 md:text-base lg:text-lg"
+        " focus:outline-hidden sm:text-sm md:py-3 md:text-base lg:text-lg"
       )}
       disabled={isLoading}
       placeholder={placeholders[selected]}
@@ -184,8 +184,8 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
         <ListboxButton
           className={clsx(
             "relative h-full w-full cursor-default whitespace-nowrap rounded-r-lg bg-zinc-700 py-2 pl-1 pr-10 text-right",
-            "text-xs focus:outline-none focus-visible:border-indigo-500 sm:text-sm md:text-base lg:text-lg",
-            "focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 "
+            "text-xs focus:outline-hidden focus-visible:border-indigo-500 sm:text-sm md:text-base lg:text-lg",
+            "focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 "
           )}
         >
           {/* Fetch special text for 'auto' mode, otherwise just use the options. */}
@@ -229,7 +229,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
           <ListboxOptions
             className={clsx(
               "scrollbar-thin absolute right-0 mt-1 max-h-60 min-w-full overflow-auto rounded-md bg-zinc-700 py-1",
-              "text-zinc-200 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+              "text-zinc-200 shadow-lg ring-1 ring-black/5 focus:outline-hidden sm:text-sm"
             )}
           >
             {Object.entries(objectNames).map(([key, value]) => (

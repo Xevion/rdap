@@ -23,7 +23,7 @@ const ErrorCard: FunctionComponent<ErrorCardProps> = ({
       )}
     >
       <div className="flex">
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <XCircleIcon className="h-5 w-5 text-red-300" aria-hidden="true" />
         </div>
         <div className="ml-3 w-full text-sm text-red-300">
@@ -35,7 +35,7 @@ const ErrorCard: FunctionComponent<ErrorCardProps> = ({
           ) : null}
           <div className="mt-2">
             {issues != undefined ? (
-              <ul role="list" className="list-disc space-y-1 pl-5">
+              <ul role="list" className="flex list-disc flex-col gap-1 pl-5">
                 {issues.map((issueText, index) => (
                   <li key={index}>{issueText}</li>
                 ))}
