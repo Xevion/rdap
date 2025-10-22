@@ -6,7 +6,7 @@ import "@fontsource-variable/inter";
 import "@fontsource/ibm-plex-mono/400.css";
 import "@radix-ui/themes/styles.css";
 
-import "../styles/globals.css";
+import "@/styles/globals.css";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
 	return (

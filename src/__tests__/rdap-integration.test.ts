@@ -1,8 +1,8 @@
 // @vitest-environment node
 import { describe, it, expect } from "vitest";
-import { getType } from "./rdap";
-import type { Register, RootRegistryType } from "./types";
-import { registryURLs } from "./constants";
+import { getType } from "@/rdap/utils";
+import type { Register, RootRegistryType } from "@/rdap/schemas";
+import { registryURLs } from "@/rdap/constants";
 
 // Integration tests that fetch real IANA bootstrap data
 // These are slower but test against actual registries

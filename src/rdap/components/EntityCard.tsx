@@ -1,9 +1,9 @@
 import type { FunctionComponent } from "react";
 import React from "react";
-import type { Entity } from "@/types";
-import Property from "@/components/common/Property";
-import PropertyList from "@/components/common/PropertyList";
-import AbstractCard from "@/components/common/AbstractCard";
+import type { Entity } from "@/rdap/schemas";
+import Property from "@/components/Property";
+import PropertyList from "@/components/PropertyList";
+import AbstractCard from "@/components/AbstractCard";
 import { Flex, DataList, Badge, Text } from "@radix-ui/themes";
 
 export type EntityCardProps = {

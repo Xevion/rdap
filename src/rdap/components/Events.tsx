@@ -1,6 +1,6 @@
 import type { FunctionComponent } from "react";
-import type { Event } from "@/types";
-import DynamicDate from "@/components/common/DynamicDate";
+import type { Event } from "@/rdap/schemas";
+import DynamicDate from "@/components/DynamicDate";
 import { Table, Text } from "@radix-ui/themes";
 
 export type EventsProps = {

@@ -1,10 +1,10 @@
 import type { FunctionComponent } from "react";
 import React from "react";
-import type { IpNetwork } from "@/types";
-import Events from "@/components/lookup/Events";
-import Property from "@/components/common/Property";
-import PropertyList from "@/components/common/PropertyList";
-import AbstractCard from "@/components/common/AbstractCard";
+import type { IpNetwork } from "@/rdap/schemas";
+import Events from "@/rdap/components/Events";
+import Property from "@/components/Property";
+import PropertyList from "@/components/PropertyList";
+import AbstractCard from "@/components/AbstractCard";
 import { Flex, Text, DataList, Badge } from "@radix-ui/themes";
 
 export type IPCardProps = {

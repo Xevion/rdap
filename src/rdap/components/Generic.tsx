@@ -1,11 +1,11 @@
 import type { FunctionComponent } from "react";
-import DomainCard from "@/components/lookup/DomainCard";
-import IPCard from "@/components/lookup/IPCard";
-import AutnumCard from "@/components/lookup/AutnumCard";
-import EntityCard from "@/components/lookup/EntityCard";
-import NameserverCard from "@/components/lookup/NameserverCard";
-import type { Domain, AutonomousNumber, Entity, Nameserver, IpNetwork } from "@/types";
-import AbstractCard from "@/components/common/AbstractCard";
+import DomainCard from "@/rdap/components/DomainCard";
+import IPCard from "@/rdap/components/IPCard";
+import AutnumCard from "@/rdap/components/AutnumCard";
+import EntityCard from "@/rdap/components/EntityCard";
+import NameserverCard from "@/rdap/components/NameserverCard";
+import type { Domain, AutonomousNumber, Entity, Nameserver, IpNetwork } from "@/rdap/schemas";
+import AbstractCard from "@/components/AbstractCard";
 
 export type ParsedGeneric = Domain | Nameserver | Entity | AutonomousNumber | IpNetwork;
 

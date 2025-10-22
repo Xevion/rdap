@@ -33,3 +33,30 @@ export function findASN(asn: number, ranges: string[]) {
 	}
 	return -1; // Failure case
 }
+
+/**
+ * Check if an ASN falls within a range
+ * @param asn The ASN number to check (e.g., 13335 for Cloudflare)
+ * @param range The range to check against (e.g., "13312-18431")
+ * @returns true if the ASN is within the range
+ */
+export function asnInRange(asn: number, range: string): boolean {
+	const parts = range.split("-");
+
+	if (parts.length !== 2) {
+		return false;
+	}
+
+	const start = parseInt(parts[0] ?? "", 10);
+	const end = parseInt(parts[1] ?? "", 10);
+
+	if (isNaN(start) || isNaN(end) || start < 0 || end < 0 || start > end) {
+		return false;
+	}
+
+	if (asn < 0) {
+		return false;
+	}
+
+	return asn >= start && asn <= end;
+}

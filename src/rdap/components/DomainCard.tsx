@@ -1,11 +1,11 @@
 import type { FunctionComponent } from "react";
 import React from "react";
-import { rdapStatusInfo } from "@/constants";
-import type { Domain } from "@/types";
-import Events from "@/components/lookup/Events";
-import Property from "@/components/common/Property";
-import PropertyList from "@/components/common/PropertyList";
-import AbstractCard from "@/components/common/AbstractCard";
+import { rdapStatusInfo } from "@/rdap/constants";
+import type { Domain } from "@/rdap/schemas";
+import Events from "@/rdap/components/Events";
+import Property from "@/components/Property";
+import PropertyList from "@/components/PropertyList";
+import AbstractCard from "@/components/AbstractCard";
 import { Flex, Text, DataList, Badge } from "@radix-ui/themes";
 
 export type DomainProps = {

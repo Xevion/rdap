@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ipv4InCIDR, ipv6InCIDR } from "./helpers";
+import { ipv4InCIDR, ipv6InCIDR } from "@/lib/network";
 
 describe("ipv4InCIDR", () => {
 	describe("basic matching", () => {

@@ -1,5 +1,5 @@
 // see https://www.iana.org/assignments/rdap-json-values
-import type { RdapStatusType, RootRegistryType, SimplifiedTargetType } from "@/types";
+import type { RdapStatusType, RootRegistryType, SimplifiedTargetType } from "@/rdap/schemas";
 
 export const rdapStatusInfo: Record<RdapStatusType, string> = {
 	validated:

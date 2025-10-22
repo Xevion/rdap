@@ -1,4 +1,4 @@
-import type { Register, RootRegistryType, TargetType } from "@/types";
+import type { Register, RootRegistryType, TargetType } from "@/rdap/schemas";
 import { Result } from "true-myth";
 
 export function domainMatchPredicate(domain: string): (tld: string) => boolean {

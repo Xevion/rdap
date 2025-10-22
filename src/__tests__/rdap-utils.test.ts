@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { getType } from "./rdap";
-import type { Register } from "./types";
+import { getType } from "@/rdap/utils";
+import type { Register } from "@/rdap/schemas";
 
 // Mock registry getter (matches real IANA structure: [email, tags, urls])
 const mockRegistry: Register = {

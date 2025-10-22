@@ -1,8 +1,8 @@
 import type { FunctionComponent } from "react";
 import React from "react";
-import type { Nameserver } from "@/types";
-import Property from "@/components/common/Property";
-import AbstractCard from "@/components/common/AbstractCard";
+import type { Nameserver } from "@/rdap/schemas";
+import Property from "@/components/Property";
+import AbstractCard from "@/components/AbstractCard";
 import { Flex, DataList, Badge, Text } from "@radix-ui/themes";
 
 export type NameserverCardProps = {

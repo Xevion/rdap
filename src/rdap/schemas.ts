@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+// ============================================================================
+// Enums
+// ============================================================================
+
 export const TargetTypeEnum = z.enum([
 	"autnum",
 	"domain",
@@ -51,6 +55,10 @@ export const StatusEnum = z.enum([
 	"transfer period",
 ]);
 
+// ============================================================================
+// Schemas
+// ============================================================================
+
 export const LinkSchema = z.object({
 	value: z.string().optional(), // de-facto optional
 	rel: z.string().optional(), // de-facto optional
@@ -91,7 +99,6 @@ export const NoticeSchema = z.object({
 	title: z.string().optional(),
 	links: z.array(LinkSchema).optional(),
 });
-export type Notice = z.infer<typeof NoticeSchema>;
 
 export const IpNetworkSchema = z.object({
 	objectClassName: z.literal("ip network"),
@@ -158,3 +165,33 @@ export const RegisterSchema = z.object({
 	services: z.array(RegistrarSchema),
 	version: z.string(),
 });
+
+// ============================================================================
+// TypeScript Types
+// ============================================================================
+
+// All precise target types that can be placed in the search bar.
+export type TargetType = z.infer<typeof TargetTypeEnum>;
+
+// Target types that can be selected by the user; IPv4 and IPv6 are combined into a single type for simplicity (IP/CIDR)
+export type SimplifiedTargetType = Exclude<TargetType, "ip4" | "ip6"> | "ip";
+
+// Root registry types that associate with a bootstrap file provided by the RDAP registry.
+export type RootRegistryType = z.infer<typeof RootRegistryEnum>;
+
+export type RdapStatusType = z.infer<typeof StatusEnum>;
+export type Link = z.infer<typeof LinkSchema>;
+export type Entity = z.infer<typeof EntitySchema>;
+export type Nameserver = z.infer<typeof NameserverSchema>;
+export type Event = z.infer<typeof EventSchema>;
+export type Notice = z.infer<typeof NoticeSchema>;
+export type IpNetwork = z.infer<typeof IpNetworkSchema>;
+export type AutonomousNumber = z.infer<typeof AutonomousNumberSchema>;
+export type Register = z.infer<typeof RegisterSchema>;
+export type Domain = z.infer<typeof DomainSchema>;
+
+export type SubmitProps = {
+	target: string;
+	requestJSContact: boolean;
+	followReferral: boolean;
+};

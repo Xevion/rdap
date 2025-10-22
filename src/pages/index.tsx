@@ -1,14 +1,14 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import { useState } from "react";
-import Generic from "@/components/lookup/Generic";
-import type { MetaParsedGeneric } from "@/hooks/useLookup";
-import useLookup from "@/hooks/useLookup";
-import LookupInput from "@/components/form/LookupInput";
-import ErrorCard from "@/components/common/ErrorCard";
-import { ThemeToggle } from "@/components/common/ThemeToggle";
+import Generic from "@/rdap/components/Generic";
+import type { MetaParsedGeneric } from "@/rdap/hooks/useLookup";
+import useLookup from "@/rdap/hooks/useLookup";
+import LookupInput from "@/rdap/components/LookupInput";
+import ErrorCard from "@/components/ErrorCard";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Maybe } from "true-myth";
-import type { TargetType } from "@/types";
+import type { TargetType } from "@/rdap/schemas";
 import { Flex, Container, Section, Text, Link } from "@radix-ui/themes";
 
 const Index: NextPage = () => {

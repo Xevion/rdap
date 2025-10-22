@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { asnInRange } from "./helpers";
+import { asnInRange } from "@/lib/network";
 
 describe("asnInRange", () => {
 	describe("basic matching", () => {
