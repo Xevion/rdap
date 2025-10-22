@@ -7,7 +7,7 @@ import { Result } from "true-myth";
 export async function getAndParse<T>(url: string, schema: ZodSchema<T>): Promise<Result<T, Error>> {
 	const response = await fetch(url);
 
-	if (response.status == 200) {
+	if (response.status === 200) {
 		const result = schema.safeParse(await response.json());
 
 		if (result.success === false) {

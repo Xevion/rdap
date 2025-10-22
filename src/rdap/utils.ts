@@ -11,10 +11,7 @@ export function domainMatch(tld: string, domain: string): boolean {
 
 // return the first HTTPS url, or the first URL
 export function getBestURL(urls: [string, ...string[]]): string {
-	urls.forEach((url) => {
-		if (url.startsWith("https://")) return url;
-	});
-	return urls[0];
+	return urls.find((url) => url.startsWith("https://")) ?? urls[0];
 }
 
 type ValidatorArgs = {

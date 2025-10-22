@@ -25,7 +25,8 @@ export function getRegistryURL(type: RootRegistryType, lookupTarget: string): st
 			throw new Error(`No matching domain found.`);
 		case "ip4": {
 			// Extract the IP address without CIDR suffix for matching
-			const ipAddress = lookupTarget.split("/")[0] ?? lookupTarget;
+			const [ipAddress] = lookupTarget.split("/");
+			if (!ipAddress) throw new Error(`Invalid IPv4 format: ${lookupTarget}`);
 			for (const bootstrapItem of bootstrap.services) {
 				// bootstrapItem[0] contains CIDR ranges like ["1.0.0.0/8", "2.0.0.0/8"]
 				if (bootstrapItem[0].some((cidr) => ipv4InCIDR(ipAddress, cidr))) {
@@ -37,7 +38,8 @@ export function getRegistryURL(type: RootRegistryType, lookupTarget: string): st
 		}
 		case "ip6": {
 			// Extract the IP address without CIDR suffix for matching
-			const ipAddress = lookupTarget.split("/")[0] ?? lookupTarget;
+			const [ipAddress] = lookupTarget.split("/");
+			if (!ipAddress) throw new Error(`Invalid IPv6 format: ${lookupTarget}`);
 			for (const bootstrapItem of bootstrap.services) {
 				// bootstrapItem[0] contains CIDR ranges like ["2001:0200::/23", "2001:0400::/23"]
 				if (bootstrapItem[0].some((cidr) => ipv6InCIDR(ipAddress, cidr))) {

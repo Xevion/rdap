@@ -8,12 +8,10 @@ import LookupInput from "@/rdap/components/LookupInput";
 import ErrorCard from "@/components/ErrorCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Maybe } from "true-myth";
-import type { TargetType } from "@/rdap/schemas";
 import { Flex, Container, Section, Text, Link } from "@radix-ui/themes";
 
 const Index: NextPage = () => {
-	const { error, setTarget, setTargetType, submit, getType } = useLookup();
-	const [detectedType, setDetectedType] = useState<Maybe<TargetType>>(Maybe.nothing());
+	const { error, setTarget, setTargetType, submit, currentType } = useLookup();
 	const [response, setResponse] = useState<Maybe<MetaParsedGeneric>>(Maybe.nothing());
 	const [isLoading, setLoading] = useState<boolean>(false);
 
@@ -65,20 +63,10 @@ const Index: NextPage = () => {
 				<Section size="2">
 					<LookupInput
 						isLoading={isLoading}
-						detectedType={detectedType}
-						onChange={async ({ target, targetType }) => {
+						detectedType={currentType}
+						onChange={({ target, targetType }) => {
 							setTarget(target);
 							setTargetType(targetType);
-
-							// Only run autodetection when in autodetect mode (targetType is null)
-							if (targetType === null) {
-								const detectResult = await getType(target);
-								if (detectResult.isOk) {
-									setDetectedType(Maybe.just(detectResult.value));
-								} else {
-									setDetectedType(Maybe.nothing());
-								}
-							}
 						}}
 						onSubmit={async function (props) {
 							try {

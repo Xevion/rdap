@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useDebouncedValue } from "@mantine/hooks";
 import { getType, validateInputForType } from "@/rdap/utils";
 import type { AutonomousNumber, Domain, IpNetwork, SubmitProps, TargetType } from "@/rdap/schemas";
 import {
@@ -27,6 +28,7 @@ const schemas = [DomainSchema, AutonomousNumberSchema, IpNetworkSchema];
 const useLookup = (warningHandler?: WarningHandler) => {
 	const [error, setError] = useState<string | null>(null);
 	const [target, setTarget] = useState<string>("");
+	const [debouncedTarget] = useDebouncedValue(target, 150);
 	const [uriType, setUriType] = useState<Maybe<TargetType>>(Maybe.nothing());
 
 	// Used by a callback on LookupInput to forcibly set the type of the lookup.
@@ -39,13 +41,20 @@ const useLookup = (warningHandler?: WarningHandler) => {
 		return getType(target, getRegistry);
 	}, []);
 
-	useCallback(async () => {
-		if (currentType != null) return Maybe.just(currentType);
-		const uri: Maybe<TargetType> = (await getTypeEasy(target)).mapOr(Maybe.nothing(), (type) =>
-			Maybe.just(type)
-		);
-		setUriType(uri);
-	}, [target, currentType, getTypeEasy]);
+	useEffect(() => {
+		const detectType = async () => {
+			if (currentType != null || debouncedTarget.length === 0) return;
+
+			const detectedType = await getTypeEasy(debouncedTarget);
+			if (detectedType.isOk) {
+				setUriType(Maybe.just(detectedType.value));
+			} else {
+				setUriType(Maybe.nothing());
+			}
+		};
+
+		detectType().catch(console.error);
+	}, [debouncedTarget, currentType, getTypeEasy]);
 
 	useEffect(() => {
 		const preload = async () => {
@@ -67,7 +76,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
 		};
 
 		preload().catch(console.error);
-	}, [target, uriType, warningHandler]);
+	}, [uriType, warningHandler]);
 
 	async function submitInternal(
 		target: string
@@ -160,7 +169,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
 			case "url": {
 				const response = await fetch(target);
 
-				if (response.status != 200)
+				if (response.status !== 200)
 					return Result.err(
 						new Error(
 							`The URL provided returned a non-200 status code: ${response.status}.`
@@ -178,10 +187,14 @@ const useLookup = (warningHandler?: WarningHandler) => {
 				return Result.err(new Error("No schema was able to parse the response."));
 			}
 			case "json": {
-				const data = JSON.parse(target);
-				for (const schema of schemas) {
-					const result = schema.safeParse(data);
-					if (result.success) return Result.ok({ data: result.data, url: "" });
+				try {
+					const data = JSON.parse(target);
+					for (const schema of schemas) {
+						const result = schema.safeParse(data);
+						if (result.success) return Result.ok({ data: result.data, url: "" });
+					}
+				} catch (e) {
+					return Result.err(new Error("Invalid JSON format", { cause: e }));
 				}
 			}
 			case "registrar": {

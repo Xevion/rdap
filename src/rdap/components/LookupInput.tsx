@@ -31,7 +31,7 @@ type LookupInputProps = {
 	 * @param target - The target object containing the search target and target type.
 	 * @returns Nothing.
 	 */
-	onChange?: (target: { target: string; targetType: TargetType | null }) => Promise<void>;
+	onChange?: (target: { target: string; targetType: TargetType | null }) => void | Promise<void>;
 	detectedType: Maybe<TargetType>;
 };
 
@@ -113,6 +113,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 				</label>
 				<Flex gap="0" style={{ position: "relative" }}>
 					<TextField.Root
+						id="search"
 						size="3"
 						placeholder={placeholders[selected]}
 						disabled={isLoading}
