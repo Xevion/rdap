@@ -6,6 +6,10 @@ on:
     pull_request:
         branches: [master]
 
+permissions:
+    contents: read
+    security-events: write
+
 env:
     NODE_VERSION: "20"
     PNPM_VERSION: "9.0.0"
