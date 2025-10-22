@@ -1,6 +1,6 @@
 import type { FunctionComponent, ReactNode } from "react";
 import React from "react";
-import clsx from "clsx";
+import { cn } from "@/lib/utils";
 
 type PropertyProps = {
   title: string | ReactNode;
@@ -17,8 +17,8 @@ const Property: FunctionComponent<PropertyProps> = ({
 }) => {
   return (
     <>
-      <dt className={clsx("font-medium", titleClass)}>{title}:</dt>
-      <dd className={clsx("mb-2 ml-6 mt-2", valueClass)}>{children}</dd>
+      <dt className={cn("font-medium", titleClass)}>{title}:</dt>
+      <dd className={cn("mb-2 ml-6 mt-2", valueClass)}>{children}</dd>
     </>
   );
 };

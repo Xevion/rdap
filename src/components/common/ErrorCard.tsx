@@ -1,6 +1,6 @@
 import type { FunctionComponent, ReactNode } from "react";
 import { XCircleIcon } from "@heroicons/react/20/solid";
-import clsx from "clsx";
+import { cn } from "@/lib/utils";
 
 export type ErrorCardProps = {
   title: ReactNode;
@@ -17,7 +17,7 @@ const ErrorCard: FunctionComponent<ErrorCardProps> = ({
 }) => {
   return (
     <div
-      className={clsx(
+      className={cn(
         className,
         "rounded-md border border-red-700/30 bg-zinc-800 px-3 pb-1 pt-3"
       )}
