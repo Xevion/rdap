@@ -1,7 +1,7 @@
 import type { FunctionComponent, ReactNode } from "react";
 import React from "react";
 import { useBoolean } from "usehooks-ts";
-import { Link2Icon, CodeIcon, DownloadIcon, ClipboardCopyIcon } from "@radix-ui/react-icons";
+import { Link2Icon, CodeIcon, DownloadIcon, ClipboardIcon } from "@radix-ui/react-icons";
 import { Card, Flex, Box, IconButton, Code, ScrollArea } from "@radix-ui/themes";
 
 type AbstractCardProps = {
@@ -75,7 +75,7 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
 										}}
 										aria-label="Copy JSON to clipboard"
 									>
-										<ClipboardCopyIcon width="18" height="18" />
+										<ClipboardIcon width="18" height="18" />
 									</IconButton>
 									<IconButton
 										variant="ghost"

@@ -1,5 +1,45 @@
 // see https://www.iana.org/assignments/rdap-json-values
 import type { RdapStatusType, RootRegistryType, SimplifiedTargetType } from "@/rdap/schemas";
+import type { badgePropDefs } from "@radix-ui/themes/src/components/badge.props";
+
+type BadgeColor = (typeof badgePropDefs)["color"]["values"][number];
+
+export const rdapStatusColors: Record<RdapStatusType, BadgeColor> = {
+	active: "jade",
+	inactive: "gray",
+	validated: "blue",
+	locked: "red",
+	"renew prohibited": "red",
+	"update prohibited": "red",
+	"transfer prohibited": "red",
+	"delete prohibited": "red",
+	"client delete prohibited": "red",
+	"client renew prohibited": "red",
+	"client transfer prohibited": "red",
+	"client update prohibited": "red",
+	"server delete prohibited": "red",
+	"server renew prohibited": "red",
+	"server transfer prohibited": "red",
+	"server update prohibited": "red",
+	"client hold": "orange",
+	"server hold": "orange",
+	"pending create": "amber",
+	"pending renew": "amber",
+	"pending transfer": "amber",
+	"pending update": "amber",
+	"pending delete": "amber",
+	"pending restore": "amber",
+	proxy: "violet",
+	private: "violet",
+	removed: "violet",
+	obscured: "violet",
+	associated: "blue",
+	"add period": "blue",
+	"auto renew period": "blue",
+	"redemption period": "orange",
+	"renew period": "blue",
+	"transfer period": "blue",
+};
 
 export const rdapStatusInfo: Record<RdapStatusType, string> = {
 	validated:

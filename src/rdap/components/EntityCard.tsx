@@ -1,10 +1,9 @@
 import type { FunctionComponent } from "react";
 import React from "react";
 import type { Entity } from "@/rdap/schemas";
-import Property from "@/components/Property";
-import PropertyList from "@/components/PropertyList";
+import CopyButton from "@/components/CopyButton";
 import AbstractCard from "@/components/AbstractCard";
-import { Flex, DataList, Badge, Text } from "@radix-ui/themes";
+import { Flex, DataList, Badge, Text, Code } from "@radix-ui/themes";
 
 export type EntityCardProps = {
 	data: Entity;
@@ -24,22 +23,45 @@ const EntityCard: FunctionComponent<EntityCardProps> = ({ data, url }: EntityCar
 			}
 		>
 			<DataList.Root orientation={{ initial: "vertical", sm: "horizontal" }} size="2">
-				{data.handle && <Property title="Handle">{data.handle}</Property>}
-				<PropertyList title="Roles">
-					{data.roles.map((role, index) => (
-						<PropertyList.Item key={index} title={role}>
-							{role}
-						</PropertyList.Item>
-					))}
-				</PropertyList>
+				{data.handle && (
+					<DataList.Item>
+						<DataList.Label>Handle</DataList.Label>
+						<DataList.Value>
+							<Flex align="center" gap="2">
+								<Code variant="ghost">{data.handle}</Code>
+								<CopyButton value={data.handle} />
+							</Flex>
+						</DataList.Value>
+					</DataList.Item>
+				)}
+				<DataList.Item align="center">
+					<DataList.Label>Roles</DataList.Label>
+					<DataList.Value>
+						<Flex gap="2" wrap="wrap">
+							{data.roles.map((role, index) => (
+								<Badge key={index} color="gray" variant="soft" radius="full">
+									{role}
+								</Badge>
+							))}
+						</Flex>
+					</DataList.Value>
+				</DataList.Item>
 				{data.publicIds && data.publicIds.length > 0 && (
-					<PropertyList title="Public IDs">
-						{data.publicIds.map((publicId, index) => (
-							<PropertyList.Item key={index} title={publicId.type}>
-								{`${publicId.identifier} (${publicId.type})`}
-							</PropertyList.Item>
-						))}
-					</PropertyList>
+					<DataList.Item align="center">
+						<DataList.Label>Public IDs</DataList.Label>
+						<DataList.Value>
+							<Flex direction="column" gap="2">
+								{data.publicIds.map((publicId, index) => (
+									<Flex key={index} align="center" gap="2">
+										<Code variant="ghost">
+											{publicId.identifier} ({publicId.type})
+										</Code>
+										<CopyButton value={publicId.identifier} />
+									</Flex>
+								))}
+							</Flex>
+						</DataList.Value>
+					</DataList.Item>
 				)}
 			</DataList.Root>
 		</AbstractCard>

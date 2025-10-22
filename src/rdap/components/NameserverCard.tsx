@@ -1,9 +1,9 @@
 import type { FunctionComponent } from "react";
 import React from "react";
 import type { Nameserver } from "@/rdap/schemas";
-import Property from "@/components/Property";
+import CopyButton from "@/components/CopyButton";
 import AbstractCard from "@/components/AbstractCard";
-import { Flex, DataList, Badge, Text } from "@radix-ui/themes";
+import { Flex, DataList, Badge, Text, Code } from "@radix-ui/themes";
 
 export type NameserverCardProps = {
 	data: Nameserver;
@@ -26,7 +26,15 @@ const NameserverCard: FunctionComponent<NameserverCardProps> = ({
 			}
 		>
 			<DataList.Root orientation={{ initial: "vertical", sm: "horizontal" }} size="2">
-				<Property title="LDH Name">{data.ldhName}</Property>
+				<DataList.Item>
+					<DataList.Label>LDH Name</DataList.Label>
+					<DataList.Value>
+						<Flex align="center" gap="2">
+							<Code variant="ghost">{data.ldhName}</Code>
+							<CopyButton value={data.ldhName} />
+						</Flex>
+					</DataList.Value>
+				</DataList.Item>
 			</DataList.Root>
 		</AbstractCard>
 	);

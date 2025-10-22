@@ -3,9 +3,10 @@ import React from "react";
 import type { AutonomousNumber } from "@/rdap/schemas";
 import Events from "@/rdap/components/Events";
 import Property from "@/components/Property";
-import PropertyList from "@/components/PropertyList";
+import CopyButton from "@/components/CopyButton";
+import StatusBadge from "@/components/StatusBadge";
 import AbstractCard from "@/components/AbstractCard";
-import { Flex, Text, DataList, Badge } from "@radix-ui/themes";
+import { Flex, Text, DataList, Badge, Code } from "@radix-ui/themes";
 
 export type AutnumCardProps = {
 	data: AutonomousNumber;
@@ -31,24 +32,39 @@ const AutnumCard: FunctionComponent<AutnumCardProps> = ({ data, url }: AutnumCar
 		>
 			<DataList.Root orientation={{ initial: "vertical", sm: "horizontal" }} size="2">
 				<Property title="Name">{data.name}</Property>
-				<Property title="Handle">{data.handle}</Property>
-				<Property title="ASN Range">
-					{data.startAutnum === data.endAutnum
-						? `AS${data.startAutnum}`
-						: `AS${data.startAutnum} - AS${data.endAutnum}`}
-				</Property>
+				<DataList.Item>
+					<DataList.Label>Handle</DataList.Label>
+					<DataList.Value>
+						<Flex align="center" gap="2">
+							<Code variant="ghost">{data.handle}</Code>
+							<CopyButton value={data.handle} />
+						</Flex>
+					</DataList.Value>
+				</DataList.Item>
+				<DataList.Item>
+					<DataList.Label>ASN Range</DataList.Label>
+					<DataList.Value>
+						<Flex align="center" gap="2">
+							<Code variant="ghost">{asnRange}</Code>
+							<CopyButton value={asnRange} />
+						</Flex>
+					</DataList.Value>
+				</DataList.Item>
 				<Property title="Type">{data.type}</Property>
 				<Property title="Country">{data.country.toUpperCase()}</Property>
 				<Property title="Events">
 					<Events key={0} data={data.events} />
 				</Property>
-				<PropertyList title="Status">
-					{data.status.map((status, index) => (
-						<PropertyList.Item key={index} title={status}>
-							{status}
-						</PropertyList.Item>
-					))}
-				</PropertyList>
+				<DataList.Item align="center">
+					<DataList.Label>Status</DataList.Label>
+					<DataList.Value>
+						<Flex gap="2" wrap="wrap">
+							{data.status.map((status, index) => (
+								<StatusBadge key={index} status={status} />
+							))}
+						</Flex>
+					</DataList.Value>
+				</DataList.Item>
 			</DataList.Root>
 		</AbstractCard>
 	);

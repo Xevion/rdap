@@ -110,7 +110,7 @@ export const IpNetworkSchema = z.object({
 	type: z.string(),
 	country: z.string().optional(),
 	parentHandle: z.string().optional(),
-	status: z.string().array(),
+	status: z.array(StatusEnum),
 	entities: z.array(EntitySchema).optional(),
 	remarks: z.any().optional(),
 	links: z.any().optional(),
@@ -125,7 +125,7 @@ export const AutonomousNumberSchema = z.object({
 	endAutnum: z.number().positive(), // TODO: 32bit
 	name: z.string(),
 	type: z.string(),
-	status: z.array(z.string()),
+	status: z.array(StatusEnum),
 	country: z.string().length(2),
 	events: z.array(EventSchema),
 	entities: z.array(EntitySchema),

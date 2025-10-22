@@ -9,29 +9,33 @@ export type EventsProps = {
 
 const Events: FunctionComponent<EventsProps> = ({ data }) => {
 	return (
-		<Table.Root size="1" variant="surface">
+		<Table.Root size="1" variant="surface" layout="auto">
 			<Table.Header>
 				<Table.Row>
 					<Table.ColumnHeaderCell>Event</Table.ColumnHeaderCell>
 					<Table.ColumnHeaderCell>Date</Table.ColumnHeaderCell>
-					<Table.ColumnHeaderCell>Actor</Table.ColumnHeaderCell>
+					<Table.ColumnHeaderCell align="right">Actor</Table.ColumnHeaderCell>
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
 				{data.map(({ eventAction, eventDate, eventActor }, index) => (
 					<Table.Row key={index}>
-						<Table.Cell>
-							<Text size="2" weight="medium">
-								{eventAction}
-							</Text>
+						<Table.Cell pr="4">
+							<Text size="2">{eventAction}</Text>
 						</Table.Cell>
-						<Table.Cell>
+						<Table.Cell pr="4">
 							<DynamicDate value={new Date(eventDate)} />
 						</Table.Cell>
-						<Table.Cell>
-							<Text size="2" color="gray">
-								{eventActor ?? "—"}
-							</Text>
+						<Table.Cell align="right">
+							{eventActor ? (
+								<Text size="2" color="gray">
+									{eventActor}
+								</Text>
+							) : (
+								<Text size="2" style={{ color: "var(--gray-a6)" }}>
+									—
+								</Text>
+							)}
 						</Table.Cell>
 					</Table.Row>
 				))}
