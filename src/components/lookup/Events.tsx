@@ -4,24 +4,24 @@ import { Fragment } from "react";
 import DynamicDate from "@/components/common/DynamicDate";
 
 export type EventsProps = {
-  data: Event[];
+	data: Event[];
 };
 const Events: FunctionComponent<EventsProps> = ({ data }) => {
-  return (
-    <dl>
-      {data.map(({ eventAction, eventDate, eventActor }, index) => {
-        return (
-          <Fragment key={index}>
-            <dt className="font-weight-bolder">{eventAction}:</dt>
-            <dd>
-              <DynamicDate value={new Date(eventDate)} />
-              {eventActor != null ? ` (by ${eventActor})` : null}
-            </dd>
-          </Fragment>
-        );
-      })}
-    </dl>
-  );
+	return (
+		<dl>
+			{data.map(({ eventAction, eventDate, eventActor }, index) => {
+				return (
+					<Fragment key={index}>
+						<dt className="font-weight-bolder">{eventAction}:</dt>
+						<dd>
+							<DynamicDate value={new Date(eventDate)} />
+							{eventActor != null ? ` (by ${eventActor})` : null}
+						</dd>
+					</Fragment>
+				);
+			})}
+		</dl>
+	);
 };
 
 export default Events;

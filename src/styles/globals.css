@@ -1,33 +1,37 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter var", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --color-zinc-850: #1D1D20;
+	--font-sans:
+		"Inter var", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+		"Segoe UI Symbol", "Noto Color Emoji";
+	--font-mono:
+		"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+		"Courier New", monospace;
+	--color-zinc-850: #1d1d20;
 }
 
 dd {
-  margin: 0.5em 0 1em 2em;
+	margin: 0.5em 0 1em 2em;
 }
 
 .dashed {
-  border-bottom: 1px dashed silver;
+	border-bottom: 1px dashed silver;
 }
 
 body {
-  color-scheme: dark;
-  @apply bg-zinc-900 font-sans text-white;
+	color-scheme: dark;
+	@apply bg-zinc-900 font-sans text-white;
 }
 
 dd,
 dl {
-  white-space: nowrap;
+	white-space: nowrap;
 }
 
 dl {
-  margin: 0;
+	margin: 0;
 }
 
 .scrollbar-thin {
-  scrollbar-width: thin;
+	scrollbar-width: thin;
 }

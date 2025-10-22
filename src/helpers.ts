@@ -2,24 +2,24 @@ import type { SyntheticEvent } from "react";
 import type { Entries } from "type-fest";
 
 declare global {
-  interface ObjectConstructor {
-    entries<T extends object>(o: T): Entries<T>;
-  }
+	interface ObjectConstructor {
+		entries<T extends object>(o: T): Entries<T>;
+	}
 }
 
 export function truthy(value: string | null | undefined) {
-  if (value == undefined) return false;
-  return value.toLowerCase() == "true" || value == "1";
+	if (value == undefined) return false;
+	return value.toLowerCase() == "true" || value == "1";
 }
 
 export function onPromise<T>(promise: (event: SyntheticEvent) => Promise<T>) {
-  return (event: SyntheticEvent) => {
-    if (promise) {
-      promise(event).catch((error) => {
-        console.log("Unexpected error", error);
-      });
-    }
-  };
+	return (event: SyntheticEvent) => {
+		if (promise) {
+			promise(event).catch((error) => {
+				console.log("Unexpected error", error);
+			});
+		}
+	};
 }
 
 /**
@@ -30,27 +30,24 @@ export function onPromise<T>(promise: (event: SyntheticEvent) => Promise<T>) {
  * @param ellipsis A string representing what should be placed on the end when the max length is hit.
  */
 export function truncated(input: string, maxLength: number, ellipsis = "...") {
-  if (maxLength <= 0) return "";
-  if (input.length <= maxLength) return input;
-  return (
-    input.substring(0, Math.max(0, maxLength - ellipsis.length)) + ellipsis
-  );
+	if (maxLength <= 0) return "";
+	if (input.length <= maxLength) return input;
+	return input.substring(0, Math.max(0, maxLength - ellipsis.length)) + ellipsis;
 }
 
 export function preventDefault(event: SyntheticEvent | Event) {
-  event.preventDefault();
+	event.preventDefault();
 }
 
 /**
  * Convert an IPv4 address string to a 32-bit integer
  */
 function ipv4ToInt(ip: string): number {
-  const parts = ip.split(".").map(Number);
-  if (parts.length !== 4) return 0;
-  const [a, b, c, d] = parts;
-  if (a === undefined || b === undefined || c === undefined || d === undefined)
-    return 0;
-  return ((a << 24) | (b << 16) | (c << 8) | d) >>> 0;
+	const parts = ip.split(".").map(Number);
+	if (parts.length !== 4) return 0;
+	const [a, b, c, d] = parts;
+	if (a === undefined || b === undefined || c === undefined || d === undefined) return 0;
+	return ((a << 24) | (b << 16) | (c << 8) | d) >>> 0;
 }
 
 /**
@@ -60,57 +57,57 @@ function ipv4ToInt(ip: string): number {
  * @returns true if the IP is within the CIDR range
  */
 export function ipv4InCIDR(ip: string, cidr: string): boolean {
-  const [rangeIp, prefixLenStr] = cidr.split("/");
-  const prefixLen = parseInt(prefixLenStr ?? "", 10);
+	const [rangeIp, prefixLenStr] = cidr.split("/");
+	const prefixLen = parseInt(prefixLenStr ?? "", 10);
 
-  if (!rangeIp || isNaN(prefixLen) || prefixLen < 0 || prefixLen > 32) {
-    return false;
-  }
+	if (!rangeIp || isNaN(prefixLen) || prefixLen < 0 || prefixLen > 32) {
+		return false;
+	}
 
-  // Special case: /0 matches all IPs
-  if (prefixLen === 0) {
-    return true;
-  }
+	// Special case: /0 matches all IPs
+	if (prefixLen === 0) {
+		return true;
+	}
 
-  const ipInt = ipv4ToInt(ip);
-  const rangeInt = ipv4ToInt(rangeIp);
-  const mask = (0xffffffff << (32 - prefixLen)) >>> 0;
+	const ipInt = ipv4ToInt(ip);
+	const rangeInt = ipv4ToInt(rangeIp);
+	const mask = (0xffffffff << (32 - prefixLen)) >>> 0;
 
-  return (ipInt & mask) === (rangeInt & mask);
+	return (ipInt & mask) === (rangeInt & mask);
 }
 
 /**
  * Convert an IPv6 address to a BigInt representation
  */
 function ipv6ToBigInt(ip: string): bigint {
-  // Expand :: notation
-  const expandedIp = expandIPv6(ip);
-  const parts = expandedIp.split(":");
+	// Expand :: notation
+	const expandedIp = expandIPv6(ip);
+	const parts = expandedIp.split(":");
 
-  let result = BigInt(0);
-  for (const part of parts) {
-    result = (result << BigInt(16)) | BigInt(parseInt(part, 16));
-  }
-  return result;
+	let result = BigInt(0);
+	for (const part of parts) {
+		result = (result << BigInt(16)) | BigInt(parseInt(part, 16));
+	}
+	return result;
 }
 
 /**
  * Expand IPv6 address shorthand notation
  */
 function expandIPv6(ip: string): string {
-  if (ip.includes("::")) {
-    const [left, right] = ip.split("::");
-    const leftParts = left ? left.split(":") : [];
-    const rightParts = right ? right.split(":") : [];
-    const missingParts = 8 - leftParts.length - rightParts.length;
-    const middleParts: string[] = Array(missingParts).fill("0") as string[];
-    const allParts = [...leftParts, ...middleParts, ...rightParts];
-    return allParts.map((p: string) => p.padStart(4, "0")).join(":");
-  }
-  return ip
-    .split(":")
-    .map((p: string) => p.padStart(4, "0"))
-    .join(":");
+	if (ip.includes("::")) {
+		const [left, right] = ip.split("::");
+		const leftParts = left ? left.split(":") : [];
+		const rightParts = right ? right.split(":") : [];
+		const missingParts = 8 - leftParts.length - rightParts.length;
+		const middleParts: string[] = Array(missingParts).fill("0") as string[];
+		const allParts = [...leftParts, ...middleParts, ...rightParts];
+		return allParts.map((p: string) => p.padStart(4, "0")).join(":");
+	}
+	return ip
+		.split(":")
+		.map((p: string) => p.padStart(4, "0"))
+		.join(":");
 }
 
 /**
@@ -120,23 +117,23 @@ function expandIPv6(ip: string): string {
  * @returns true if the IP is within the CIDR range
  */
 export function ipv6InCIDR(ip: string, cidr: string): boolean {
-  const [rangeIp, prefixLenStr] = cidr.split("/");
-  const prefixLen = parseInt(prefixLenStr ?? "", 10);
+	const [rangeIp, prefixLenStr] = cidr.split("/");
+	const prefixLen = parseInt(prefixLenStr ?? "", 10);
 
-  if (!rangeIp || isNaN(prefixLen) || prefixLen < 0 || prefixLen > 128) {
-    return false;
-  }
+	if (!rangeIp || isNaN(prefixLen) || prefixLen < 0 || prefixLen > 128) {
+		return false;
+	}
 
-  try {
-    const ipInt = ipv6ToBigInt(ip);
-    const rangeInt = ipv6ToBigInt(rangeIp);
-    const maxMask = BigInt("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
-    const mask = (maxMask << BigInt(128 - prefixLen)) & maxMask;
+	try {
+		const ipInt = ipv6ToBigInt(ip);
+		const rangeInt = ipv6ToBigInt(rangeIp);
+		const maxMask = BigInt("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+		const mask = (maxMask << BigInt(128 - prefixLen)) & maxMask;
 
-    return (ipInt & mask) === (rangeInt & mask);
-  } catch {
-    return false;
-  }
+		return (ipInt & mask) === (rangeInt & mask);
+	} catch {
+		return false;
+	}
 }
 
 /**
@@ -146,22 +143,22 @@ export function ipv6InCIDR(ip: string, cidr: string): boolean {
  * @returns true if the ASN is within the range
  */
 export function asnInRange(asn: number, range: string): boolean {
-  const parts = range.split("-");
+	const parts = range.split("-");
 
-  if (parts.length !== 2) {
-    return false;
-  }
+	if (parts.length !== 2) {
+		return false;
+	}
 
-  const start = parseInt(parts[0] ?? "", 10);
-  const end = parseInt(parts[1] ?? "", 10);
+	const start = parseInt(parts[0] ?? "", 10);
+	const end = parseInt(parts[1] ?? "", 10);
 
-  if (isNaN(start) || isNaN(end) || start < 0 || end < 0 || start > end) {
-    return false;
-  }
+	if (isNaN(start) || isNaN(end) || start < 0 || end < 0 || start > end) {
+		return false;
+	}
 
-  if (asn < 0) {
-    return false;
-  }
+	if (asn < 0) {
+		return false;
+	}
 
-  return asn >= start && asn <= end;
+	return asn >= start && asn <= end;
 }

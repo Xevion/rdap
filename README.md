@@ -35,11 +35,11 @@ But in all seriousness, my project does intend to have more features:
 - Whois: RDAP is a newer protocol that is meant to replace Whois, but some servers still use Whois. I might add support for that.
 - Punycode: Some domain names use punycode, which is a way to represent Unicode characters in ASCII. I might add support for working with these domains.
 - Better Error Handling: The original RDAP client doesn't handle errors very well, or tell you what went wrong. I want to fix that.
-  - For example, when querying a TLD that does not have a RDAP server, or one that does not exist, the original client doesn't explain this very well.
+    - For example, when querying a TLD that does not have a RDAP server, or one that does not exist, the original client doesn't explain this very well.
 - RDAP Schema Adherence: RDAP servers are supposed to follow a schema, but it appears a large number simply don't. I intend to provide handling for this.
-  - Essentially, two separate schemas will be available: one for basic type checking, and one for the RFC-compliant schema.
-  - If the server doesn't follow the RFC-compliant schema, the basic schema will be used instead.
-  - It's hard to tell at this moment if Typescript can handle this well, but I'll try.
+    - Essentially, two separate schemas will be available: one for basic type checking, and one for the RFC-compliant schema.
+    - If the server doesn't follow the RFC-compliant schema, the basic schema will be used instead.
+    - It's hard to tell at this moment if Typescript can handle this well, but I'll try.
 
 [rdap]: https://rdap.xevion.dev
 [nextjs]: https://nextjs.org

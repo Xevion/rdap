@@ -1,16 +1,16 @@
 import type { z } from "zod";
 import type {
-  AutonomousNumberSchema,
-  DomainSchema,
-  EntitySchema,
-  EventSchema,
-  IpNetworkSchema,
-  LinkSchema,
-  NameserverSchema,
-  TargetTypeEnum,
-  RegisterSchema,
-  StatusEnum,
-  RootRegistryEnum,
+	AutonomousNumberSchema,
+	DomainSchema,
+	EntitySchema,
+	EventSchema,
+	IpNetworkSchema,
+	LinkSchema,
+	NameserverSchema,
+	TargetTypeEnum,
+	RegisterSchema,
+	StatusEnum,
+	RootRegistryEnum,
 } from "@/schema";
 
 // All precise target types that can be placed in the search bar.
@@ -33,7 +33,7 @@ export type Register = z.infer<typeof RegisterSchema>;
 export type Domain = z.infer<typeof DomainSchema>;
 
 export type SubmitProps = {
-  target: string;
-  requestJSContact: boolean;
-  followReferral: boolean;
+	target: string;
+	requestJSContact: boolean;
+	followReferral: boolean;
 };

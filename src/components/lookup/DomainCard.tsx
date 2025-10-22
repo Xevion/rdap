@@ -8,49 +8,46 @@ import PropertyList from "@/components/common/PropertyList";
 import AbstractCard from "@/components/common/AbstractCard";
 
 export type DomainProps = {
-  data: Domain;
-  url?: string;
+	data: Domain;
+	url?: string;
 };
 
-const DomainCard: FunctionComponent<DomainProps> = ({
-  data,
-  url,
-}: DomainProps) => {
-  return (
-    <AbstractCard
-      data={data}
-      url={url}
-      header={
-        <>
-          <span className="font-mono tracking-tighter">DOMAIN</span>
-          <span className="font-mono tracking-wide">
-            {data.ldhName ?? data.unicodeName}
-          </span>
-          <span className="whitespace-nowrap">({data.handle})</span>
-        </>
-      }
-    >
-      <dl>
-        {data.unicodeName != undefined ? (
-          <Property title="Unicode Name">{data.unicodeName}</Property>
-        ) : null}
-        <Property title={data.unicodeName != undefined ? "LHD Name" : "Name"}>
-          {data.ldhName}
-        </Property>
-        <Property title="Handle">{data.handle}</Property>
-        <Property title="Events">
-          <Events key={0} data={data.events} />
-        </Property>
-        <PropertyList title="Status">
-          {data.status.map((statusKey, index) => (
-            <PropertyList.Item key={index} title={rdapStatusInfo[statusKey]}>
-              {statusKey}
-            </PropertyList.Item>
-          ))}
-        </PropertyList>
-      </dl>
-    </AbstractCard>
-  );
+const DomainCard: FunctionComponent<DomainProps> = ({ data, url }: DomainProps) => {
+	return (
+		<AbstractCard
+			data={data}
+			url={url}
+			header={
+				<>
+					<span className="font-mono tracking-tighter">DOMAIN</span>
+					<span className="font-mono tracking-wide">
+						{data.ldhName ?? data.unicodeName}
+					</span>
+					<span className="whitespace-nowrap">({data.handle})</span>
+				</>
+			}
+		>
+			<dl>
+				{data.unicodeName != undefined ? (
+					<Property title="Unicode Name">{data.unicodeName}</Property>
+				) : null}
+				<Property title={data.unicodeName != undefined ? "LHD Name" : "Name"}>
+					{data.ldhName}
+				</Property>
+				<Property title="Handle">{data.handle}</Property>
+				<Property title="Events">
+					<Events key={0} data={data.events} />
+				</Property>
+				<PropertyList title="Status">
+					{data.status.map((statusKey, index) => (
+						<PropertyList.Item key={index} title={rdapStatusInfo[statusKey]}>
+							{statusKey}
+						</PropertyList.Item>
+					))}
+				</PropertyList>
+			</dl>
+		</AbstractCard>
+	);
 };
 
 export default DomainCard;
