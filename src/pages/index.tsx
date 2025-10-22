@@ -6,8 +6,10 @@ import type { MetaParsedGeneric } from "@/hooks/useLookup";
 import useLookup from "@/hooks/useLookup";
 import LookupInput from "@/components/form/LookupInput";
 import ErrorCard from "@/components/common/ErrorCard";
+import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { Maybe } from "true-myth";
 import type { TargetType } from "@/types";
+import { Flex, Container, Section, Text, Link } from "@radix-ui/themes";
 
 const Index: NextPage = () => {
 	const { error, setTarget, setTargetType, submit, getType } = useLookup();
@@ -37,16 +39,30 @@ const Index: NextPage = () => {
 					content="xevion, rdap, whois, rdap, domain name, dns, ip address"
 				/>
 			</Head>
-			<nav className="bg-zinc-850 px-5 py-4 shadow-xs">
-				<span className="text-xl font-medium text-white" style={{ fontSize: "larger" }}>
-					<a href="https://github.com/Xevion/rdap">rdap</a>
-					<a href={"https://xevion.dev"} className="text-zinc-400 hover:animate-pulse">
-						.xevion.dev
-					</a>
-				</span>
-			</nav>
-			<div className="mx-auto max-w-screen-sm px-5 lg:max-w-screen-md xl:max-w-screen-lg">
-				<div className="dark container mx-auto w-full py-6 md:py-12">
+			<Flex
+				asChild
+				justify="between"
+				align="center"
+				px="5"
+				py="4"
+				style={{
+					borderBottom: "1px solid var(--gray-a5)",
+				}}
+			>
+				<nav>
+					<Text size="5" weight="medium">
+						<Link href="https://github.com/Xevion/rdap" color="gray" highContrast>
+							rdap
+						</Link>
+						<Link href="https://xevion.dev" color="gray">
+							.xevion.dev
+						</Link>
+					</Text>
+					<ThemeToggle />
+				</nav>
+			</Flex>
+			<Container size="3" px="5">
+				<Section size="2">
 					<LookupInput
 						isLoading={isLoading}
 						detectedType={detectedType}
@@ -83,8 +99,8 @@ const Index: NextPage = () => {
 					{response.isJust ? (
 						<Generic url={response.value.url} data={response.value.data} />
 					) : null}
-				</div>
-			</div>
+				</Section>
+			</Container>
 		</>
 	);
 };

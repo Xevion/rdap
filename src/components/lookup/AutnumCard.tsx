@@ -5,6 +5,7 @@ import Events from "@/components/lookup/Events";
 import Property from "@/components/common/Property";
 import PropertyList from "@/components/common/PropertyList";
 import AbstractCard from "@/components/common/AbstractCard";
+import { Flex, Text, DataList, Badge } from "@radix-ui/themes";
 
 export type AutnumCardProps = {
 	data: AutonomousNumber;
@@ -22,14 +23,13 @@ const AutnumCard: FunctionComponent<AutnumCardProps> = ({ data, url }: AutnumCar
 			data={data}
 			url={url}
 			header={
-				<>
-					<span className="font-mono tracking-tighter">AUTONOMOUS SYSTEM</span>
-					<span className="font-mono tracking-wide">{asnRange}</span>
-					<span className="whitespace-nowrap">({data.handle})</span>
-				</>
+				<Flex gap="2" align="center" wrap="wrap">
+					<Text size="5">{asnRange}</Text>
+					<Badge color="gray">AUTONOMOUS SYSTEM</Badge>
+				</Flex>
 			}
 		>
-			<dl>
+			<DataList.Root orientation={{ initial: "vertical", sm: "horizontal" }} size="2">
 				<Property title="Name">{data.name}</Property>
 				<Property title="Handle">{data.handle}</Property>
 				<Property title="ASN Range">
@@ -49,7 +49,7 @@ const AutnumCard: FunctionComponent<AutnumCardProps> = ({ data, url }: AutnumCar
 						</PropertyList.Item>
 					))}
 				</PropertyList>
-			</dl>
+			</DataList.Root>
 		</AbstractCard>
 	);
 };

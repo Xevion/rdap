@@ -35,12 +35,6 @@ const Generic: FunctionComponent<ObjectProps> = ({ data, url }: ObjectProps) => 
 				</AbstractCard>
 			);
 	}
-
-	// const title: string = (data.unicodeName ?? data.ldhName ?? data.handle)?.toUpperCase() ?? "Response";
-	// return <div className="card">
-	//     <div className="card-header">{title}</div>
-	//     {objectFragment}
-	// </div>
 };
 
 export default Generic;

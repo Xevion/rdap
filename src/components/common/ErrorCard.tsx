@@ -1,6 +1,6 @@
 import type { FunctionComponent, ReactNode } from "react";
-import { XCircleIcon } from "@heroicons/react/20/solid";
-import { cn } from "@/lib/utils";
+import { CrossCircledIcon } from "@radix-ui/react-icons";
+import { Callout, Box, Flex } from "@radix-ui/themes";
 
 export type ErrorCardProps = {
 	title: ReactNode;
@@ -16,35 +16,46 @@ const ErrorCard: FunctionComponent<ErrorCardProps> = ({
 	className,
 }) => {
 	return (
-		<div
-			className={cn(
-				className,
-				"rounded-md border border-red-700/30 bg-zinc-800 px-3 pt-3 pb-1"
-			)}
-		>
-			<div className="flex">
-				<div className="shrink-0">
-					<XCircleIcon className="h-5 w-5 text-red-300" aria-hidden="true" />
-				</div>
-				<div className="ml-3 w-full text-sm text-red-300">
-					<h3 className="font-medium text-red-200">{title}</h3>
+		<Box className={className}>
+			<Callout.Root color="red" role="alert">
+				<Callout.Icon>
+					<CrossCircledIcon />
+				</Callout.Icon>
+				<Flex direction="column" gap="2">
+					<Callout.Text weight="medium" size="3">
+						{title}
+					</Callout.Text>
 					{description != undefined ? (
-						<div className="mt-2 max-h-24 w-full overflow-y-auto whitespace-pre-wrap">
-							{description}
-						</div>
+						<Box
+							style={{
+								maxHeight: "6rem",
+								overflowY: "auto",
+								whiteSpace: "pre-wrap",
+							}}
+						>
+							<Callout.Text size="2">{description}</Callout.Text>
+						</Box>
 					) : null}
-					<div className="mt-2">
-						{issues != undefined ? (
-							<ul role="list" className="flex list-disc flex-col gap-1 pl-5">
+					{issues != undefined && issues.length > 0 ? (
+						<Box asChild>
+							<ul
+								role="list"
+								style={{
+									listStyleType: "disc",
+									paddingLeft: "1.25rem",
+								}}
+							>
 								{issues.map((issueText, index) => (
-									<li key={index}>{issueText}</li>
+									<li key={index}>
+										<Callout.Text size="2">{issueText}</Callout.Text>
+									</li>
 								))}
 							</ul>
-						) : null}
-					</div>
-				</div>
-			</div>
-		</div>
+						</Box>
+					) : null}
+				</Flex>
+			</Callout.Root>
+		</Box>
 	);
 };
 

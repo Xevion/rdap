@@ -6,6 +6,7 @@ import Events from "@/components/lookup/Events";
 import Property from "@/components/common/Property";
 import PropertyList from "@/components/common/PropertyList";
 import AbstractCard from "@/components/common/AbstractCard";
+import { Flex, Text, DataList, Badge } from "@radix-ui/themes";
 
 export type DomainProps = {
 	data: Domain;
@@ -18,16 +19,13 @@ const DomainCard: FunctionComponent<DomainProps> = ({ data, url }: DomainProps) 
 			data={data}
 			url={url}
 			header={
-				<>
-					<span className="font-mono tracking-tighter">DOMAIN</span>
-					<span className="font-mono tracking-wide">
-						{data.ldhName ?? data.unicodeName}
-					</span>
-					<span className="whitespace-nowrap">({data.handle})</span>
-				</>
+				<Flex gap="2" align="center" wrap="wrap">
+					<Text size="5">{data.ldhName ?? data.unicodeName}</Text>
+					<Badge color="gray">DOMAIN</Badge>
+				</Flex>
 			}
 		>
-			<dl>
+			<DataList.Root orientation={{ initial: "vertical", sm: "horizontal" }} size="2">
 				{data.unicodeName != undefined ? (
 					<Property title="Unicode Name">{data.unicodeName}</Property>
 				) : null}
@@ -45,7 +43,7 @@ const DomainCard: FunctionComponent<DomainProps> = ({ data, url }: DomainProps) 
 						</PropertyList.Item>
 					))}
 				</PropertyList>
-			</dl>
+			</DataList.Root>
 		</AbstractCard>
 	);
 };

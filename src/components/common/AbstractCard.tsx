@@ -1,12 +1,8 @@
 import type { FunctionComponent, ReactNode } from "react";
 import React from "react";
 import { useBoolean } from "usehooks-ts";
-import {
-	LinkIcon,
-	CodeBracketIcon,
-	DocumentArrowDownIcon,
-	ClipboardDocumentIcon,
-} from "@heroicons/react/24/outline";
+import { Link2Icon, CodeIcon, DownloadIcon, ClipboardCopyIcon } from "@radix-ui/react-icons";
+import { Card, Flex, Box, IconButton, Code, ScrollArea } from "@radix-ui/themes";
 
 type AbstractCardProps = {
 	children?: ReactNode;
@@ -26,82 +22,125 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
 	const { value: showRaw, toggle: toggleRaw } = useBoolean(false);
 
 	return (
-		<div className="mb-4 overflow-clip rounded bg-zinc-800 shadow">
-			{header != undefined || data != undefined ? (
-				<div className="flex bg-zinc-700 p-2 pl-3 md:pl-5">
-					<div className="flex grow gap-2">{header}</div>
-					{url != undefined ? (
-						<div className="pr-2">
-							<a href={url} target="_blank" rel="noreferrer">
-								<LinkIcon className="mt-1 h-5 w-5 cursor-pointer" />
-							</a>
-						</div>
-					) : null}
-					{data != undefined ? (
-						<>
-							<div className="pr-2">
-								<ClipboardDocumentIcon
-									onClick={() => {
-										// stringify the JSON object, then begin the async clipboard write
-										navigator.clipboard
-											.writeText(JSON.stringify(data, null, 4))
-											.then(
-												() => {
-													// Successfully copied to clipboard
-												},
-												(err) => {
-													if (err instanceof Error)
-														console.error(
-															`Failed to copy to clipboard (${err.toString()}).`
-														);
-													else
-														console.error(
-															"Failed to copy to clipboard."
-														);
-												}
-											);
-									}}
-									className="h-6 w-6 cursor-pointer"
-								/>
-							</div>
-							<div className="pr-2">
-								<DocumentArrowDownIcon
-									onClick={() => {
-										const file = new Blob([JSON.stringify(data, null, 4)], {
-											type: "application/json",
-										});
+		<Box mb="4">
+			<Card size="2">
+				{(header != undefined || data != undefined) && (
+					<Flex
+						justify="between"
+						align="center"
+						p="3"
+						style={{
+							borderBottom: "1px solid var(--gray-a5)",
+						}}
+					>
+						<Flex gap="2" style={{ flex: 1 }}>
+							{header}
+						</Flex>
+						<Flex gap="2" align="center">
+							{url != undefined && (
+								<IconButton variant="ghost" size="2" asChild>
+									<a
+										href={url}
+										target="_blank"
+										rel="noreferrer"
+										aria-label="Open RDAP URL"
+									>
+										<Link2Icon width="18" height="18" />
+									</a>
+								</IconButton>
+							)}
+							{data != undefined && (
+								<>
+									<IconButton
+										variant="ghost"
+										size="2"
+										onClick={() => {
+											navigator.clipboard
+												.writeText(JSON.stringify(data, null, 4))
+												.then(
+													() => {
+														// Successfully copied to clipboard
+													},
+													(err) => {
+														if (err instanceof Error)
+															console.error(
+																`Failed to copy to clipboard (${err.toString()}).`
+															);
+														else
+															console.error(
+																"Failed to copy to clipboard."
+															);
+													}
+												);
+										}}
+										aria-label="Copy JSON to clipboard"
+									>
+										<ClipboardCopyIcon width="18" height="18" />
+									</IconButton>
+									<IconButton
+										variant="ghost"
+										size="2"
+										onClick={() => {
+											const file = new Blob([JSON.stringify(data, null, 4)], {
+												type: "application/json",
+											});
 
-										const anchor = document.createElement("a");
-										anchor.href = URL.createObjectURL(file);
-										anchor.download = "response.json";
-										anchor.click();
-									}}
-									className="h-6 w-6 cursor-pointer"
-								/>
-							</div>
-							<div className="pr-1">
-								<CodeBracketIcon
-									onClick={toggleRaw}
-									className="h-6 w-6 cursor-pointer"
-								/>
-							</div>
-						</>
-					) : null}
-				</div>
-			) : null}
-			<div className="max-w-full overflow-x-auto p-2 px-4">
-				{showRaw ? (
-					<pre className="scrollbar-thin m-2 max-h-[40rem] max-w-full overflow-y-auto rounded whitespace-pre-wrap">
-						{JSON.stringify(data, null, 4)}
-					</pre>
-				) : (
-					children
+											const anchor = document.createElement("a");
+											anchor.href = URL.createObjectURL(file);
+											anchor.download = "response.json";
+											anchor.click();
+										}}
+										aria-label="Download JSON"
+									>
+										<DownloadIcon width="18" height="18" />
+									</IconButton>
+									<IconButton
+										variant="ghost"
+										size="2"
+										onClick={toggleRaw}
+										aria-label={
+											showRaw ? "Show formatted view" : "Show raw JSON"
+										}
+									>
+										<CodeIcon width="18" height="18" />
+									</IconButton>
+								</>
+							)}
+						</Flex>
+					</Flex>
 				)}
-			</div>
-			{footer != null ? (
-				<div className="flex gap-2 bg-zinc-700 p-2 pl-5">{footer}</div>
-			) : null}
-		</div>
+				<Box p="4">
+					{showRaw ? (
+						<ScrollArea type="auto" scrollbars="both" style={{ maxHeight: "40rem" }}>
+							<Code
+								variant="ghost"
+								size="2"
+								style={{
+									display: "block",
+									whiteSpace: "pre-wrap",
+									fontFamily: "var(--font-mono)",
+								}}
+							>
+								{JSON.stringify(data, null, 4)}
+							</Code>
+						</ScrollArea>
+					) : (
+						children
+					)}
+				</Box>
+				{footer != null && (
+					<Flex
+						gap="2"
+						p="3"
+						style={{
+							borderTop: "1px solid var(--gray-a5)",
+						}}
+					>
+						{footer}
+					</Flex>
+				)}
+			</Card>
+		</Box>
 	);
 };
 

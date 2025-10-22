@@ -1,6 +1,6 @@
 import type { FunctionComponent, ReactNode } from "react";
 import React from "react";
-import { cn } from "@/lib/utils";
+import { DataList } from "@radix-ui/themes";
 
 type PropertyProps = {
 	title: string | ReactNode;
@@ -9,6 +9,11 @@ type PropertyProps = {
 	valueClass?: string;
 };
 
+/**
+ * A simple wrapper around Radix DataList for displaying key-value pairs.
+ * This component uses DataList.Item, DataList.Label, and DataList.Value
+ * to provide semantic HTML and consistent styling.
+ */
 const Property: FunctionComponent<PropertyProps> = ({
 	title,
 	children,
@@ -16,10 +21,10 @@ const Property: FunctionComponent<PropertyProps> = ({
 	valueClass,
 }) => {
 	return (
-		<>
-			<dt className={cn("font-medium", titleClass)}>{title}:</dt>
-			<dd className={cn("mt-2 mb-2 ml-6", valueClass)}>{children}</dd>
-		</>
+		<DataList.Item>
+			<DataList.Label className={titleClass}>{title}</DataList.Label>
+			<DataList.Value className={valueClass}>{children}</DataList.Value>
+		</DataList.Item>
 	);
 };
 

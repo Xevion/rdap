@@ -7,31 +7,27 @@
 	--font-mono:
 		"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
 		"Courier New", monospace;
-	--color-zinc-850: #1d1d20;
 }
 
-dd {
-	margin: 0.5em 0 1em 2em;
-}
-
+/* Utility classes */
 .dashed {
-	border-bottom: 1px dashed silver;
-}
-
-body {
-	color-scheme: dark;
-	@apply bg-zinc-900 font-sans text-white;
-}
-
-dd,
-dl {
-	white-space: nowrap;
-}
-
-dl {
-	margin: 0;
+	border-bottom: 1px dashed var(--gray-a6);
 }
 
 .scrollbar-thin {
 	scrollbar-width: thin;
+}
+
+/* Keep animate-spin for loading states */
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.animate-spin {
+	animation: spin 1s linear infinite;
 }

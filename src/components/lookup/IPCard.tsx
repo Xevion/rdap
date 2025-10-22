@@ -5,6 +5,7 @@ import Events from "@/components/lookup/Events";
 import Property from "@/components/common/Property";
 import PropertyList from "@/components/common/PropertyList";
 import AbstractCard from "@/components/common/AbstractCard";
+import { Flex, Text, DataList, Badge } from "@radix-ui/themes";
 
 export type IPCardProps = {
 	data: IpNetwork;
@@ -17,17 +18,15 @@ const IPCard: FunctionComponent<IPCardProps> = ({ data, url }: IPCardProps) => {
 			data={data}
 			url={url}
 			header={
-				<>
-					<span className="font-mono tracking-tighter">IP NETWORK</span>
-					<span className="font-mono tracking-wide">
-						{data.startAddress}
-						{data.startAddress !== data.endAddress && ` - ${data.endAddress}`}
-					</span>
-					<span className="whitespace-nowrap">({data.handle})</span>
-				</>
+				<Flex gap="2" align="center" wrap="wrap">
+					<Text size="5">
+						{data.startAddress} - {data.endAddress}
+					</Text>
+					<Badge color="gray">IP NETWORK</Badge>
+				</Flex>
 			}
 		>
-			<dl>
+			<DataList.Root orientation={{ initial: "vertical", sm: "horizontal" }} size="2">
 				<Property title="Name">{data.name}</Property>
 				<Property title="Handle">{data.handle}</Property>
 				<Property title="IP Version">{data.ipVersion.toUpperCase()}</Property>
@@ -48,7 +47,7 @@ const IPCard: FunctionComponent<IPCardProps> = ({ data, url }: IPCardProps) => {
 						</PropertyList.Item>
 					))}
 				</PropertyList>
-			</dl>
+			</DataList.Root>
 		</AbstractCard>
 	);
 };

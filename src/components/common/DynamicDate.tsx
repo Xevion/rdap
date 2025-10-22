@@ -2,6 +2,7 @@ import type { FunctionComponent } from "react";
 import { useBoolean } from "usehooks-ts";
 import { format } from "date-fns";
 import TimeAgo from "react-timeago";
+import { Button, Text } from "@radix-ui/themes";
 
 type DynamicDateProps = {
 	value: Date | number;
@@ -18,15 +19,20 @@ const DynamicDate: FunctionComponent<DynamicDateProps> = ({ value, absoluteForma
 
 	const date = new Date(value);
 	return (
-		<button onClick={toggleFormat}>
-			<span className="dashed" title={date.toISOString()}>
+		<Button
+			variant="ghost"
+			size="1"
+			onClick={toggleFormat}
+			style={{ padding: 0, height: "auto" }}
+		>
+			<Text className="dashed" title={date.toISOString()} size="2">
 				{showAbsolute ? (
 					format(date, absoluteFormat ?? "LLL do, y HH:mm:ss xxx")
 				) : (
 					<TimeAgo date={date} />
 				)}
-			</span>
-		</button>
+			</Text>
+		</Button>
 	);
 };
 

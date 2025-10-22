@@ -4,6 +4,7 @@ import type { Entity } from "@/types";
 import Property from "@/components/common/Property";
 import PropertyList from "@/components/common/PropertyList";
 import AbstractCard from "@/components/common/AbstractCard";
+import { Flex, DataList, Badge, Text } from "@radix-ui/themes";
 
 export type EntityCardProps = {
 	data: Entity;
@@ -16,15 +17,13 @@ const EntityCard: FunctionComponent<EntityCardProps> = ({ data, url }: EntityCar
 			data={data}
 			url={url}
 			header={
-				<>
-					<span className="font-mono tracking-tighter">ENTITY</span>
-					<span className="font-mono tracking-wide">
-						{data.handle || data.roles.join(", ")}
-					</span>
-				</>
+				<Flex gap="2" align="center" wrap="wrap">
+					<Text size="5">{data.handle || data.roles.join(", ")}</Text>
+					<Badge color="gray">ENTITY</Badge>
+				</Flex>
 			}
 		>
-			<dl>
+			<DataList.Root orientation={{ initial: "vertical", sm: "horizontal" }} size="2">
 				{data.handle && <Property title="Handle">{data.handle}</Property>}
 				<PropertyList title="Roles">
 					{data.roles.map((role, index) => (
@@ -42,7 +41,7 @@ const EntityCard: FunctionComponent<EntityCardProps> = ({ data, url }: EntityCar
 						))}
 					</PropertyList>
 				)}
-			</dl>
+			</DataList.Root>
 		</AbstractCard>
 	);
 };

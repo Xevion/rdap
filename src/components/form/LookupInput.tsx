@@ -1,24 +1,11 @@
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import type { FunctionComponent } from "react";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { onPromise, preventDefault } from "@/helpers";
 import type { SimplifiedTargetType, SubmitProps, TargetType } from "@/types";
 import { TargetTypeEnum } from "@/schema";
-import {
-	CheckIcon,
-	ChevronUpDownIcon,
-	LockClosedIcon,
-	MagnifyingGlassIcon,
-	ArrowPathIcon,
-} from "@heroicons/react/20/solid";
-import {
-	Listbox,
-	ListboxButton,
-	ListboxOptions,
-	ListboxOption,
-	Transition,
-} from "@headlessui/react";
-import { cn } from "@/lib/utils";
+import { MagnifyingGlassIcon, ReloadIcon, LockClosedIcon } from "@radix-ui/react-icons";
+import { TextField, Select, Flex, Checkbox, Text, IconButton } from "@radix-ui/themes";
 import type { Maybe } from "true-myth";
 import { placeholders } from "@/constants";
 
@@ -54,7 +41,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 	onChange,
 	detectedType,
 }: LookupInputProps) => {
-	const { register, handleSubmit, getValues } = useForm<SubmitProps>({
+	const { register, handleSubmit, getValues, control } = useForm<SubmitProps>({
 		defaultValues: {
 			target: "",
 			// Not used at this time.
@@ -115,200 +102,143 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 		return result.success ? result.data : null;
 	}
 
-	const searchIcon = (
-		<>
-			<button
-				type="submit"
-				className={cn({
-					"absolute inset-y-0 left-0 flex items-center pl-3": true,
-					"pointer-events-none": isLoading,
-				})}
-			>
-				{isLoading ? (
-					<ArrowPathIcon
-						className="h-5 w-5 animate-spin text-zinc-400"
-						aria-hidden="true"
-					/>
-				) : (
-					<MagnifyingGlassIcon className="h-5 w-5 text-zinc-400" aria-hidden="true" />
-				)}
-			</button>
-		</>
-	);
-
-	const searchInput = (
-		<input
-			className={cn(
-				"block w-full rounded-l-md border border-transparent lg:py-4.5",
-				"bg-zinc-700 py-2 pr-1.5 pl-10 text-sm placeholder-zinc-400 placeholder:translate-y-2 focus:text-zinc-200",
-				"focus:outline-hidden sm:text-sm md:py-3 md:text-base lg:text-lg"
-			)}
-			disabled={isLoading}
-			placeholder={placeholders[selected]}
-			type="search"
-			{...register("target", {
-				required: true,
-				onChange: () => {
-					if (onChange != undefined)
-						void onChange({
-							target: getValues("target"),
-							// dropdown target will be pulled from state anyways, so no need to provide it here
-							targetType: retrieveTargetType(null),
-						});
-				},
-			})}
-		/>
-	);
-
-	const dropdown = (
-		<Listbox
-			value={selected}
-			onChange={(value) => {
-				setSelected(value);
-
-				if (onChange != undefined)
-					void onChange({
-						target: getValues("target"),
-						// we provide the value as the state will not have updated yet for this context
-						targetType: retrieveTargetType(value),
-					});
-			}}
-			disabled={isLoading}
-		>
-			<div className="relative">
-				<ListboxButton
-					className={cn(
-						"relative h-full w-full cursor-default rounded-r-lg bg-zinc-700 py-2 pr-10 pl-1 text-right whitespace-nowrap",
-						"text-xs focus:outline-hidden focus-visible:border-indigo-500 sm:text-sm md:text-base lg:text-lg",
-						"focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300"
-					)}
-				>
-					{/* Fetch special text for 'auto' mode, otherwise just use the options. */}
-					<span className="block">
-						{selected == "auto" ? (
-							// If the detected type was provided, then notate which in parentheses. Compact object naming might be better in the future.
-							detectedType.isJust ? (
-								<>
-									Auto (
-									<span className="animate-pulse">
-										{targetShortNames[detectedType.value]}
-									</span>
-									)
-								</>
-							) : (
-								objectNames["auto"]
-							)
-						) : (
-							<>
-								<LockClosedIcon
-									className="mr-2.5 mb-1 inline h-4 w-4 animate-pulse text-zinc-500"
-									aria-hidden
-								/>
-								{objectNames[selected]}
-							</>
-						)}
-					</span>
-					<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-						<ChevronUpDownIcon className="h-5 w-5 text-zinc-200" aria-hidden="true" />
-					</span>
-				</ListboxButton>
-				<Transition
-					as={Fragment}
-					leave="transition ease-in duration-100"
-					leaveFrom="opacity-100"
-					leaveTo="opacity-0"
-				>
-					<ListboxOptions
-						className={cn(
-							"scrollbar-thin absolute right-0 mt-1 max-h-60 min-w-full overflow-auto rounded-md bg-zinc-700 py-1",
-							"text-zinc-200 shadow-lg ring-1 ring-black/5 focus:outline-hidden sm:text-sm"
-						)}
-					>
-						{Object.entries(objectNames).map(([key, value]) => (
-							<ListboxOption
-								key={key}
-								className={({ focus }) =>
-									cn(
-										"relative cursor-default py-2 pr-4 pl-10 select-none",
-										focus ? "bg-zinc-800 text-zinc-300" : null
-									)
-								}
-								value={key}
-							>
-								{({ selected }) => (
-									<>
-										<span
-											className={cn(
-												"block text-right text-xs whitespace-nowrap md:text-sm lg:text-base",
-												selected ? "font-medium" : null
-											)}
-										>
-											{value}
-										</span>
-										{selected ? (
-											<span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-500">
-												<CheckIcon className="h-5 w-5" aria-hidden="true" />
-											</span>
-										) : (
-											<button
-												onClick={(e) => {
-													e.preventDefault();
-													// TODO: Show Help Explanation
-												}}
-												className="absolute inset-y-0 left-0 flex items-center pl-4 text-lg font-bold opacity-20 hover:animate-pulse"
-											>
-												?
-											</button>
-										)}
-									</>
-								)}
-							</ListboxOption>
-						))}
-					</ListboxOptions>
-				</Transition>
-			</div>
-		</Listbox>
-	);
-
 	return (
 		<form
-			className="pb-3"
+			className="pb-2.5"
 			onSubmit={onSubmit != undefined ? onPromise(handleSubmit(onSubmit)) : preventDefault}
 		>
-			<div className="col">
+			<Flex direction="column" gap="3">
 				<label htmlFor="search" className="sr-only">
 					Search
 				</label>
-				<div className="relative flex">
-					{searchIcon}
-					{searchInput}
-					{dropdown}
-				</div>
-			</div>
-			<div className="col">
-				<div className="flex flex-wrap pt-3 pb-1 text-sm">
-					<div className="whitespace-nowrap">
-						<input
-							className="mr-1 ml-2 whitespace-nowrap text-zinc-800 accent-blue-700"
-							type="checkbox"
-							{...register("requestJSContact")}
-						/>
-						<label className="text-zinc-300" htmlFor="requestJSContact">
+				<Flex gap="0" style={{ position: "relative" }}>
+					<TextField.Root
+						size="3"
+						placeholder={placeholders[selected]}
+						disabled={isLoading}
+						{...register("target", {
+							required: true,
+							onChange: () => {
+								if (onChange != undefined)
+									void onChange({
+										target: getValues("target"),
+										targetType: retrieveTargetType(null),
+									});
+							},
+						})}
+						style={{
+							borderTopRightRadius: 0,
+							borderBottomRightRadius: 0,
+							border: "1px solid var(--gray-7)",
+							borderRight: "none",
+							boxShadow: "none",
+							flex: 1,
+						}}
+					>
+						<TextField.Slot side="left">
+							<IconButton
+								size="1"
+								variant="ghost"
+								type="submit"
+								disabled={isLoading}
+								tabIndex={-1}
+								style={{ cursor: isLoading ? "not-allowed" : "pointer" }}
+							>
+								{isLoading ? (
+									<ReloadIcon className="animate-spin" width="16" height="16" />
+								) : (
+									<MagnifyingGlassIcon width="16" height="16" />
+								)}
+							</IconButton>
+						</TextField.Slot>
+					</TextField.Root>
+
+					<Select.Root
+						value={selected}
+						onValueChange={(value) => {
+							setSelected(value as SimplifiedTargetType | "auto");
+
+							if (onChange != undefined)
+								void onChange({
+									target: getValues("target"),
+									targetType: retrieveTargetType(value),
+								});
+						}}
+						disabled={isLoading}
+						size="3"
+					>
+						<Select.Trigger
+							style={{
+								borderTopLeftRadius: 0,
+								borderBottomLeftRadius: 0,
+
+								minWidth: "150px",
+							}}
+						>
+							{selected == "auto" ? (
+								detectedType.isJust ? (
+									<Text>Auto ({targetShortNames[detectedType.value]})</Text>
+								) : (
+									objectNames["auto"]
+								)
+							) : (
+								<Flex align="center" gap="2">
+									<LockClosedIcon width="14" height="14" />
+									{objectNames[selected]}
+								</Flex>
+							)}
+						</Select.Trigger>
+
+						<Select.Content position="popper">
+							{Object.entries(objectNames).map(([key, value]) => (
+								<Select.Item key={key} value={key}>
+									<Flex
+										align="center"
+										justify="between"
+										gap="2"
+										style={{ width: "100%" }}
+									>
+										{value}
+									</Flex>
+								</Select.Item>
+							))}
+						</Select.Content>
+					</Select.Root>
+				</Flex>
+
+				<Flex pl="3" gapX="5" gapY="2" wrap="wrap">
+					<Flex asChild align="center" gap="2">
+						<Text as="label" size="2">
+							<Controller
+								name="requestJSContact"
+								control={control}
+								render={({ field }) => (
+									<Checkbox
+										checked={field.value}
+										onCheckedChange={field.onChange}
+									/>
+								)}
+							/>
 							Request JSContact
-						</label>
-					</div>
-					<div className="whitespace-nowrap">
-						<input
-							className="mr-1 ml-2 bg-zinc-500 text-inherit accent-blue-700"
-							type="checkbox"
-							{...register("followReferral")}
-						/>
-						<label className="text-zinc-300" htmlFor="followReferral">
+						</Text>
+					</Flex>
+					<Flex asChild align="center" gap="2">
+						<Text as="label" size="2">
+							<Controller
+								name="followReferral"
+								control={control}
+								render={({ field }) => (
+									<Checkbox
+										checked={field.value}
+										onCheckedChange={field.onChange}
+									/>
+								)}
+							/>
 							Follow referral to registrar&apos;s RDAP record
-						</label>
-					</div>
-				</div>
-			</div>
+						</Text>
+					</Flex>
+				</Flex>
+			</Flex>
 		</form>
 	);
 };

@@ -1,17 +1,19 @@
 import type { FunctionComponent, ReactNode } from "react";
 import React from "react";
-import Property from "@/components/common/Property";
+import { Text, Box, DataList } from "@radix-ui/themes";
 
 const PropertyListItem: FunctionComponent<{
 	title: string;
 	children: string;
 }> = ({ title, children }) => {
 	return (
-		<li>
-			<span className="dashed" title={title}>
-				{children}
-			</span>
-		</li>
+		<Box asChild>
+			<li>
+				<Text className="dashed" title={title} size="2">
+					{children}
+				</Text>
+			</li>
+		</Box>
 	);
 };
 
@@ -20,15 +22,30 @@ type PropertyListProps = {
 	children: ReactNode;
 };
 
+/**
+ * PropertyList displays a labeled list of items (not key-value pairs).
+ * Uses DataList.Item for the label, and renders children as a bulleted list.
+ */
 const PropertyList: FunctionComponent<PropertyListProps> & {
 	Item: typeof PropertyListItem;
 } = ({ title, children }) => {
 	return (
-		<Property title={title}>
-			<ul key={2} className="list-disc">
-				{children}
-			</ul>
-		</Property>
+		<DataList.Item>
+			<DataList.Label>{title}</DataList.Label>
+			<DataList.Value>
+				<Box asChild>
+					<ul
+						style={{
+							listStyleType: "disc",
+							paddingLeft: "1.25rem",
+							margin: 0,
+						}}
+					>
+						{children}
+					</ul>
+				</Box>
+			</DataList.Value>
+		</DataList.Item>
 	);
 };
 
