@@ -796,7 +796,7 @@ const TypeValidators = new Map<
         const octet = parseInt(octets[i] ?? "", 10);
         if (isNaN(octet) || octet < 0 || octet > 255) {
           return Promise.resolve(
-            `Invalid IPv4 address: octet ${i + 1} (${octets[i]}) must be 0-255`
+            `Invalid IPv4 address: octet ${i + 1} (${octets[i] ?? 'undefined'}) must be 0-255`
           );
         }
       }

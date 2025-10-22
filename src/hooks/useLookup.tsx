@@ -212,7 +212,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
 
   async function getAndParse<T>(
     url: string,
-    schema: ZodSchema
+    schema: ZodSchema<T>
   ): Promise<Result<T, Error>> {
     const response = await fetch(url);
 
@@ -366,7 +366,6 @@ const useLookup = (warningHandler?: WarningHandler) => {
             )
           );
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const data = await response.json();
 
         // Try each schema until one works
@@ -381,7 +380,6 @@ const useLookup = (warningHandler?: WarningHandler) => {
         );
       }
       case "json": {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const data = JSON.parse(target);
         for (const schema of schemas) {
           const result = schema.safeParse(data);

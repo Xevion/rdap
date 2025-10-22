@@ -134,7 +134,7 @@ export function ipv6InCIDR(ip: string, cidr: string): boolean {
     const mask = (maxMask << BigInt(128 - prefixLen)) & maxMask;
 
     return (ipInt & mask) === (rangeInt & mask);
-  } catch (e) {
+  } catch {
     return false;
   }
 }

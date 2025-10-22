@@ -1,10 +1,10 @@
-import type { FunctionComponent, ReactFragment, ReactNode } from "react";
+import type { FunctionComponent, ReactNode } from "react";
 import React from "react";
 import clsx from "clsx";
 
 type PropertyProps = {
-  title: string | ReactNode | ReactFragment;
-  children: string | ReactNode | ReactFragment;
+  title: string | ReactNode;
+  children: string | ReactNode;
   titleClass?: string;
   valueClass?: string;
 };
