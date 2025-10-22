@@ -28,7 +28,8 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
 					<Flex
 						justify="between"
 						align="center"
-						p="3"
+						px="3"
+						pb="3"
 						style={{
 							borderBottom: "1px solid var(--gray-a5)",
 						}}
