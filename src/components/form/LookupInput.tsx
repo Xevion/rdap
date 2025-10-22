@@ -3,6 +3,7 @@ import type { FunctionComponent } from "react";
 import { Fragment, useState } from "react";
 import { onPromise, preventDefault } from "@/helpers";
 import type { SimplifiedTargetType, SubmitProps, TargetType } from "@/types";
+import { TargetTypeEnum } from "@/schema";
 import {
 	CheckIcon,
 	ChevronUpDownIcon,
@@ -109,7 +110,9 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 		// 'auto' means 'do whatever' so we return null.
 		if (value == "auto") return null;
 
-		return value as TargetType;
+		// Validate the value is a valid TargetType
+		const result = TargetTypeEnum.safeParse(value);
+		return result.success ? result.data : null;
 	}
 
 	const searchIcon = (
@@ -250,7 +253,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 											<button
 												onClick={(e) => {
 													e.preventDefault();
-													console.log("TODO: Show Help Explanation");
+													// TODO: Show Help Explanation
 												}}
 												className="absolute inset-y-0 left-0 flex items-center pl-4 text-lg font-bold opacity-20 hover:animate-pulse"
 											>

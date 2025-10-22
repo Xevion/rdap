@@ -27,7 +27,6 @@
 		"@swc/helpers": "^0.5.11",
 		"clsx": "^2.1.1",
 		"date-fns": "^4.1.0",
-		"immutability-helper": "^3.1.1",
 		"next": "^15.5.6",
 		"react": "19.2.0",
 		"react-dom": "19.2.0",
@@ -64,7 +63,6 @@
 		"prettier-plugin-tailwindcss": "^0.7.1",
 		"semantic-release": "^24.0.0",
 		"tailwindcss": "^4.1.15",
-		"type-fest": "^5.1.0",
 		"typescript": "^5.9.3",
 		"vitest": "^3.2.4"
 	},

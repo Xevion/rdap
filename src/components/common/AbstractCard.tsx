@@ -47,7 +47,7 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
 											.writeText(JSON.stringify(data, null, 4))
 											.then(
 												() => {
-													console.log("Copied to clipboard.");
+													// Successfully copied to clipboard
 												},
 												(err) => {
 													if (err instanceof Error)

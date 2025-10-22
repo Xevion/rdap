@@ -37,9 +37,13 @@ const useLookup = (warningHandler?: WarningHandler) => {
 	 * A reference to the registry data, which is used to cache the registry data in memory.
 	 * This uses TargetType as the key, meaning v4/v6 IP/CIDR lookups are differentiated.
 	 */
-	const registryDataRef = useRef<Record<RootRegistryType, Register | null>>(
-		{} as Record<RootRegistryType, Register>
-	);
+	const registryDataRef = useRef<Record<RootRegistryType, Register | null>>({
+		autnum: null,
+		domain: null,
+		ip4: null,
+		ip6: null,
+		entity: null,
+	});
 
 	const [error, setError] = useState<string | null>(null);
 	const [target, setTarget] = useState<string>("");
@@ -175,12 +179,6 @@ const useLookup = (warningHandler?: WarningHandler) => {
 
 			const registryUri = RootRegistryEnum.safeParse(uriType.value);
 			if (!registryUri.success) return;
-
-			console.log({
-				uriType: uriType.value,
-				registryData: registryDataRef.current,
-				registryUri: registryUri.data,
-			});
 			if (registryDataRef.current[registryUri.data] != null) return;
 
 			try {
@@ -210,8 +208,6 @@ const useLookup = (warningHandler?: WarningHandler) => {
 					const path = issue.path.map((value) => value.toString()).join(".");
 					return `${path}: ${issue.message}`;
 				});
-
-				console.log(flatErrors);
 
 				// combine them all, wrap them in a new error, and return it
 				return Result.err(

@@ -1,9 +1,8 @@
 import type { SyntheticEvent } from "react";
-import type { Entries } from "type-fest";
 
 declare global {
 	interface ObjectConstructor {
-		entries<T extends object>(o: T): Entries<T>;
+		entries<T extends object>(o: T): [keyof T, T[keyof T]][];
 	}
 }
 
