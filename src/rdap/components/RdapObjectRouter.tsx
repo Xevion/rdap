@@ -15,7 +15,11 @@ export type ObjectProps = {
 	queryTimestamp?: Date;
 };
 
-const Generic: FunctionComponent<ObjectProps> = ({ data, url, queryTimestamp }: ObjectProps) => {
+const RdapObjectRouter: FunctionComponent<ObjectProps> = ({
+	data,
+	url,
+	queryTimestamp,
+}: ObjectProps) => {
 	const objectClassName = data.objectClassName;
 
 	switch (objectClassName) {
@@ -38,4 +42,4 @@ const Generic: FunctionComponent<ObjectProps> = ({ data, url, queryTimestamp }: 
 	}
 };
 
-export default Generic;
+export default RdapObjectRouter;

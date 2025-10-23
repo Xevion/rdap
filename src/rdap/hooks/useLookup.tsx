@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useDebouncedValue } from "@mantine/hooks";
 import type { SubmitProps, TargetType } from "@/rdap/schemas";
 import { RootRegistryEnum } from "@/rdap/schemas";
-import type { ParsedGeneric } from "@/rdap/components/Generic";
+import type { ParsedGeneric } from "@/rdap/components/RdapObjectRouter";
 import { Maybe, Result } from "true-myth";
 import { loadBootstrap, getRegistry } from "@/rdap/services/registry";
 import {
@@ -11,7 +11,7 @@ import {
 	generateValidationWarning,
 	generateBootstrapWarning,
 } from "@/rdap/services/type-detection";
-import { executeRdapQuery, HttpSecurityError } from "@/rdap/services/rdap-query";
+import { executeRdapQuery, HttpSecurityError } from "@/rdap/services/query";
 
 export type WarningHandler = (warning: { message: string }) => void;
 export type UrlUpdateHandler = (target: string, manuallySelectedType: TargetType | null) => void;

@@ -2,7 +2,7 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
-import Generic from "@/rdap/components/Generic";
+import RdapObjectRouter from "@/rdap/components/RdapObjectRouter";
 import type { MetaParsedGeneric } from "@/rdap/hooks/useLookup";
 import useLookup from "@/rdap/hooks/useLookup";
 import LookupInput from "@/rdap/components/LookupInput";
@@ -12,7 +12,7 @@ import { Maybe } from "true-myth";
 import { Flex, Container, Section, Text, Link, IconButton } from "@radix-ui/themes";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
-import { serializeQueryToUrl, deserializeUrlToQuery, buildShareableUrl } from "@/lib/url-utils";
+import { serializeQueryToUrl, deserializeUrlToQuery, buildShareableUrl } from "@/lib/urls";
 import type { TargetType } from "@/rdap/schemas";
 
 const Index: NextPage = () => {
@@ -172,7 +172,7 @@ const Index: NextPage = () => {
 							/>
 						) : null}
 						{response.isJust ? (
-							<Generic
+							<RdapObjectRouter
 								url={response.value.url}
 								data={response.value.data}
 								queryTimestamp={response.value.completeTime}

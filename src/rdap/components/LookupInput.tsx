@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import type { FunctionComponent } from "react";
 import { useState, useEffect, useRef } from "react";
-import { onPromise, preventDefault } from "@/lib/utils";
+import { onPromise, preventDefault } from "@/lib/misc";
 import type { SimplifiedTargetType, SubmitProps, TargetType } from "@/rdap/schemas";
 import { TargetTypeEnum } from "@/rdap/schemas";
 import { MagnifyingGlassIcon, ReloadIcon, LockClosedIcon } from "@radix-ui/react-icons";

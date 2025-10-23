@@ -7,9 +7,9 @@ import {
 } from "@/rdap/schemas";
 import { Result } from "true-myth";
 import { loadBootstrap } from "@/rdap/services/registry";
-import { getRegistryURL } from "@/rdap/services/url-resolver";
-import { getAndParse } from "@/rdap/services/rdap-api";
-import type { ParsedGeneric } from "@/rdap/components/Generic";
+import { getRegistryURL } from "@/rdap/services/resolver";
+import { getAndParse } from "@/rdap/services/api";
+import type { ParsedGeneric } from "@/rdap/components/RdapObjectRouter";
 
 // An array of schemas to try and parse unknown JSON data with.
 const schemas = [DomainSchema, AutonomousNumberSchema, IpNetworkSchema, EntitySchema];

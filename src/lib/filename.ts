@@ -1,4 +1,4 @@
-import type { ParsedGeneric } from "@/rdap/components/Generic";
+import type { ParsedGeneric } from "@/rdap/components/RdapObjectRouter";
 
 /**
  * Attempts to convert an IP range to CIDR notation

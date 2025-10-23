@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { serializeQueryToUrl, deserializeUrlToQuery, buildShareableUrl } from "@/lib/url-utils";
+import { serializeQueryToUrl, deserializeUrlToQuery, buildShareableUrl } from "@/lib/urls";
 
 describe("URL Utilities", () => {
 	describe("serializeQueryToUrl", () => {

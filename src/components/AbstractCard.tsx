@@ -4,8 +4,8 @@ import { useBoolean } from "usehooks-ts";
 import { Link2Icon, CodeIcon, DownloadIcon } from "@radix-ui/react-icons";
 import { Card, Flex, Box, IconButton, Code, Tooltip } from "@radix-ui/themes";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
-import type { ParsedGeneric } from "@/rdap/components/Generic";
-import { generateDownloadFilename } from "@/utils/generateFilename";
+import type { ParsedGeneric } from "@/rdap/components/RdapObjectRouter";
+import { generateDownloadFilename } from "@/lib/filename";
 import CopyButton from "@/components/CopyButton";
 
 type AbstractCardProps = {

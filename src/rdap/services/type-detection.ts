@@ -1,7 +1,7 @@
 import type { Register, RootRegistryType, TargetType } from "@/rdap/schemas";
 import { getType, validateInputForType } from "@/rdap/utils";
 import type { Result } from "true-myth";
-import { truncated } from "@/lib/utils";
+import { truncated } from "@/lib/misc";
 
 /**
  * Detect the target type for a given input string.
