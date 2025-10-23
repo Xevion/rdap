@@ -3,9 +3,18 @@ import { Result } from "true-myth";
 
 /**
  * Fetch and parse RDAP data from a URL
+ * @param url - The URL to fetch
+ * @param schema - The Zod schema to validate the response
+ * @param followRedirects - Whether to automatically follow HTTP redirects (default: false)
  */
-export async function getAndParse<T>(url: string, schema: ZodSchema<T>): Promise<Result<T, Error>> {
-	const response = await fetch(url);
+export async function getAndParse<T>(
+	url: string,
+	schema: ZodSchema<T>,
+	followRedirects = false
+): Promise<Result<T, Error>> {
+	const response = await fetch(url, {
+		redirect: followRedirects ? "follow" : "manual",
+	});
 
 	if (response.status === 200) {
 		const result = schema.safeParse(await response.json());

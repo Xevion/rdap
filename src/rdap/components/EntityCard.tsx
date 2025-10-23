@@ -5,7 +5,7 @@ import CopyButton from "@/components/CopyButton";
 import StatusBadge from "@/components/StatusBadge";
 import AbstractCard from "@/components/AbstractCard";
 import Property from "@/components/Property";
-import VCardDisplay from "@/rdap/components/VCardDisplay";
+import ContactDisplay from "@/rdap/components/ContactDisplay";
 import Events from "@/rdap/components/Events";
 import LinksSection from "@/rdap/components/LinksSection";
 import RemarksSection from "@/rdap/components/RemarksSection";
@@ -102,9 +102,9 @@ const EntityCard: FunctionComponent<EntityCardProps> = ({ data, url }: EntityCar
 						</DataList.Value>
 					</DataList.Item>
 				)}
-				{data.vcardArray && (
+				{(data.vcardArray || data.jscard) && (
 					<Property title="Contact Information">
-						<VCardDisplay vcardArray={data.vcardArray} />
+						<ContactDisplay entity={data} />
 					</Property>
 				)}
 				{data.entities && data.entities.length > 0 && (

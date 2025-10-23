@@ -2,7 +2,7 @@ import type { FunctionComponent } from "react";
 import React from "react";
 import type { Entity, RdapStatusType } from "@/rdap/schemas";
 import { Box, Flex, Badge, Text, Code, DataList, Table } from "@radix-ui/themes";
-import VCardDisplay from "@/rdap/components/VCardDisplay";
+import ContactDisplay from "@/rdap/components/ContactDisplay";
 import CopyButton from "@/components/CopyButton";
 import StatusBadge from "@/components/StatusBadge";
 
@@ -84,9 +84,9 @@ const EntitiesSection: FunctionComponent<EntitiesSectionProps> = ({ entities }) 
 								)}
 							</DataList.Root>
 
-							{entity.vcardArray && (
+							{(entity.vcardArray || entity.jscard) && (
 								<Flex direction="column" gap="2">
-									<VCardDisplay vcardArray={entity.vcardArray} />
+									<ContactDisplay entity={entity} />
 								</Flex>
 							)}
 

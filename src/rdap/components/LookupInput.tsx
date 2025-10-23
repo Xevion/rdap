@@ -160,15 +160,15 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 						onFocus={() => {
 							isFocusedRef.current = true;
 						}}
-						onBlur={() => {
-							// Don't clear focus state if we're loading (input is being disabled)
-							// so we can restore focus when loading completes
-							if (!isLoading) {
-								isFocusedRef.current = false;
-							}
-						}}
 						{...register("target", {
 							required: true,
+							onBlur: () => {
+								// Don't clear focus state if we're loading (input is being disabled)
+								// so we can restore focus when loading completes
+								if (!isLoading) {
+									isFocusedRef.current = false;
+								}
+							},
 							onChange: () => {
 								const targetValue = getValues("target");
 								const oldIsEmpty = inputValue.trim() === "";

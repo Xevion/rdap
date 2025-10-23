@@ -3,10 +3,19 @@ import { getCachedRegistry } from "@/rdap/services/registry";
 import { domainMatchPredicate, getBestURL } from "@/rdap/utils";
 import { ipv4InCIDR, ipv6InCIDR, asnInRange } from "@/lib/network";
 
+export interface URLQueryParams {
+	jsContact?: boolean;
+	followReferral?: boolean;
+}
+
 /**
  * Resolve the RDAP URL for a given registry type and lookup target
  */
-export function getRegistryURL(type: RootRegistryType, lookupTarget: string): string {
+export function getRegistryURL(
+	type: RootRegistryType,
+	lookupTarget: string,
+	queryParams?: URLQueryParams
+): string {
 	const bootstrap = getCachedRegistry(type);
 	if (bootstrap == null)
 		throw new Error(`Cannot acquire RDAP URL without bootstrap data for ${type} lookup.`);
@@ -82,5 +91,17 @@ export function getRegistryURL(type: RootRegistryType, lookupTarget: string): st
 	// ip4 and ip6 both use the 'ip' endpoint in RDAP
 	const rdapPath = type === "ip4" || type === "ip6" ? "ip" : type;
 
-	return `${url}${rdapPath}/${lookupTarget}`;
+	// Build query parameters string
+	const params = new URLSearchParams();
+	if (queryParams?.jsContact) {
+		params.append("jsContact", "1");
+	}
+	if (queryParams?.followReferral) {
+		params.append("followReferral", "1");
+	}
+
+	const queryString = params.toString();
+	const baseUrl = `${url}${rdapPath}/${lookupTarget}`;
+
+	return queryString ? `${baseUrl}?${queryString}` : baseUrl;
 }

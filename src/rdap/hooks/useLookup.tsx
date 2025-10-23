@@ -79,7 +79,9 @@ const useLookup = (warningHandler?: WarningHandler) => {
 	}, [uriType, warningHandler]);
 
 	async function submitInternal(
-		target: string
+		target: string,
+		requestJSContact: boolean,
+		followReferral: boolean
 	): Promise<Result<{ data: ParsedGeneric; url: string }, Error>> {
 		if (target == null || target.length == 0)
 			return Result.err(new Error("A target must be given in order to execute a lookup."));
@@ -115,25 +117,28 @@ const useLookup = (warningHandler?: WarningHandler) => {
 			targetType = detectedType.value;
 		}
 
+		// Prepare query parameters for RDAP requests
+		const queryParams = { jsContact: requestJSContact, followReferral };
+
 		switch (targetType) {
 			// Block scoped case to allow url const reuse
 			case "ip4": {
 				await loadBootstrap("ip4");
-				const url = getRegistryURL(targetType, target);
-				const result = await getAndParse<IpNetwork>(url, IpNetworkSchema);
+				const url = getRegistryURL(targetType, target, queryParams);
+				const result = await getAndParse<IpNetwork>(url, IpNetworkSchema, followReferral);
 				if (result.isErr) return Result.err(result.error);
 				return Result.ok({ data: result.value, url });
 			}
 			case "ip6": {
 				await loadBootstrap("ip6");
-				const url = getRegistryURL(targetType, target);
-				const result = await getAndParse<IpNetwork>(url, IpNetworkSchema);
+				const url = getRegistryURL(targetType, target, queryParams);
+				const result = await getAndParse<IpNetwork>(url, IpNetworkSchema, followReferral);
 				if (result.isErr) return Result.err(result.error);
 				return Result.ok({ data: result.value, url });
 			}
 			case "domain": {
 				await loadBootstrap("domain");
-				const url = getRegistryURL(targetType, target);
+				const url = getRegistryURL(targetType, target, queryParams);
 
 				// HTTP
 				if (url.startsWith("http://") && url != repeatableRef.current) {
@@ -146,23 +151,32 @@ const useLookup = (warningHandler?: WarningHandler) => {
 						)
 					);
 				}
-				const result = await getAndParse<Domain>(url, DomainSchema);
+				const result = await getAndParse<Domain>(url, DomainSchema, followReferral);
 				if (result.isErr) return Result.err(result.error);
 
 				return Result.ok({ data: result.value, url });
 			}
 			case "autnum": {
 				await loadBootstrap("autnum");
-				const url = getRegistryURL(targetType, target);
-				const result = await getAndParse<AutonomousNumber>(url, AutonomousNumberSchema);
+				const url = getRegistryURL(targetType, target, queryParams);
+				const result = await getAndParse<AutonomousNumber>(
+					url,
+					AutonomousNumberSchema,
+					followReferral
+				);
 				if (result.isErr) return Result.err(result.error);
 				return Result.ok({ data: result.value, url });
 			}
 			case "tld": {
 				// remove the leading dot
 				const value = target.startsWith(".") ? target.slice(1) : target;
-				const url = `https://root.rdap.org/domain/${value}`;
-				const result = await getAndParse<Domain>(url, DomainSchema);
+				const params = new URLSearchParams();
+				if (requestJSContact) params.append("jsContact", "1");
+				if (followReferral) params.append("followReferral", "1");
+				const queryString = params.toString();
+				const baseUrl = `https://root.rdap.org/domain/${value}`;
+				const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
+				const result = await getAndParse<Domain>(url, DomainSchema, followReferral);
 				if (result.isErr) return Result.err(result.error);
 				return Result.ok({ data: result.value, url });
 			}
@@ -204,10 +218,14 @@ const useLookup = (warningHandler?: WarningHandler) => {
 		}
 	}
 
-	async function submit({ target }: SubmitProps): Promise<Maybe<MetaParsedGeneric>> {
+	async function submit({
+		target,
+		requestJSContact,
+		followReferral,
+	}: SubmitProps): Promise<Maybe<MetaParsedGeneric>> {
 		try {
 			// target is already set in state, but it's also provided by the form callback, so we'll use it.
-			const response = await submitInternal(target);
+			const response = await submitInternal(target, requestJSContact, followReferral);
 
 			if (response.isErr) {
 				setError(response.error.message);
