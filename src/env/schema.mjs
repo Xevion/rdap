@@ -7,6 +7,8 @@ import { z } from "zod";
  */
 export const serverSchema = z.object({
 	NODE_ENV: z.enum(["development", "test", "production"]),
+	// PostHog source map upload configuration (optional, only needed for production builds)
+	POSTHOG_PERSONAL_API_KEY: z.string().optional(),
 });
 
 /**
@@ -16,6 +18,7 @@ export const serverSchema = z.object({
  */
 export const serverEnv = {
 	NODE_ENV: process.env.NODE_ENV,
+	POSTHOG_PERSONAL_API_KEY: process.env.POSTHOG_PERSONAL_API_KEY,
 };
 
 /**
@@ -25,6 +28,8 @@ export const serverEnv = {
  */
 export const clientSchema = z.object({
 	// NEXT_PUBLIC_CLIENTVAR: z.string(),
+	NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
+	NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
 });
 
 /**
@@ -35,4 +40,6 @@ export const clientSchema = z.object({
  */
 export const clientEnv = {
 	// NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+	NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
+	NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
 };

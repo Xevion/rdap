@@ -3,6 +3,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { CheckIcon, ClipboardIcon } from "@radix-ui/react-icons";
 import type { IconButtonProps } from "@radix-ui/themes";
 import { IconButton, Tooltip } from "@radix-ui/themes";
+import { useTelemetry } from "@/contexts/TelemetryContext";
 
 /**
  * Duration in milliseconds for how long the "copied" state persists
@@ -64,6 +65,7 @@ const CopyButton: FunctionComponent<CopyButtonProps> = ({
 	const [copied, setCopied] = useState(false);
 	const [tooltipOpen, setTooltipOpen] = useState(false);
 	const forceOpenRef = useRef(false);
+	const { track } = useTelemetry();
 
 	// Consolidated timer effect: Reset copied state, tooltip, and force-open flag
 	useEffect(() => {
@@ -85,12 +87,22 @@ const CopyButton: FunctionComponent<CopyButtonProps> = ({
 		navigator.clipboard.writeText(value).then(
 			() => {
 				setCopied(true);
+
+				// Track copy action
+				track({
+					name: "user_interaction",
+					properties: {
+						action: "copy_button",
+						component: "CopyButton",
+						value: value.length, // Track length instead of actual value for privacy
+					},
+				});
 			},
 			(err) => {
 				console.error("Failed to copy to clipboard:", err);
 			}
 		);
-	}, [value]);
+	}, [value, track]);
 
 	const handleTooltipOpenChange = useCallback((open: boolean) => {
 		// Don't allow the tooltip to close if we're in the forced-open period

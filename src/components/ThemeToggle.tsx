@@ -4,6 +4,7 @@ import { useTheme } from "next-themes";
 import { IconButton } from "@radix-ui/themes";
 import { MoonIcon, SunIcon, DesktopIcon } from "@radix-ui/react-icons";
 import { useEffect, useState, type ReactElement } from "react";
+import { useTelemetry } from "@/contexts/TelemetryContext";
 
 type Theme = "light" | "dark" | "system";
 
@@ -21,6 +22,7 @@ const isTheme = (value: string | undefined): value is Theme => {
 
 export const ThemeToggle = () => {
 	const { theme, setTheme } = useTheme();
+	const { track } = useTelemetry();
 	const [mounted, setMounted] = useState(false);
 
 	// Avoid hydration mismatch by only rendering after mount
@@ -36,6 +38,16 @@ export const ThemeToggle = () => {
 	const { icon, next } = THEME_CONFIG[currentTheme];
 
 	const toggleTheme = () => {
+		// Track theme change
+		track({
+			name: "user_interaction",
+			properties: {
+				action: "theme_toggle",
+				component: "ThemeToggle",
+				value: next,
+			},
+		});
+
 		setTheme(next);
 	};
 

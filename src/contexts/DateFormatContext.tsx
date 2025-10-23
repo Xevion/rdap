@@ -1,5 +1,6 @@
 import type { FunctionComponent, ReactNode } from "react";
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { useTelemetry } from "@/telemetry";
 
 type DateFormat = "relative" | "absolute";
 
@@ -13,6 +14,8 @@ const DateFormatContext = createContext<DateFormatContextType | undefined>(undef
 const STORAGE_KEY = "global-date-format-preference";
 
 export const DateFormatProvider: FunctionComponent<{ children: ReactNode }> = ({ children }) => {
+	const { track } = useTelemetry();
+
 	const [format, setFormat] = useState<DateFormat>(() => {
 		// Initialize from localStorage on client side
 		if (typeof window !== "undefined") {
@@ -30,8 +33,22 @@ export const DateFormatProvider: FunctionComponent<{ children: ReactNode }> = ({
 	}, [format]);
 
 	const toggleFormat = useCallback(() => {
-		setFormat((current) => (current === "relative" ? "absolute" : "relative"));
-	}, []);
+		setFormat((current) => {
+			const newFormat = current === "relative" ? "absolute" : "relative";
+
+			// Track date format change
+			track({
+				name: "user_interaction",
+				properties: {
+					action: "date_format_change",
+					component: "DateFormatProvider",
+					value: newFormat,
+				},
+			});
+
+			return newFormat;
+		});
+	}, [track]);
 
 	return (
 		<DateFormatContext.Provider value={{ format, toggleFormat }}>

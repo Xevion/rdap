@@ -169,6 +169,14 @@ To self-host:
 pnpm build
 ```
 
+## Privacy & Telemetry
+
+The hosted demo at [rdap.xevion.dev][live-demo] collects optional telemetry to improve the service. Self-hosted deployments have no telemetry by default.
+
+**What's tracked:** Page views, query metadata (type, success/failure, timing), user interactions, and errors.
+
+**Privacy protections:** Successful query targets are never logged—only the query type and timing. Failed queries may include targets for debugging. Copy actions track text length only.
+
 ## Contributing
 
 Issues and pull requests are welcome! This project uses:

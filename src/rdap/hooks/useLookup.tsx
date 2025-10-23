@@ -12,6 +12,7 @@ import {
 	generateBootstrapWarning,
 } from "@/rdap/services/type-detection";
 import { executeRdapQuery, HttpSecurityError } from "@/rdap/services/query";
+import { useTelemetry } from "@/contexts/TelemetryContext";
 
 export type WarningHandler = (warning: { message: string }) => void;
 export type UrlUpdateHandler = (target: string, manuallySelectedType: TargetType | null) => void;
@@ -32,6 +33,8 @@ const useLookup = (warningHandler?: WarningHandler, urlUpdateHandler?: UrlUpdate
 
 	// Used to allow repeatable lookups when weird errors happen.
 	const repeatableRef = useRef<string>("");
+
+	const { track } = useTelemetry();
 
 	const getTypeEasy = useCallback(async (target: string): Promise<Result<TargetType, Error>> => {
 		return detectTargetType(target, getRegistry);
@@ -112,12 +115,65 @@ const useLookup = (warningHandler?: WarningHandler, urlUpdateHandler?: UrlUpdate
 			targetType = detectedType.value;
 		}
 
+		// Track query start
+		const startTime = performance.now();
+
 		// Execute the RDAP query using the extracted service
 		const result = await executeRdapQuery(target, targetType, {
 			requestJSContact,
 			followReferral,
 			repeatableUrl: repeatableRef.current,
 		});
+
+		// Calculate duration
+		const duration = performance.now() - startTime;
+
+		// Track query result
+		if (result.isOk) {
+			track({
+				name: "rdap_query",
+				properties: {
+					targetType,
+					success: true,
+					duration,
+				},
+			});
+		} else {
+			// Determine error type
+			let errorType = "unknown_error";
+			if (result.error instanceof HttpSecurityError) {
+				errorType = "http_security_error";
+			} else if (result.error.message.includes("network")) {
+				errorType = "network_error";
+			} else if (result.error.message.includes("validation")) {
+				errorType = "validation_error";
+			}
+
+			track({
+				name: "rdap_query",
+				properties: {
+					targetType,
+					target,
+					success: false,
+					errorType,
+					duration,
+				},
+			});
+
+			// Also track detailed error
+			track({
+				name: "error",
+				properties: {
+					errorType: "rdap_query_error",
+					message: result.error.message,
+					stack: result.error.stack,
+					context: {
+						target,
+						targetType,
+					},
+				},
+			});
+		}
 
 		// Update repeatable ref if we got an HTTP security error for domain lookups
 		if (result.isErr && result.error instanceof HttpSecurityError) {
