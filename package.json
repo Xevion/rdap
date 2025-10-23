@@ -1,6 +1,6 @@
 {
 	"name": "rdap",
-	"version": "0.2.0",
+	"version": "0.9.0",
 	"private": true,
 	"scripts": {
 		"build": "next build",
@@ -13,8 +13,12 @@
 		"test": "vitest",
 		"test:ui": "vitest --ui",
 		"test:run": "vitest run --exclude '**/*.integration.test.{ts,tsx}'",
-		"test:integration": "vitest run src/rdap.integration.test.ts",
+		"test:run:coverage": "vitest run --coverage --exclude '**/*.integration.test.{ts,tsx}'",
+		"test:integration": "vitest run src/__tests__/rdap-integration.test.ts",
+		"test:integration:coverage": "vitest run --coverage src/__tests__/rdap-integration.test.ts",
 		"test:all": "vitest run",
+		"test:coverage": "vitest run --coverage",
+		"test:all:coverage": "vitest run --coverage",
 		"type-check": "tsc --noEmit",
 		"prepare": "husky install"
 	},
@@ -40,6 +44,7 @@
 		"zod": "^4.1.12"
 	},
 	"devDependencies": {
+		"@codecov/vite-plugin": "^1.9.1",
 		"@commitlint/cli": "^19.0.0",
 		"@commitlint/config-conventional": "^19.0.0",
 		"@tailwindcss/postcss": "^4.1.15",
@@ -50,7 +55,8 @@
 		"@types/react-dom": "^19.2.2",
 		"@typescript-eslint/eslint-plugin": "^8.46.2",
 		"@typescript-eslint/parser": "^8.46.2",
-		"@vitest/ui": "^3.2.4",
+		"@vitest/coverage-v8": "^4.0.1",
+		"@vitest/ui": "^4.0.1",
 		"eslint": "^9.38.0",
 		"eslint-config-next": "15.5.6",
 		"happy-dom": "^20.0.8",
@@ -61,7 +67,7 @@
 		"prettier-plugin-tailwindcss": "^0.7.1",
 		"tailwindcss": "^4.1.15",
 		"typescript": "^5.9.3",
-		"vitest": "^3.2.4"
+		"vitest": "^4.0.1"
 	},
 	"ct3aMetadata": {
 		"initVersion": "7.2.0"

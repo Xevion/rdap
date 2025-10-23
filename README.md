@@ -8,7 +8,7 @@
 [![Next.js][badge-nextjs]][nextjs]
 [![React][badge-react]][react]
 
-[badge-version]: https://img.shields.io/badge/version-0.2.0-blue
+[badge-version]: https://img.shields.io/badge/version-0.9.0-blue
 [badge-license]: https://img.shields.io/badge/license-MIT-green
 [badge-ci]: https://github.com/Xevion/rdap/actions/workflows/ci.yml/badge.svg
 [badge-codecov]: https://codecov.io/gh/Xevion/rdap/branch/master/graph/badge.svg
