@@ -1,6 +1,6 @@
 import { useForm, Controller } from "react-hook-form";
 import type { FunctionComponent } from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { onPromise, preventDefault } from "@/lib/utils";
 import type { SimplifiedTargetType, SubmitProps, TargetType } from "@/rdap/schemas";
 import { TargetTypeEnum } from "@/rdap/schemas";
@@ -97,6 +97,12 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 	const [showingPlaceholder, setShowingPlaceholder] = useState<boolean>(false);
 
 	/**
+	 * Tracks whether the input is currently focused.
+	 * Used to restore focus after loading completes.
+	 */
+	const isFocusedRef = useRef<boolean>(false);
+
+	/**
 	 * Retrieves the target type based on the provided value.
 	 * @param value - The value to retrieve the target type for.
 	 * @returns The target type as ObjectType or null.
@@ -123,6 +129,19 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 		}
 	}, [detectedType]);
 
+	/**
+	 * Restore focus to the input when loading completes.
+	 * Only refocus if the input was focused when loading started.
+	 */
+	useEffect(() => {
+		if (!isLoading && isFocusedRef.current) {
+			const inputElement = document.getElementById("search");
+			if (inputElement) {
+				inputElement.focus();
+			}
+		}
+	}, [isLoading]);
+
 	return (
 		<form
 			className="pb-2.5"
@@ -138,6 +157,16 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 						size="3"
 						placeholder={placeholders[selected]}
 						disabled={isLoading}
+						onFocus={() => {
+							isFocusedRef.current = true;
+						}}
+						onBlur={() => {
+							// Don't clear focus state if we're loading (input is being disabled)
+							// so we can restore focus when loading completes
+							if (!isLoading) {
+								isFocusedRef.current = false;
+							}
+						}}
 						{...register("target", {
 							required: true,
 							onChange: () => {
