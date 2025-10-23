@@ -11,7 +11,8 @@ export type ShareButtonProps = Omit<CopyButtonProps, "value"> & {
 
 const ShareButton: FunctionComponent<ShareButtonProps> = ({
 	url,
-	icon = <Link2Icon />,
+	icon = Link2Icon,
+	iconSize = 18,
 	tooltipText = "Copy shareable link",
 	...copyButtonProps
 }) => {
@@ -24,7 +25,15 @@ const ShareButton: FunctionComponent<ShareButtonProps> = ({
 		}
 	}
 
-	return <CopyButton {...copyButtonProps} value={url} icon={icon} tooltipText={tooltipText} />;
+	return (
+		<CopyButton
+			{...copyButtonProps}
+			value={url}
+			icon={icon}
+			iconSize={iconSize}
+			tooltipText={tooltipText}
+		/>
+	);
 };
 
 export default ShareButton;

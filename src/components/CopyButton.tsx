@@ -1,4 +1,4 @@
-import type { FunctionComponent, ReactNode } from "react";
+import type { FunctionComponent, ComponentType } from "react";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { CheckIcon, ClipboardIcon } from "@radix-ui/react-icons";
 import type { IconButtonProps } from "@radix-ui/themes";
@@ -14,6 +14,9 @@ const COPIED_STATE_DURATION_MS = 1000;
 export type ButtonSize = IconButtonProps["size"];
 export type ButtonVariant = IconButtonProps["variant"];
 export type ButtonColor = IconButtonProps["color"];
+
+// Type for icon components that accept width/height props (e.g., Radix UI icons)
+export type IconComponent = ComponentType<{ width?: string | number; height?: string | number }>;
 
 export type CopyButtonProps = {
 	/**
@@ -35,9 +38,14 @@ export type CopyButtonProps = {
 	 */
 	color?: ButtonColor | null;
 	/**
-	 * Optional custom icon to show when not copied (defaults to ClipboardIcon)
+	 * Optional custom icon component to show when not copied (defaults to ClipboardIcon)
 	 */
-	icon?: ReactNode;
+	icon?: IconComponent;
+	/**
+	 * Size for both the custom icon and checkmark icon
+	 * @default 16
+	 */
+	iconSize?: number;
 	/**
 	 * Tooltip text to show when not copied (defaults to "Copy to Clipboard")
 	 */
@@ -49,7 +57,8 @@ const CopyButton: FunctionComponent<CopyButtonProps> = ({
 	size = "1",
 	variant = "ghost",
 	color = "gray",
-	icon,
+	icon: IconComp,
+	iconSize = 16,
 	tooltipText = "Copy to Clipboard",
 }) => {
 	const [copied, setCopied] = useState(false);
@@ -91,6 +100,9 @@ const CopyButton: FunctionComponent<CopyButtonProps> = ({
 		setTooltipOpen(open);
 	}, []);
 
+	// Determine which icon component to render
+	const ActiveIcon = copied ? CheckIcon : (IconComp ?? ClipboardIcon);
+
 	return (
 		<Tooltip
 			content={copied ? "Copied!" : tooltipText}
@@ -104,7 +116,7 @@ const CopyButton: FunctionComponent<CopyButtonProps> = ({
 				aria-label={copied ? "Copied!" : tooltipText}
 				onClick={handleCopy}
 			>
-				{copied ? <CheckIcon /> : (icon ?? <ClipboardIcon />)}
+				<ActiveIcon width={iconSize} height={iconSize} />
 			</IconButton>
 		</Tooltip>
 	);
