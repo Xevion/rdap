@@ -31,9 +31,9 @@ export const ThemeToggle = () => {
 			title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
 		>
 			{theme === "light" ? (
-				<MoonIcon width="18" height="18" />
+				<MoonIcon width="22" height="22" />
 			) : (
-				<SunIcon width="18" height="18" />
+				<SunIcon width="22" height="22" />
 			)}
 		</IconButton>
 	);

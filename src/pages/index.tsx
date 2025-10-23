@@ -8,7 +8,8 @@ import LookupInput from "@/rdap/components/LookupInput";
 import ErrorCard from "@/components/ErrorCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Maybe } from "true-myth";
-import { Flex, Container, Section, Text, Link } from "@radix-ui/themes";
+import { Flex, Container, Section, Text, Link, IconButton } from "@radix-ui/themes";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
 
 const Index: NextPage = () => {
 	const { error, setTarget, setTargetType, submit, currentType } = useLookup();
@@ -56,7 +57,24 @@ const Index: NextPage = () => {
 							.xevion.dev
 						</Link>
 					</Text>
-					<ThemeToggle />
+					<Flex gap="4" align="center">
+						<IconButton
+							asChild
+							size="3"
+							variant="ghost"
+							aria-label="View on GitHub"
+							title="View on GitHub"
+						>
+							<a
+								href="https://github.com/Xevion/rdap"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								<GitHubLogoIcon width="22" height="22" />
+							</a>
+						</IconButton>
+						<ThemeToggle />
+					</Flex>
 				</nav>
 			</Flex>
 			<Container size="3" px="5">
