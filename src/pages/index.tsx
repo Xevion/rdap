@@ -1,6 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/router";
 import Generic from "@/rdap/components/Generic";
 import type { MetaParsedGeneric } from "@/rdap/hooks/useLookup";
 import useLookup from "@/rdap/hooks/useLookup";
@@ -11,11 +12,60 @@ import { Maybe } from "true-myth";
 import { Flex, Container, Section, Text, Link, IconButton } from "@radix-ui/themes";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
+import { serializeQueryToUrl, deserializeUrlToQuery, buildShareableUrl } from "@/lib/url-utils";
+import type { TargetType } from "@/rdap/schemas";
 
 const Index: NextPage = () => {
-	const { error, setTarget, setTargetType, submit, currentType } = useLookup();
+	const router = useRouter();
 	const [response, setResponse] = useState<Maybe<MetaParsedGeneric>>(Maybe.nothing());
 	const [isLoading, setLoading] = useState<boolean>(false);
+
+	// URL update handler for useLookup hook
+	const handleUrlUpdate = useCallback(
+		(target: string, manuallySelectedType: TargetType | null) => {
+			const queryString = serializeQueryToUrl(target, manuallySelectedType);
+			// Use shallow routing to update URL without page reload
+			router.push(queryString, undefined, { shallow: true });
+		},
+		[router]
+	);
+
+	const { error, target, setTarget, setTargetType, submit, currentType, manualType } = useLookup(
+		undefined,
+		handleUrlUpdate
+	);
+
+	// Parse URL parameters on mount and auto-execute query if present
+	useEffect(() => {
+		// Only run once on mount, when router is ready
+		if (!router.isReady) return;
+
+		const searchParams = new URLSearchParams(router.asPath.split("?")[1] || "");
+		const queryState = deserializeUrlToQuery(searchParams);
+
+		if (queryState) {
+			// Set the target and type from URL
+			setTarget(queryState.query);
+			if (queryState.type) {
+				setTargetType(queryState.type);
+			}
+
+			// Auto-execute the query
+			setLoading(true);
+			submit({
+				target: queryState.query,
+				requestJSContact: true,
+				followReferral: true,
+			})
+				.then(setResponse)
+				.catch((e) => {
+					console.error("Error executing query from URL:", e);
+					setResponse(Maybe.nothing());
+				})
+				.finally(() => setLoading(false));
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [router.isReady]); // Only run when router becomes ready
 
 	return (
 		<>
@@ -93,6 +143,11 @@ const Index: NextPage = () => {
 						<LookupInput
 							isLoading={isLoading}
 							detectedType={currentType}
+							shareableUrl={
+								response.isJust && target && typeof window !== "undefined"
+									? buildShareableUrl(window.location.origin, target, manualType)
+									: undefined
+							}
 							onChange={({ target, targetType }) => {
 								setTarget(target);
 								setTargetType(targetType);

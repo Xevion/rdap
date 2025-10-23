@@ -14,13 +14,14 @@ import {
 import { executeRdapQuery, HttpSecurityError } from "@/rdap/services/rdap-query";
 
 export type WarningHandler = (warning: { message: string }) => void;
+export type UrlUpdateHandler = (target: string, manuallySelectedType: TargetType | null) => void;
 export type MetaParsedGeneric = {
 	data: ParsedGeneric;
 	url: string;
 	completeTime: Date;
 };
 
-const useLookup = (warningHandler?: WarningHandler) => {
+const useLookup = (warningHandler?: WarningHandler, urlUpdateHandler?: UrlUpdateHandler) => {
 	const [error, setError] = useState<string | null>(null);
 	const [target, setTarget] = useState<string>("");
 	const [debouncedTarget] = useDebouncedValue(target, 75);
@@ -138,7 +139,15 @@ const useLookup = (warningHandler?: WarningHandler) => {
 			if (response.isErr) {
 				setError(response.error.message);
 				console.error(response.error);
-			} else setError(null);
+			} else {
+				setError(null);
+
+				// Update URL after successful query
+				// currentType is non-null only when user manually selected a type
+				if (urlUpdateHandler) {
+					urlUpdateHandler(target, currentType);
+				}
+			}
 
 			return response.isOk
 				? Maybe.just({
@@ -157,10 +166,12 @@ const useLookup = (warningHandler?: WarningHandler) => {
 
 	return {
 		error,
+		target,
 		setTarget,
 		setTargetType,
 		submit,
 		currentType: uriType,
+		manualType: currentType,
 		getType: getTypeEasy,
 	};
 };

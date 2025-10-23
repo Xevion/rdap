@@ -8,6 +8,7 @@ import { MagnifyingGlassIcon, ReloadIcon, LockClosedIcon } from "@radix-ui/react
 import { TextField, Select, Flex, IconButton, Badge } from "@radix-ui/themes";
 import type { Maybe } from "true-myth";
 import { placeholders } from "@/rdap/constants";
+import ShareButton from "@/components/ShareButton";
 
 /**
  * Props for the LookupInput component.
@@ -33,6 +34,10 @@ type LookupInputProps = {
 	 */
 	onChange?: (target: { target: string; targetType: TargetType | null }) => void | Promise<void>;
 	detectedType: Maybe<TargetType>;
+	/**
+	 * Optional shareable URL to display in the share button. Only shown when provided.
+	 */
+	shareableUrl?: string;
 };
 
 const LookupInput: FunctionComponent<LookupInputProps> = ({
@@ -40,6 +45,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 	onSubmit,
 	onChange,
 	detectedType,
+	shareableUrl,
 }: LookupInputProps) => {
 	const { register, handleSubmit, getValues } = useForm<SubmitProps>({
 		defaultValues: {
@@ -216,6 +222,11 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 								)}
 							</IconButton>
 						</TextField.Slot>
+						{shareableUrl && (
+							<TextField.Slot side="right">
+								<ShareButton url={shareableUrl} />
+							</TextField.Slot>
+						)}
 					</TextField.Root>
 
 					<Select.Root
