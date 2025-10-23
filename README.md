@@ -124,14 +124,13 @@ The development server will be available at `http://localhost:3000`.
 # Run tests
 pnpm test
 
-# Run tests with UI
-pnpm test:ui
+# Run tests with coverage
+pnpm test:coverage
 
-# Type checking
-pnpm type-check
+# Type checking and linting
+pnpm check
 
-# Linting
-pnpm lint
+# Fix linting issues
 pnpm lint:fix
 
 # Code formatting
