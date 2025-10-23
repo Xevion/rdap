@@ -14,7 +14,7 @@ type AbstractCardProps = {
 	footer?: ReactNode;
 	/** RDAP response data for download/display. When provided, enables JSON actions. */
 	data?: ParsedGeneric | object;
-	/** RDAP query URL. When provided, enables "open in new tab" button. */
+	/** RDAP query URL. When provided, enables "open RDAP URL" button. */
 	url?: string;
 	/** Query execution timestamp for filename generation */
 	queryTimestamp?: Date;
@@ -85,7 +85,7 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
 						</Flex>
 						<Flex gap="2" align="center">
 							{url != null && (
-								<Tooltip content="Open in new tab">
+								<Tooltip content="Open RDAP URL">
 									<IconButton variant="ghost" size="2" asChild>
 										<a
 											href={url}

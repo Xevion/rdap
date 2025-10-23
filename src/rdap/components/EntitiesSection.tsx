@@ -1,7 +1,7 @@
 import type { FunctionComponent } from "react";
 import React from "react";
 import type { Entity, RdapStatusType } from "@/rdap/schemas";
-import { Box, Flex, Badge, Text, Code, DataList, Table } from "@radix-ui/themes";
+import { Box, Flex, Badge, Code, DataList, Table } from "@radix-ui/themes";
 import ContactDisplay from "@/rdap/components/ContactDisplay";
 import CopyButton from "@/components/CopyButton";
 import StatusBadge from "@/components/StatusBadge";
@@ -82,6 +82,18 @@ const EntitiesSection: FunctionComponent<EntitiesSectionProps> = ({ entities }) 
 										</DataList.Value>
 									</DataList.Item>
 								)}
+
+								{entity.port43 && (
+									<DataList.Item>
+										<DataList.Label>WHOIS Server</DataList.Label>
+										<DataList.Value>
+											<Flex align="center" gap="2">
+												<Code variant="ghost">{entity.port43}</Code>
+												<CopyButton value={entity.port43} />
+											</Flex>
+										</DataList.Value>
+									</DataList.Item>
+								)}
 							</DataList.Root>
 
 							{(entity.vcardArray || entity.jscard) && (
@@ -125,16 +137,6 @@ const EntitiesSection: FunctionComponent<EntitiesSectionProps> = ({ entities }) 
 										)}
 									</Table.Body>
 								</Table.Root>
-							)}
-
-							{entity.port43 && (
-								<Flex align="center" gap="2">
-									<Text size="2" weight="medium">
-										WHOIS Server:
-									</Text>
-									<Code variant="ghost">{entity.port43}</Code>
-									<CopyButton value={entity.port43} />
-								</Flex>
 							)}
 						</Flex>
 					</Box>

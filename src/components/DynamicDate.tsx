@@ -40,8 +40,11 @@ const DynamicDate: FunctionComponent<DynamicDateProps> = ({
 		: format(date, absoluteFormatString);
 	const isoString = date.toISOString();
 
+	// Relative time element (disable time since it's already shown in the tooltip)
+	const relative = <TimeAgo title="" date={date} />;
+
 	// Get display value based on global format
-	const displayValue = dateFormat === "relative" ? <TimeAgo date={date} /> : absoluteWithTz;
+	const displayValue = dateFormat === "relative" ? relative : absoluteWithTz;
 
 	return (
 		<Tooltip
@@ -49,7 +52,7 @@ const DynamicDate: FunctionComponent<DynamicDateProps> = ({
 				<Box style={{ minWidth: "280px" }} as="span">
 					<Flex align="center" justify="between" mb="2" as="span">
 						<Text size="1">
-							<strong>Relative:</strong> <TimeAgo date={date} />
+							<strong>Relative:</strong> {relative}
 						</Text>
 					</Flex>
 					<Flex align="center" justify="between" mb="2" as="span">

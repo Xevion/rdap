@@ -1,6 +1,6 @@
 import type { FunctionComponent } from "react";
 import { Link2Icon } from "@radix-ui/react-icons";
-import CopyButton, { type CopyButtonProps } from "./CopyButton";
+import CopyButton, { type CopyButtonProps } from "@/components/CopyButton";
 
 export type ShareButtonProps = Omit<CopyButtonProps, "value"> & {
 	/**

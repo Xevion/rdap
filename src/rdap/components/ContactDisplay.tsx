@@ -1,8 +1,8 @@
 import type { FunctionComponent } from "react";
 import React from "react";
 import type { Entity } from "@/rdap/schemas";
-import VCardDisplay from "./VCardDisplay";
-import JSContactDisplay from "./JSContactDisplay";
+import VCardDisplay from "@/rdap/components/VCardDisplay";
+import JSContactDisplay from "@/rdap/components/JSContactDisplay";
 
 export type ContactDisplayProps = {
 	entity: Entity;
