@@ -7,6 +7,7 @@ import "@fontsource/ibm-plex-mono/400.css";
 import "@radix-ui/themes/styles.css";
 
 import "@/styles/globals.css";
+import { DateFormatProvider } from "@/contexts/DateFormatContext";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
 	return (
@@ -17,7 +18,9 @@ const MyApp: AppType = ({ Component, pageProps }) => {
 			scriptProps={{ "data-cfasync": "false" }}
 		>
 			<Theme accentColor="indigo" grayColor="slate" radius="medium" scaling="100%">
-				<Component {...pageProps} />
+				<DateFormatProvider>
+					<Component {...pageProps} />
+				</DateFormatProvider>
 			</Theme>
 		</ThemeProvider>
 	);

@@ -1,38 +1,74 @@
 import type { FunctionComponent } from "react";
-import { useBoolean } from "usehooks-ts";
+import { useMemo } from "react";
 import { format } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 import TimeAgo from "react-timeago";
-import { Button, Text } from "@radix-ui/themes";
+import { Box, Button, Tooltip, Text, Flex } from "@radix-ui/themes";
+import { useDateFormat } from "@/contexts/DateFormatContext";
 
 type DynamicDateProps = {
 	value: Date | number;
 	absoluteFormat?: string;
+	showTimezone?: boolean;
 };
 
 /**
- * A component for a toggleable switch between the absolute & human-relative date.
- * @param value The date to be displayed, the Date value, or
- * @param absoluteFormat Optional - the date-fns format string to use for the absolute date rendering.
+ * A timestamp component with global format preferences.
+ * Features:
+ * - Toggle between relative and absolute time formats
+ * - Global state - clicking any timestamp toggles all timestamps on the page
+ * - Tooltip shows all formats (relative, absolute, ISO) with copy buttons
+ * - Timezone support with automatic detection
+ * - Minimal, clean design
  */
-const DynamicDate: FunctionComponent<DynamicDateProps> = ({ value, absoluteFormat }) => {
-	const { value: showAbsolute, toggle: toggleFormat } = useBoolean(true);
+const DynamicDate: FunctionComponent<DynamicDateProps> = ({
+	value,
+	absoluteFormat,
+	showTimezone = true,
+}) => {
+	const { format: dateFormat, toggleFormat } = useDateFormat();
 
-	const date = new Date(value);
+	// Get user timezone
+	const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+	const date = useMemo(() => new Date(value), [value]);
+
+	// Format variants
+	const absoluteFormatString = absoluteFormat ?? "PPP 'at' p";
+	const absoluteWithTz = showTimezone
+		? formatInTimeZone(date, userTimezone, `${absoluteFormatString} (zzz)`)
+		: format(date, absoluteFormatString);
+	const isoString = date.toISOString();
+
+	// Get display value based on global format
+	const displayValue = dateFormat === "relative" ? <TimeAgo date={date} /> : absoluteWithTz;
+
 	return (
-		<Button
-			variant="ghost"
-			size="1"
-			onClick={toggleFormat}
-			style={{ padding: 0, height: "auto" }}
+		<Tooltip
+			content={
+				<Box style={{ minWidth: "280px" }} as="span">
+					<Flex align="center" justify="between" mb="2" as="span">
+						<Text size="1">
+							<strong>Relative:</strong> <TimeAgo date={date} />
+						</Text>
+					</Flex>
+					<Flex align="center" justify="between" mb="2" as="span">
+						<Text size="1">
+							<strong>Absolute:</strong> {absoluteWithTz}
+						</Text>
+					</Flex>
+					<Flex align="center" justify="between" as="span">
+						<Text size="1" style={{ wordBreak: "break-all" }}>
+							<strong>ISO:</strong> {isoString}
+						</Text>
+					</Flex>
+				</Box>
+			}
 		>
-			<Text className="dashed" title={date.toISOString()} size="2">
-				{showAbsolute ? (
-					format(date, absoluteFormat ?? "LLL do, y HH:mm:ss xxx")
-				) : (
-					<TimeAgo date={date} />
-				)}
-			</Text>
-		</Button>
+			<Button variant="ghost" size="1" onClick={toggleFormat} style={{ cursor: "pointer" }}>
+				<Text size="2">{displayValue}</Text>
+			</Button>
+		</Tooltip>
 	);
 };
 
