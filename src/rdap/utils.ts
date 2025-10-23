@@ -68,10 +68,16 @@ const TypeValidators = new Map<TargetType, (args: ValidatorArgs) => Promise<Vali
 		"ip6",
 		({ value }) => {
 			// Basic format check (hex characters, colons, optional CIDR)
+			// MUST contain at least one colon to be a valid IPv6 address
 			const match = value.match(/^([0-9a-fA-F:]+)(\/\d{1,3})?$/);
 			if (!match) return Promise.resolve(false);
 
 			const ipPart = match[1] ?? "";
+
+			// Require at least one colon (essential for IPv6 structure)
+			if (!ipPart.includes(":")) {
+				return Promise.resolve(false);
+			}
 
 			// Check for invalid characters
 			if (!/^[0-9a-fA-F:]+$/.test(ipPart)) {
@@ -82,6 +88,13 @@ const TypeValidators = new Map<TargetType, (args: ValidatorArgs) => Promise<Vali
 			const doubleColonCount = (ipPart.match(/::/g) || []).length;
 			if (doubleColonCount > 1) {
 				return Promise.resolve("Invalid IPv6 address: :: can only appear once");
+			}
+
+			// Reject invalid colon patterns (e.g., ":::")
+			// Valid patterns: "::", "a::", "::a", "a::b", etc.
+			// Invalid: ":::", "::::", single ":", etc.
+			if (ipPart === ":" || /:{3,}/.test(ipPart)) {
+				return Promise.resolve(false);
 			}
 
 			// Validate CIDR prefix if present
@@ -131,11 +144,21 @@ const TypeValidators = new Map<TargetType, (args: ValidatorArgs) => Promise<Vali
 		({ value }) => {
 			// Case-insensitive domain matching with support for multiple labels
 			// Matches: example.com, www.example.com, a.b.c.d.example.net, etc.
-			return Promise.resolve(
-				/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i.test(
-					value
-				)
-			);
+			const domainPattern =
+				/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i;
+
+			if (!domainPattern.test(value)) {
+				return Promise.resolve(false);
+			}
+
+			// Reject pure numeric domains (e.g., "1.2", "192.168")
+			// These are likely incomplete IPs, not domains
+			// Valid domains must have at least one letter somewhere
+			if (/^[\d.]+$/.test(value)) {
+				return Promise.resolve(false);
+			}
+
+			return Promise.resolve(true);
 		},
 	],
 	["registrar", () => Promise.resolve(false)],

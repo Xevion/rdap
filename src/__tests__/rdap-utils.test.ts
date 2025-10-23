@@ -404,3 +404,278 @@ describe("getType - Case sensitivity", () => {
 		}
 	});
 });
+
+describe("getType - Edge cases and false positives", () => {
+	describe("Single character inputs (should fail)", () => {
+		it("should NOT detect single hex character 'a' as IPv6", async () => {
+			const result = await getType("a", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+			if (result.isErr) {
+				expect(result.error.message).toContain("No patterns matched");
+			}
+		});
+
+		it("should NOT detect single hex character 'f' as IPv6", async () => {
+			const result = await getType("f", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect single digit '1' as any type", async () => {
+			const result = await getType("1", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect single letter 'z' as any type", async () => {
+			const result = await getType("z", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect single colon ':' as IPv6", async () => {
+			const result = await getType(":", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect single dot '.' as any type", async () => {
+			const result = await getType(".", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+	});
+
+	describe("Short hex-only strings without colons (should fail)", () => {
+		it("should NOT detect 'abc' as IPv6", async () => {
+			const result = await getType("abc", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+			if (result.isErr) {
+				expect(result.error.message).toContain("No patterns matched");
+			}
+		});
+
+		it("should NOT detect 'def' as IPv6", async () => {
+			const result = await getType("def", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect 'ff' as IPv6", async () => {
+			const result = await getType("ff", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect '1234' as IPv6", async () => {
+			const result = await getType("1234", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect 'abcdef' as IPv6", async () => {
+			const result = await getType("abcdef", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect 'deadbeef' as IPv6", async () => {
+			const result = await getType("deadbeef", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+	});
+
+	describe("Incomplete IP-like inputs (should fail)", () => {
+		it("should NOT detect '1.2' as IPv4", async () => {
+			const result = await getType("1.2", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect '1.2.3' as IPv4", async () => {
+			const result = await getType("1.2.3", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect '1.2.3.4.5' as IPv4", async () => {
+			const result = await getType("1.2.3.4.5", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect '192.168' as IPv4", async () => {
+			const result = await getType("192.168", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+	});
+
+	describe("Dot-only and dot-related edge cases (should fail)", () => {
+		it("should NOT detect '..' as any type", async () => {
+			const result = await getType("..", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect '...' as any type", async () => {
+			const result = await getType("...", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect 'a.' as domain (trailing dot without TLD)", async () => {
+			const result = await getType("a.", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect '.a' as domain (it's a TLD)", async () => {
+			const result = await getType(".a", mockGetRegistry);
+			expect(result.isOk).toBe(true);
+			if (result.isOk) {
+				expect(result.value).toBe("tld");
+			}
+		});
+	});
+
+	describe("Incomplete ASN formats (should fail)", () => {
+		it("should NOT detect 'AS' as ASN", async () => {
+			const result = await getType("AS", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect 'A1234' as ASN", async () => {
+			const result = await getType("A1234", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect 'S1234' as ASN", async () => {
+			const result = await getType("S1234", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+	});
+
+	describe("Colon-only edge cases", () => {
+		it("should NOT detect ':::' as IPv6", async () => {
+			const result = await getType(":::", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect '::::' as IPv6", async () => {
+			const result = await getType("::::", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+	});
+
+	describe("Minimal valid inputs (lenient - should pass)", () => {
+		it("should detect '::1' as IPv6 (localhost)", async () => {
+			const result = await getType("::1", mockGetRegistry);
+			expect(result.isOk).toBe(true);
+			if (result.isOk) {
+				expect(result.value).toBe("ip6");
+			}
+		});
+
+		it("should detect '::' as IPv6 (all zeros)", async () => {
+			const result = await getType("::", mockGetRegistry);
+			expect(result.isOk).toBe(true);
+			if (result.isOk) {
+				expect(result.value).toBe("ip6");
+			}
+		});
+
+		it("should detect 'a::' as IPv6", async () => {
+			const result = await getType("a::", mockGetRegistry);
+			expect(result.isOk).toBe(true);
+			if (result.isOk) {
+				expect(result.value).toBe("ip6");
+			}
+		});
+
+		it("should detect '::a' as IPv6", async () => {
+			const result = await getType("::a", mockGetRegistry);
+			expect(result.isOk).toBe(true);
+			if (result.isOk) {
+				expect(result.value).toBe("ip6");
+			}
+		});
+
+		it("should detect 'a.b' as domain (short labels)", async () => {
+			const result = await getType("a.b", mockGetRegistry);
+			expect(result.isOk).toBe(true);
+			if (result.isOk) {
+				expect(result.value).toBe("domain");
+			}
+		});
+
+		it("should detect 'AS1' as ASN (minimal ASN)", async () => {
+			const result = await getType("AS1", mockGetRegistry);
+			expect(result.isOk).toBe(true);
+			if (result.isOk) {
+				expect(result.value).toBe("autnum");
+			}
+		});
+
+		it("should detect 'as1' as ASN (lowercase minimal)", async () => {
+			const result = await getType("as1", mockGetRegistry);
+			expect(result.isOk).toBe(true);
+			if (result.isOk) {
+				expect(result.value).toBe("autnum");
+			}
+		});
+	});
+
+	describe("Boundary IPv4 tests", () => {
+		it("should detect '0.0.0.0' as IPv4", async () => {
+			const result = await getType("0.0.0.0", mockGetRegistry);
+			expect(result.isOk).toBe(true);
+			if (result.isOk) {
+				expect(result.value).toBe("ip4");
+			}
+		});
+
+		it("should detect '255.255.255.255' as IPv4", async () => {
+			const result = await getType("255.255.255.255", mockGetRegistry);
+			expect(result.isOk).toBe(true);
+			if (result.isOk) {
+				expect(result.value).toBe("ip4");
+			}
+		});
+
+		it("should detect IPv4 with /0 CIDR", async () => {
+			const result = await getType("0.0.0.0/0", mockGetRegistry);
+			expect(result.isOk).toBe(true);
+			if (result.isOk) {
+				expect(result.value).toBe("ip4");
+			}
+		});
+
+		it("should detect IPv4 with /32 CIDR", async () => {
+			const result = await getType("192.168.1.1/32", mockGetRegistry);
+			expect(result.isOk).toBe(true);
+			if (result.isOk) {
+				expect(result.value).toBe("ip4");
+			}
+		});
+	});
+
+	describe("Boundary IPv6 tests", () => {
+		it("should detect IPv6 with /0 CIDR", async () => {
+			const result = await getType("::/0", mockGetRegistry);
+			expect(result.isOk).toBe(true);
+			if (result.isOk) {
+				expect(result.value).toBe("ip6");
+			}
+		});
+
+		it("should detect IPv6 with /128 CIDR", async () => {
+			const result = await getType("::1/128", mockGetRegistry);
+			expect(result.isOk).toBe(true);
+			if (result.isOk) {
+				expect(result.value).toBe("ip6");
+			}
+		});
+	});
+
+	describe("Ambiguous hex strings (should prioritize correctly)", () => {
+		it("should NOT detect 'cafe' as IPv6 (missing colon)", async () => {
+			const result = await getType("cafe", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect 'dead' as IPv6 (missing colon)", async () => {
+			const result = await getType("dead", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+
+		it("should NOT detect 'beef' as IPv6 (missing colon)", async () => {
+			const result = await getType("beef", mockGetRegistry);
+			expect(result.isErr).toBe(true);
+		});
+	});
+});
