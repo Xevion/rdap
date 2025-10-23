@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { format } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import TimeAgo from "react-timeago";
-import { Box, Button, Tooltip, Text, Flex } from "@radix-ui/themes";
+import { Box, Tooltip, Text, Flex } from "@radix-ui/themes";
 import { useDateFormat } from "@/contexts/DateFormatContext";
 
 type DynamicDateProps = {
@@ -65,9 +65,17 @@ const DynamicDate: FunctionComponent<DynamicDateProps> = ({
 				</Box>
 			}
 		>
-			<Button variant="ghost" size="1" onClick={toggleFormat} style={{ cursor: "pointer" }}>
-				<Text size="2">{displayValue}</Text>
-			</Button>
+			<time
+				dateTime={isoString}
+				onClick={toggleFormat}
+				style={{
+					cursor: "pointer",
+					textDecoration: "none",
+					fontSize: "var(--font-size-2)",
+				}}
+			>
+				{displayValue}
+			</time>
 		</Tooltip>
 	);
 };

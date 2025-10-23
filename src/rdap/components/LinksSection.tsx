@@ -2,6 +2,7 @@ import type { FunctionComponent } from "react";
 import React from "react";
 import type { Link as RdapLink } from "@/rdap/schemas";
 import { Table, Link, Text, Badge } from "@radix-ui/themes";
+import EmDash from "@/components/EmDash";
 
 export type LinksSectionProps = {
 	links: RdapLink[];
@@ -28,35 +29,25 @@ const LinksSection: FunctionComponent<LinksSectionProps> = ({ links }) => {
 								{link.href}
 							</Link>
 						</Table.Cell>
-						<Table.Cell>
+						<Table.Cell align="center">
 							{link.rel ? (
 								<Badge variant="soft" size="1">
 									{link.rel}
 								</Badge>
 							) : (
-								<Text size="2" style={{ color: "var(--gray-a6)" }}>
-									—
-								</Text>
+								<EmDash />
 							)}
 						</Table.Cell>
-						<Table.Cell>
-							{link.title ? (
-								<Text size="2">{link.title}</Text>
-							) : (
-								<Text size="2" style={{ color: "var(--gray-a6)" }}>
-									—
-								</Text>
-							)}
+						<Table.Cell align="center">
+							{link.title ? <Text size="2">{link.title}</Text> : <EmDash />}
 						</Table.Cell>
-						<Table.Cell>
+						<Table.Cell align="right">
 							{link.type ? (
 								<Text size="2" color="gray">
 									{link.type}
 								</Text>
 							) : (
-								<Text size="2" style={{ color: "var(--gray-a6)" }}>
-									—
-								</Text>
+								<EmDash />
 							)}
 						</Table.Cell>
 					</Table.Row>

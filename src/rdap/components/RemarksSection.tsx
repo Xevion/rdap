@@ -26,7 +26,9 @@ const RemarksSection: FunctionComponent<RemarksSectionProps> = ({ remarks }) => 
 					<Flex direction="column" gap="2">
 						{remark.title && (
 							<Flex align="center" gap="2">
-								<Heading size="3">{remark.title}</Heading>
+								<Heading size="3" weight="medium">
+									{remark.title}
+								</Heading>
 								{remark.type && (
 									<Badge variant="soft" size="1">
 										{remark.type}

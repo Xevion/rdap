@@ -1,8 +1,9 @@
 import type { FunctionComponent } from "react";
 import React from "react";
 import type { Nameserver } from "@/rdap/schemas";
-import { Table, Text, Code, Flex, Badge } from "@radix-ui/themes";
+import { Table, Code, Flex, Badge } from "@radix-ui/themes";
 import CopyButton from "@/components/CopyButton";
+import EmDash from "@/components/EmDash";
 
 export type NameserversSectionProps = {
 	nameservers: Nameserver[];
@@ -39,7 +40,7 @@ const NameserversSection: FunctionComponent<NameserversSectionProps> = ({ namese
 								</Flex>
 							)}
 						</Table.Cell>
-						<Table.Cell>
+						<Table.Cell align="center">
 							{ns.ipAddresses?.v4 && ns.ipAddresses.v4.length > 0 ? (
 								<Flex direction="column" gap="1">
 									{ns.ipAddresses.v4.map((ip, ipIndex) => (
@@ -52,12 +53,10 @@ const NameserversSection: FunctionComponent<NameserversSectionProps> = ({ namese
 									))}
 								</Flex>
 							) : (
-								<Text size="2" style={{ color: "var(--gray-a4)" }}>
-									—
-								</Text>
+								<EmDash />
 							)}
 						</Table.Cell>
-						<Table.Cell>
+						<Table.Cell align="right">
 							{ns.ipAddresses?.v6 && ns.ipAddresses.v6.length > 0 ? (
 								<Flex direction="column" gap="1">
 									{ns.ipAddresses.v6.map((ip, ipIndex) => (
@@ -70,9 +69,7 @@ const NameserversSection: FunctionComponent<NameserversSectionProps> = ({ namese
 									))}
 								</Flex>
 							) : (
-								<Text size="2" style={{ color: "var(--gray-a4)" }}>
-									—
-								</Text>
+								<EmDash />
 							)}
 						</Table.Cell>
 					</Table.Row>

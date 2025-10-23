@@ -1,6 +1,7 @@
 import type { FunctionComponent } from "react";
 import type { Event } from "@/rdap/schemas";
 import DynamicDate from "@/components/DynamicDate";
+import EmDash from "@/components/EmDash";
 import { Table, Text } from "@radix-ui/themes";
 
 export type EventsProps = {
@@ -32,9 +33,7 @@ const Events: FunctionComponent<EventsProps> = ({ data }) => {
 									{eventActor}
 								</Text>
 							) : (
-								<Text size="2" style={{ color: "var(--gray-a4)" }}>
-									—
-								</Text>
+								<EmDash />
 							)}
 						</Table.Cell>
 					</Table.Row>
