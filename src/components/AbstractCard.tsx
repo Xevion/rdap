@@ -1,20 +1,58 @@
 import type { FunctionComponent, ReactNode } from "react";
-import React from "react";
+import { useMemo } from "react";
 import { useBoolean } from "usehooks-ts";
-import { Link2Icon, CodeIcon, DownloadIcon, ClipboardIcon } from "@radix-ui/react-icons";
+import { Link2Icon, CodeIcon, DownloadIcon } from "@radix-ui/react-icons";
 import { Card, Flex, Box, IconButton, Code, Tooltip } from "@radix-ui/themes";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import type { ParsedGeneric } from "@/rdap/components/Generic";
 import { generateDownloadFilename } from "@/utils/generateFilename";
+import CopyButton from "@/components/CopyButton";
 
 type AbstractCardProps = {
 	children?: ReactNode;
 	header?: ReactNode;
 	footer?: ReactNode;
-	data?: object;
+	/** RDAP response data for download/display. When provided, enables JSON actions. */
+	data?: ParsedGeneric | object;
+	/** RDAP query URL. When provided, enables "open in new tab" button. */
 	url?: string;
+	/** Query execution timestamp for filename generation */
 	queryTimestamp?: Date;
 };
+
+/**
+ * Type guard to check if data is ParsedGeneric with objectClassName
+ */
+function isParsedGeneric(data: unknown): data is ParsedGeneric {
+	return (
+		data != null &&
+		typeof data === "object" &&
+		"objectClassName" in data &&
+		typeof (data as ParsedGeneric).objectClassName === "string"
+	);
+}
+
+/**
+ * Downloads JSON data as a file with automatic filename generation
+ * Handles blob creation, download triggering, and cleanup
+ */
+function downloadJSON(data: object, queryTimestamp?: Date): void {
+	const jsonString = JSON.stringify(data, null, 4);
+	const blob = new Blob([jsonString], { type: "application/json" });
+	const url = URL.createObjectURL(blob);
+
+	const filename = isParsedGeneric(data)
+		? generateDownloadFilename(data, queryTimestamp)
+		: "response.json";
+
+	const anchor = document.createElement("a");
+	anchor.href = url;
+	anchor.download = filename;
+	anchor.click();
+
+	// Clean up to prevent memory leak
+	URL.revokeObjectURL(url);
+}
 
 const AbstractCard: FunctionComponent<AbstractCardProps> = ({
 	url,
@@ -26,10 +64,13 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
 }) => {
 	const { value: showRaw, toggle: toggleRaw } = useBoolean(false);
 
+	// Memoize JSON stringification to avoid repeated calls
+	const jsonString = useMemo(() => (data != null ? JSON.stringify(data, null, 4) : ""), [data]);
+
 	return (
 		<Box mb="4">
 			<Card size="2">
-				{(header != undefined || data != undefined) && (
+				{(header != null || data != null) && (
 					<Flex
 						justify="between"
 						align="center"
@@ -43,7 +84,7 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
 							{header}
 						</Flex>
 						<Flex gap="2" align="center">
-							{url != undefined && (
+							{url != null && (
 								<Tooltip content="Open in new tab">
 									<IconButton variant="ghost" size="2" asChild>
 										<a
@@ -57,65 +98,20 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
 									</IconButton>
 								</Tooltip>
 							)}
-							{data != undefined && (
+							{data != null && (
 								<>
-									<Tooltip content="Copy JSON to clipboard">
-										<IconButton
-											variant="ghost"
-											size="2"
-											onClick={() => {
-												navigator.clipboard
-													.writeText(JSON.stringify(data, null, 4))
-													.then(
-														() => {
-															// Successfully copied to clipboard
-														},
-														(err) => {
-															if (err instanceof Error)
-																console.error(
-																	`Failed to copy to clipboard (${err.toString()}).`
-																);
-															else
-																console.error(
-																	"Failed to copy to clipboard."
-																);
-														}
-													);
-											}}
-											aria-label="Copy JSON to clipboard"
-										>
-											<ClipboardIcon width="18" height="18" />
-										</IconButton>
-									</Tooltip>
+									<CopyButton
+										value={jsonString}
+										size="2"
+										color={null}
+										variant="ghost"
+										tooltipText="Copy JSON to clipboard"
+									/>
 									<Tooltip content="Download JSON">
 										<IconButton
 											variant="ghost"
 											size="2"
-											onClick={() => {
-												const file = new Blob(
-													[JSON.stringify(data, null, 4)],
-													{
-														type: "application/json",
-													}
-												);
-
-												const anchor = document.createElement("a");
-												anchor.href = URL.createObjectURL(file);
-
-												// Generate filename based on data and timestamp
-												const filename =
-													data != null &&
-													typeof data === "object" &&
-													"objectClassName" in data
-														? generateDownloadFilename(
-																data as ParsedGeneric,
-																queryTimestamp
-															)
-														: "response.json";
-
-												anchor.download = filename;
-												anchor.click();
-											}}
+											onClick={() => downloadJSON(data, queryTimestamp)}
 											aria-label="Download JSON"
 										>
 											<DownloadIcon width="18" height="18" />
@@ -161,7 +157,7 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
 									fontFamily: "var(--font-mono)",
 								}}
 							>
-								{JSON.stringify(data, null, 4)}
+								{jsonString}
 							</Code>
 						</OverlayScrollbarsComponent>
 					) : (
