@@ -17,6 +17,8 @@ export default [
 	// Base configuration with ignores
 	{
 		ignores: [
+			".media/**",
+			"coverage/**",
 			".next/**",
 			"node_modules/**",
 			"out/**",
