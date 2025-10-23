@@ -79,8 +79,38 @@ export function getRegistryURL(
 			}
 			throw new Error(`No matching registry found for ${lookupTarget}.`);
 		}
-		case "entity":
-			throw new Error(`No matching entity found.`);
+		case "entity": {
+			// Extract service provider tag from entity handle (text after last hyphen)
+			// Example: "OPS4-RIPE" -> tag is "RIPE"
+			const lastHyphenIndex = lookupTarget.lastIndexOf("-");
+			if (lastHyphenIndex === -1 || lastHyphenIndex === lookupTarget.length - 1) {
+				throw new Error(
+					`Invalid entity handle format: ${lookupTarget}. Expected format: HANDLE-TAG`
+				);
+			}
+
+			const serviceProviderTag = lookupTarget.substring(lastHyphenIndex + 1).toUpperCase();
+
+			// Search for the service provider tag in the bootstrap registry
+			// Entity registry structure: [email, tags, urls]
+			for (const bootstrapItem of bootstrap.services) {
+				const tags = bootstrapItem[1]; // Tags are at index 1 (0=email, 1=tags, 2=urls)
+				const urls = bootstrapItem[2]; // URLs are at index 2
+
+				if (
+					tags.some((tag) => tag.toUpperCase() === serviceProviderTag) &&
+					urls &&
+					urls.length > 0
+				) {
+					url = getBestURL(urls as [string, ...string[]]);
+					break typeSwitch;
+				}
+			}
+
+			throw new Error(
+				`No matching registry found for entity service provider tag: ${serviceProviderTag}`
+			);
+		}
 		default:
 			throw new Error("Invalid lookup target provided.");
 	}

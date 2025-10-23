@@ -49,6 +49,8 @@ export const StatusEnum = z.enum([
 	"server update prohibited",
 	"server hold",
 	"transfer period",
+	"administrative",
+	"reserved",
 ]);
 
 export const LinkSchema = z.object({

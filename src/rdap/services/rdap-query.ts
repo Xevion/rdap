@@ -1,5 +1,10 @@
-import type { AutonomousNumber, Domain, IpNetwork, TargetType } from "@/rdap/schemas";
-import { AutonomousNumberSchema, DomainSchema, IpNetworkSchema } from "@/rdap/schemas";
+import type { AutonomousNumber, Domain, Entity, IpNetwork, TargetType } from "@/rdap/schemas";
+import {
+	AutonomousNumberSchema,
+	DomainSchema,
+	EntitySchema,
+	IpNetworkSchema,
+} from "@/rdap/schemas";
 import { Result } from "true-myth";
 import { loadBootstrap } from "@/rdap/services/registry";
 import { getRegistryURL } from "@/rdap/services/url-resolver";
@@ -7,7 +12,7 @@ import { getAndParse } from "@/rdap/services/rdap-api";
 import type { ParsedGeneric } from "@/rdap/components/Generic";
 
 // An array of schemas to try and parse unknown JSON data with.
-const schemas = [DomainSchema, AutonomousNumberSchema, IpNetworkSchema];
+const schemas = [DomainSchema, AutonomousNumberSchema, IpNetworkSchema, EntitySchema];
 
 /**
  * Custom error for HTTP security warnings that includes the URL for repeatability.
@@ -157,9 +162,20 @@ export async function executeRdapQuery(
 			}
 			return Result.err(new Error("No schema was able to parse the JSON."));
 		}
-		case "entity":
+		case "entity": {
+			await loadBootstrap("entity");
+			const url = getRegistryURL(targetType, target, queryParams);
+			const result = await getAndParse<Entity>(url, EntitySchema, followReferral);
+			if (result.isErr) return Result.err(result.error);
+			return Result.ok({ data: result.value, url });
+		}
 		case "registrar":
-			return Result.err(new Error("The type detected has not been implemented."));
+			return Result.err(
+				new Error(
+					"Registrar lookups are not supported as a separate type. " +
+						"In RDAP, registrars are entity objects. Please use the entity type with the registrar's handle (e.g., IANA ID format)."
+				)
+			);
 		default:
 			return Result.err(new Error("The type detected has not been implemented."));
 	}
