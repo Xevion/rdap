@@ -14,9 +14,14 @@ import { Flex, Text, DataList, Badge, Code } from "@radix-ui/themes";
 export type AutnumCardProps = {
 	data: AutonomousNumber;
 	url?: string;
+	queryTimestamp?: Date;
 };
 
-const AutnumCard: FunctionComponent<AutnumCardProps> = ({ data, url }: AutnumCardProps) => {
+const AutnumCard: FunctionComponent<AutnumCardProps> = ({
+	data,
+	url,
+	queryTimestamp,
+}: AutnumCardProps) => {
 	const asnRange =
 		data.startAutnum === data.endAutnum
 			? `AS${data.startAutnum}`
@@ -26,6 +31,7 @@ const AutnumCard: FunctionComponent<AutnumCardProps> = ({ data, url }: AutnumCar
 		<AbstractCard
 			data={data}
 			url={url}
+			queryTimestamp={queryTimestamp}
 			header={
 				<Flex gap="2" align="center" wrap="wrap">
 					<Text size="5">{asnRange}</Text>

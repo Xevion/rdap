@@ -4,6 +4,8 @@ import { useBoolean } from "usehooks-ts";
 import { Link2Icon, CodeIcon, DownloadIcon, ClipboardIcon } from "@radix-ui/react-icons";
 import { Card, Flex, Box, IconButton, Code, Tooltip } from "@radix-ui/themes";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
+import type { ParsedGeneric } from "@/rdap/components/Generic";
+import { generateDownloadFilename } from "@/utils/generateFilename";
 
 type AbstractCardProps = {
 	children?: ReactNode;
@@ -11,6 +13,7 @@ type AbstractCardProps = {
 	footer?: ReactNode;
 	data?: object;
 	url?: string;
+	queryTimestamp?: Date;
 };
 
 const AbstractCard: FunctionComponent<AbstractCardProps> = ({
@@ -19,6 +22,7 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
 	header,
 	footer,
 	data,
+	queryTimestamp,
 }) => {
 	const { value: showRaw, toggle: toggleRaw } = useBoolean(false);
 
@@ -97,7 +101,19 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
 
 												const anchor = document.createElement("a");
 												anchor.href = URL.createObjectURL(file);
-												anchor.download = "response.json";
+
+												// Generate filename based on data and timestamp
+												const filename =
+													data != null &&
+													typeof data === "object" &&
+													"objectClassName" in data
+														? generateDownloadFilename(
+																data as ParsedGeneric,
+																queryTimestamp
+															)
+														: "response.json";
+
+												anchor.download = filename;
 												anchor.click();
 											}}
 											aria-label="Download JSON"

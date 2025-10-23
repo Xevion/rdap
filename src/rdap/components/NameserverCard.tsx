@@ -14,16 +14,19 @@ import { Flex, DataList, Badge, Text, Code } from "@radix-ui/themes";
 export type NameserverCardProps = {
 	data: Nameserver;
 	url?: string;
+	queryTimestamp?: Date;
 };
 
 const NameserverCard: FunctionComponent<NameserverCardProps> = ({
 	data,
 	url,
+	queryTimestamp,
 }: NameserverCardProps) => {
 	return (
 		<AbstractCard
 			data={data}
 			url={url}
+			queryTimestamp={queryTimestamp}
 			header={
 				<Flex gap="2" align="center" wrap="wrap">
 					<Text size="5">{data.ldhName}</Text>

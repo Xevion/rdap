@@ -14,13 +14,15 @@ import { Flex, Text, DataList, Badge, Code } from "@radix-ui/themes";
 export type IPCardProps = {
 	data: IpNetwork;
 	url?: string;
+	queryTimestamp?: Date;
 };
 
-const IPCard: FunctionComponent<IPCardProps> = ({ data, url }: IPCardProps) => {
+const IPCard: FunctionComponent<IPCardProps> = ({ data, url, queryTimestamp }: IPCardProps) => {
 	return (
 		<AbstractCard
 			data={data}
 			url={url}
+			queryTimestamp={queryTimestamp}
 			header={
 				<Flex gap="2" align="center" wrap="wrap">
 					<Text size="5">

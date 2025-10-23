@@ -117,7 +117,11 @@ const Index: NextPage = () => {
 							/>
 						) : null}
 						{response.isJust ? (
-							<Generic url={response.value.url} data={response.value.data} />
+							<Generic
+								url={response.value.url}
+								data={response.value.data}
+								queryTimestamp={response.value.completeTime}
+							/>
 						) : null}
 					</Section>
 				</Container>

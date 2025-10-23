@@ -12,25 +12,26 @@ export type ParsedGeneric = Domain | Nameserver | Entity | AutonomousNumber | Ip
 export type ObjectProps = {
 	data: ParsedGeneric;
 	url?: string;
+	queryTimestamp?: Date;
 };
 
-const Generic: FunctionComponent<ObjectProps> = ({ data, url }: ObjectProps) => {
+const Generic: FunctionComponent<ObjectProps> = ({ data, url, queryTimestamp }: ObjectProps) => {
 	const objectClassName = data.objectClassName;
 
 	switch (objectClassName) {
 		case "domain":
-			return <DomainCard url={url} data={data} />;
+			return <DomainCard url={url} data={data} queryTimestamp={queryTimestamp} />;
 		case "ip network":
-			return <IPCard url={url} data={data} />;
+			return <IPCard url={url} data={data} queryTimestamp={queryTimestamp} />;
 		case "autnum":
-			return <AutnumCard url={url} data={data} />;
+			return <AutnumCard url={url} data={data} queryTimestamp={queryTimestamp} />;
 		case "entity":
-			return <EntityCard url={url} data={data} />;
+			return <EntityCard url={url} data={data} queryTimestamp={queryTimestamp} />;
 		case "nameserver":
-			return <NameserverCard url={url} data={data} />;
+			return <NameserverCard url={url} data={data} queryTimestamp={queryTimestamp} />;
 		default:
 			return (
-				<AbstractCard url={url}>
+				<AbstractCard url={url} queryTimestamp={queryTimestamp}>
 					Not implemented. (<pre>{objectClassName ?? "null"}</pre>)
 				</AbstractCard>
 			);

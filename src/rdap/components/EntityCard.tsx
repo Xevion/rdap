@@ -15,13 +15,19 @@ import { Flex, DataList, Badge, Text, Code } from "@radix-ui/themes";
 export type EntityCardProps = {
 	data: Entity;
 	url?: string;
+	queryTimestamp?: Date;
 };
 
-const EntityCard: FunctionComponent<EntityCardProps> = ({ data, url }: EntityCardProps) => {
+const EntityCard: FunctionComponent<EntityCardProps> = ({
+	data,
+	url,
+	queryTimestamp,
+}: EntityCardProps) => {
 	return (
 		<AbstractCard
 			data={data}
 			url={url}
+			queryTimestamp={queryTimestamp}
 			header={
 				<Flex gap="2" align="center" wrap="wrap">
 					<Text size="5">

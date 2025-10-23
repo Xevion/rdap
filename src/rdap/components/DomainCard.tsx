@@ -16,13 +16,15 @@ import { Flex, Text, DataList, Badge, Code } from "@radix-ui/themes";
 export type DomainProps = {
 	data: Domain;
 	url?: string;
+	queryTimestamp?: Date;
 };
 
-const DomainCard: FunctionComponent<DomainProps> = ({ data, url }: DomainProps) => {
+const DomainCard: FunctionComponent<DomainProps> = ({ data, url, queryTimestamp }: DomainProps) => {
 	return (
 		<AbstractCard
 			data={data}
 			url={url}
+			queryTimestamp={queryTimestamp}
 			header={
 				<Flex gap="2" align="center" wrap="wrap">
 					<Text size="5">{data.ldhName ?? data.unicodeName}</Text>
