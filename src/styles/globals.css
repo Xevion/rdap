@@ -18,6 +18,14 @@
 	scrollbar-width: thin;
 }
 
+/* Table header cell styling - prevent word-breaking */
+.rt-TableColumnHeaderCell {
+	word-break: normal;
+	overflow-wrap: normal;
+	hyphens: none;
+	white-space: normal;
+}
+
 /* Keep animate-spin for loading states */
 @keyframes spin {
 	from {
