@@ -1,11 +1,11 @@
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import type { FunctionComponent } from "react";
 import { useState, useEffect, useRef } from "react";
 import { onPromise, preventDefault } from "@/lib/utils";
 import type { SimplifiedTargetType, SubmitProps, TargetType } from "@/rdap/schemas";
 import { TargetTypeEnum } from "@/rdap/schemas";
 import { MagnifyingGlassIcon, ReloadIcon, LockClosedIcon } from "@radix-ui/react-icons";
-import { TextField, Select, Flex, Checkbox, Text, IconButton, Badge } from "@radix-ui/themes";
+import { TextField, Select, Flex, IconButton, Badge } from "@radix-ui/themes";
 import type { Maybe } from "true-myth";
 import { placeholders } from "@/rdap/constants";
 
@@ -41,12 +41,12 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 	onChange,
 	detectedType,
 }: LookupInputProps) => {
-	const { register, handleSubmit, getValues, control } = useForm<SubmitProps>({
+	const { register, handleSubmit, getValues } = useForm<SubmitProps>({
 		defaultValues: {
 			target: "",
 			// Not used at this time.
-			followReferral: false,
-			requestJSContact: false,
+			followReferral: true,
+			requestJSContact: true,
 		},
 	});
 
@@ -280,39 +280,6 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 							))}
 						</Select.Content>
 					</Select.Root>
-				</Flex>
-
-				<Flex pl="3" gapX="5" gapY="2" wrap="wrap">
-					<Flex asChild align="center" gap="2">
-						<Text as="label" size="2">
-							<Controller
-								name="requestJSContact"
-								control={control}
-								render={({ field }) => (
-									<Checkbox
-										checked={field.value}
-										onCheckedChange={field.onChange}
-									/>
-								)}
-							/>
-							Request JSContact
-						</Text>
-					</Flex>
-					<Flex asChild align="center" gap="2">
-						<Text as="label" size="2">
-							<Controller
-								name="followReferral"
-								control={control}
-								render={({ field }) => (
-									<Checkbox
-										checked={field.value}
-										onCheckedChange={field.onChange}
-									/>
-								)}
-							/>
-							Follow referral to registrar&apos;s RDAP record
-						</Text>
-					</Flex>
 				</Flex>
 			</Flex>
 		</form>
