@@ -1,19 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDebouncedValue } from "@mantine/hooks";
-import { getType, validateInputForType } from "@/rdap/utils";
-import type { AutonomousNumber, Domain, IpNetwork, SubmitProps, TargetType } from "@/rdap/schemas";
-import {
-	AutonomousNumberSchema,
-	DomainSchema,
-	IpNetworkSchema,
-	RootRegistryEnum,
-} from "@/rdap/schemas";
-import { truncated } from "@/lib/utils";
+import type { SubmitProps, TargetType } from "@/rdap/schemas";
+import { RootRegistryEnum } from "@/rdap/schemas";
 import type { ParsedGeneric } from "@/rdap/components/Generic";
 import { Maybe, Result } from "true-myth";
 import { loadBootstrap, getRegistry } from "@/rdap/services/registry";
-import { getRegistryURL } from "@/rdap/services/url-resolver";
-import { getAndParse } from "@/rdap/services/rdap-api";
+import {
+	detectTargetType,
+	validateTargetType,
+	generateValidationWarning,
+	generateBootstrapWarning,
+} from "@/rdap/services/type-detection";
+import { executeRdapQuery, HttpSecurityError } from "@/rdap/services/rdap-query";
 
 export type WarningHandler = (warning: { message: string }) => void;
 export type MetaParsedGeneric = {
@@ -22,13 +20,10 @@ export type MetaParsedGeneric = {
 	completeTime: Date;
 };
 
-// An array of schemas to try and parse unknown JSON data with.
-const schemas = [DomainSchema, AutonomousNumberSchema, IpNetworkSchema];
-
 const useLookup = (warningHandler?: WarningHandler) => {
 	const [error, setError] = useState<string | null>(null);
 	const [target, setTarget] = useState<string>("");
-	const [debouncedTarget] = useDebouncedValue(target, 150);
+	const [debouncedTarget] = useDebouncedValue(target, 75);
 	const [uriType, setUriType] = useState<Maybe<TargetType>>(Maybe.nothing());
 
 	// Used by a callback on LookupInput to forcibly set the type of the lookup.
@@ -38,7 +33,7 @@ const useLookup = (warningHandler?: WarningHandler) => {
 	const repeatableRef = useRef<string>("");
 
 	const getTypeEasy = useCallback(async (target: string): Promise<Result<TargetType, Error>> => {
-		return getType(target, getRegistry);
+		return detectTargetType(target, getRegistry);
 	}, []);
 
 	useEffect(() => {
@@ -67,9 +62,8 @@ const useLookup = (warningHandler?: WarningHandler) => {
 				await loadBootstrap(registryUri.data);
 			} catch (e) {
 				if (warningHandler != undefined) {
-					const message = e instanceof Error ? `(${truncated(e.message, 15)})` : ".";
 					warningHandler({
-						message: `Failed to preload registry${message}`,
+						message: generateBootstrapWarning(e),
 					});
 				}
 			}
@@ -93,12 +87,12 @@ const useLookup = (warningHandler?: WarningHandler) => {
 			targetType = currentType;
 
 			// Validate the input matches the selected type
-			const validation = await validateInputForType(target, currentType, getRegistry);
+			const validation = await validateTargetType(target, currentType, getRegistry);
 			if (validation.isErr) {
 				// Show warning but proceed with user's selection
 				if (warningHandler != undefined) {
 					warningHandler({
-						message: `Warning: ${validation.error}. Proceeding with selected type "${currentType}".`,
+						message: generateValidationWarning(validation.error, currentType),
 					});
 				}
 			}
@@ -117,105 +111,19 @@ const useLookup = (warningHandler?: WarningHandler) => {
 			targetType = detectedType.value;
 		}
 
-		// Prepare query parameters for RDAP requests
-		const queryParams = { jsContact: requestJSContact, followReferral };
+		// Execute the RDAP query using the extracted service
+		const result = await executeRdapQuery(target, targetType, {
+			requestJSContact,
+			followReferral,
+			repeatableUrl: repeatableRef.current,
+		});
 
-		switch (targetType) {
-			// Block scoped case to allow url const reuse
-			case "ip4": {
-				await loadBootstrap("ip4");
-				const url = getRegistryURL(targetType, target, queryParams);
-				const result = await getAndParse<IpNetwork>(url, IpNetworkSchema, followReferral);
-				if (result.isErr) return Result.err(result.error);
-				return Result.ok({ data: result.value, url });
-			}
-			case "ip6": {
-				await loadBootstrap("ip6");
-				const url = getRegistryURL(targetType, target, queryParams);
-				const result = await getAndParse<IpNetwork>(url, IpNetworkSchema, followReferral);
-				if (result.isErr) return Result.err(result.error);
-				return Result.ok({ data: result.value, url });
-			}
-			case "domain": {
-				await loadBootstrap("domain");
-				const url = getRegistryURL(targetType, target, queryParams);
-
-				// HTTP
-				if (url.startsWith("http://") && url != repeatableRef.current) {
-					repeatableRef.current = url;
-					return Result.err(
-						new Error(
-							"The registry this domain belongs to uses HTTP, which is not secure. " +
-								"In order to prevent a cryptic error from appearing due to mixed active content, " +
-								"or worse, a CORS error, this lookup has been blocked. Try again to force the lookup."
-						)
-					);
-				}
-				const result = await getAndParse<Domain>(url, DomainSchema, followReferral);
-				if (result.isErr) return Result.err(result.error);
-
-				return Result.ok({ data: result.value, url });
-			}
-			case "autnum": {
-				await loadBootstrap("autnum");
-				const url = getRegistryURL(targetType, target, queryParams);
-				const result = await getAndParse<AutonomousNumber>(
-					url,
-					AutonomousNumberSchema,
-					followReferral
-				);
-				if (result.isErr) return Result.err(result.error);
-				return Result.ok({ data: result.value, url });
-			}
-			case "tld": {
-				// remove the leading dot
-				const value = target.startsWith(".") ? target.slice(1) : target;
-				const params = new URLSearchParams();
-				if (requestJSContact) params.append("jsContact", "1");
-				if (followReferral) params.append("followReferral", "1");
-				const queryString = params.toString();
-				const baseUrl = `https://root.rdap.org/domain/${value}`;
-				const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
-				const result = await getAndParse<Domain>(url, DomainSchema, followReferral);
-				if (result.isErr) return Result.err(result.error);
-				return Result.ok({ data: result.value, url });
-			}
-			case "url": {
-				const response = await fetch(target);
-
-				if (response.status !== 200)
-					return Result.err(
-						new Error(
-							`The URL provided returned a non-200 status code: ${response.status}.`
-						)
-					);
-
-				const data = await response.json();
-
-				// Try each schema until one works
-				for (const schema of schemas) {
-					const result = schema.safeParse(data);
-					if (result.success) return Result.ok({ data: result.data, url: target });
-				}
-
-				return Result.err(new Error("No schema was able to parse the response."));
-			}
-			case "json": {
-				try {
-					const data = JSON.parse(target);
-					for (const schema of schemas) {
-						const result = schema.safeParse(data);
-						if (result.success) return Result.ok({ data: result.data, url: "" });
-					}
-				} catch (e) {
-					return Result.err(new Error("Invalid JSON format", { cause: e }));
-				}
-			}
-			case "registrar": {
-			}
-			default:
-				return Result.err(new Error("The type detected has not been implemented."));
+		// Update repeatable ref if we got an HTTP security error for domain lookups
+		if (result.isErr && result.error instanceof HttpSecurityError) {
+			repeatableRef.current = result.error.url;
 		}
+
+		return result;
 	}
 
 	async function submit({
