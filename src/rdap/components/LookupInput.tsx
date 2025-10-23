@@ -157,6 +157,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 						size="3"
 						placeholder={placeholders[selected]}
 						disabled={isLoading}
+						autoFocus
 						onFocus={() => {
 							isFocusedRef.current = true;
 						}}

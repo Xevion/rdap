@@ -2,7 +2,8 @@ import type { FunctionComponent, ReactNode } from "react";
 import React from "react";
 import { useBoolean } from "usehooks-ts";
 import { Link2Icon, CodeIcon, DownloadIcon, ClipboardIcon } from "@radix-ui/react-icons";
-import { Card, Flex, Box, IconButton, Code, ScrollArea, Tooltip } from "@radix-ui/themes";
+import { Card, Flex, Box, IconButton, Code, Tooltip } from "@radix-ui/themes";
+import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 
 type AbstractCardProps = {
 	children?: ReactNode;
@@ -125,7 +126,16 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
 				)}
 				<Box p="4">
 					{showRaw ? (
-						<ScrollArea type="auto" scrollbars="both" style={{ maxHeight: "40rem" }}>
+						<OverlayScrollbarsComponent
+							defer
+							options={{
+								scrollbars: {
+									autoHide: "leave",
+									autoHideDelay: 1300,
+								},
+							}}
+							style={{ maxHeight: "40rem" }}
+						>
 							<Code
 								variant="ghost"
 								size="2"
@@ -137,7 +147,7 @@ const AbstractCard: FunctionComponent<AbstractCardProps> = ({
 							>
 								{JSON.stringify(data, null, 4)}
 							</Code>
-						</ScrollArea>
+						</OverlayScrollbarsComponent>
 					) : (
 						children
 					)}

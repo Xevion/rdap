@@ -5,6 +5,7 @@ import { type AppType } from "next/dist/shared/lib/utils";
 import "@fontsource-variable/inter";
 import "@fontsource/ibm-plex-mono/400.css";
 import "@radix-ui/themes/styles.css";
+import "overlayscrollbars/overlayscrollbars.css";
 
 import "@/styles/globals.css";
 import { DateFormatProvider } from "@/contexts/DateFormatContext";

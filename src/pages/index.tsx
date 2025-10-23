@@ -10,6 +10,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Maybe } from "true-myth";
 import { Flex, Container, Section, Text, Link, IconButton } from "@radix-ui/themes";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 
 const Index: NextPage = () => {
 	const { error, setTarget, setTargetType, submit, currentType } = useLookup();
@@ -38,78 +39,89 @@ const Index: NextPage = () => {
 					content="xevion, rdap, whois, rdap, domain name, dns, ip address"
 				/>
 			</Head>
-			<Flex
-				asChild
-				justify="between"
-				align="center"
-				px="5"
-				py="4"
-				style={{
-					borderBottom: "1px solid var(--gray-a5)",
+			<OverlayScrollbarsComponent
+				defer
+				options={{
+					scrollbars: {
+						autoHide: "leave",
+						autoHideDelay: 1300,
+					},
 				}}
+				style={{ height: "100vh" }}
 			>
-				<nav>
-					<Text size="5" weight="medium">
-						<Link href="https://github.com/Xevion/rdap" color="gray" highContrast>
-							rdap
-						</Link>
-						<Link href="https://xevion.dev" color="gray">
-							.xevion.dev
-						</Link>
-					</Text>
-					<Flex gap="4" align="center">
-						<IconButton
-							asChild
-							size="3"
-							variant="ghost"
-							aria-label="View on GitHub"
-							title="View on GitHub"
-						>
-							<a
-								href="https://github.com/Xevion/rdap"
-								target="_blank"
-								rel="noopener noreferrer"
+				<Flex
+					asChild
+					justify="between"
+					align="center"
+					px="5"
+					py="4"
+					style={{
+						borderBottom: "1px solid var(--gray-a5)",
+					}}
+				>
+					<nav>
+						<Text size="5" weight="medium">
+							<Link href="https://github.com/Xevion/rdap" color="gray" highContrast>
+								rdap
+							</Link>
+							<Link href="https://xevion.dev" color="gray">
+								.xevion.dev
+							</Link>
+						</Text>
+						<Flex gap="4" align="center">
+							<IconButton
+								asChild
+								size="3"
+								variant="ghost"
+								aria-label="View on GitHub"
+								title="View on GitHub"
 							>
-								<GitHubLogoIcon width="22" height="22" />
-							</a>
-						</IconButton>
-						<ThemeToggle />
-					</Flex>
-				</nav>
-			</Flex>
-			<Container size="3" px="5">
-				<Section size="2">
-					<LookupInput
-						isLoading={isLoading}
-						detectedType={currentType}
-						onChange={({ target, targetType }) => {
-							setTarget(target);
-							setTargetType(targetType);
-						}}
-						onSubmit={async function (props) {
-							try {
-								setLoading(true);
-								setResponse(await submit(props));
-								setLoading(false);
-							} catch (e) {
-								console.error(e);
-								setResponse(Maybe.nothing());
-								setLoading(false);
-							}
-						}}
-					/>
-					{error != null ? (
-						<ErrorCard
-							title="An error occurred while performing a lookup."
-							description={error}
-							className="mb-2"
+								<a
+									href="https://github.com/Xevion/rdap"
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									<GitHubLogoIcon width="22" height="22" />
+								</a>
+							</IconButton>
+							<ThemeToggle />
+						</Flex>
+					</nav>
+				</Flex>
+				<Container size="3" px="5">
+					<Section size="2">
+						<LookupInput
+							isLoading={isLoading}
+							detectedType={currentType}
+							onChange={({ target, targetType }) => {
+								setTarget(target);
+								setTargetType(targetType);
+							}}
+							onSubmit={async function (props) {
+								try {
+									setLoading(true);
+									setResponse(await submit(props));
+									setLoading(false);
+								} catch (e) {
+									console.error(e);
+									setResponse(Maybe.nothing());
+									setLoading(false);
+								}
+							}}
 						/>
-					) : null}
-					{response.isJust ? (
-						<Generic url={response.value.url} data={response.value.data} />
-					) : null}
-				</Section>
-			</Container>
+						{error != null ? (
+							<ErrorCard
+								title="An error occurred while performing a lookup."
+								description={error}
+								className="mb-2"
+							/>
+						) : null}
+						{response.isJust ? (
+							<Generic url={response.value.url} data={response.value.data} />
+						) : null}
+					</Section>
+				</Container>
+			</OverlayScrollbarsComponent>
 		</>
 	);
 };

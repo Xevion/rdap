@@ -35,6 +35,8 @@
 		"date-fns-tz": "^3.2.0",
 		"next": "^15.5.6",
 		"next-themes": "^0.4.6",
+		"overlayscrollbars": "^2.12.0",
+		"overlayscrollbars-react": "^0.5.6",
 		"react": "19.2.0",
 		"react-dom": "19.2.0",
 		"react-hook-form": "^7.42.1",
