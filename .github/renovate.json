@@ -7,7 +7,11 @@
 		":automergeDigest",
 		":automergeMinor"
 	],
-	"schedule": ["after 10pm every weekday", "before 5am every weekday", "every weekend"],
+	"schedule": [
+		"after 10pm every weekday",
+		"before 5am every weekday",
+		"every weekend"
+	],
 	"timezone": "America/Chicago",
 	"prConcurrentLimit": 3,
 	"prCreation": "not-pending",
@@ -28,21 +32,21 @@
 		},
 		{
 			"description": "Automerge TypeScript type packages",
-			"matchPackagePatterns": ["^@types/"],
 			"automerge": true,
-			"automergeType": "pr"
+			"automergeType": "pr",
+			"matchPackageNames": ["/^@types//"]
 		},
 		{
 			"description": "Group ESLint packages together",
-			"matchPackagePatterns": ["^eslint", "^@typescript-eslint/"],
 			"groupName": "eslint packages",
-			"automerge": true
+			"automerge": true,
+			"matchPackageNames": ["/^eslint/", "/^@typescript-eslint//"]
 		},
 		{
 			"description": "Group testing packages together",
-			"matchPackagePatterns": ["^vitest", "^@vitest/", "^@testing-library/"],
 			"groupName": "testing packages",
-			"automerge": true
+			"automerge": true,
+			"matchPackageNames": ["/^vitest/", "/^@vitest//", "/^@testing-library//"]
 		},
 		{
 			"description": "Group Next.js related packages",
@@ -52,7 +56,12 @@
 		},
 		{
 			"description": "Group React packages",
-			"matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
+			"matchPackageNames": [
+				"react",
+				"react-dom",
+				"@types/react",
+				"@types/react-dom"
+			],
 			"groupName": "React packages",
 			"minimumReleaseAge": "7 days"
 		},
@@ -63,18 +72,18 @@
 		},
 		{
 			"description": "Group Tailwind CSS packages",
-			"matchPackagePatterns": [
-				"^tailwindcss",
-				"^@tailwindcss/",
-				"prettier-plugin-tailwindcss"
-			],
-			"groupName": "Tailwind CSS packages"
+			"groupName": "Tailwind CSS packages",
+			"matchPackageNames": [
+				"/^tailwindcss/",
+				"/^@tailwindcss//",
+				"/prettier-plugin-tailwindcss/"
+			]
 		},
 		{
 			"description": "Group font packages",
-			"matchPackagePatterns": ["^@fontsource"],
 			"groupName": "font packages",
-			"automerge": true
+			"automerge": true,
+			"matchPackageNames": ["/^@fontsource/"]
 		}
 	],
 	"postUpdateOptions": ["pnpmDedupe"],
