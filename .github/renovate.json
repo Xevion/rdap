@@ -7,11 +7,7 @@
 		":automergeDigest",
 		":automergeMinor"
 	],
-	"schedule": [
-		"after 10pm every weekday",
-		"before 5am every weekday",
-		"every weekend"
-	],
+	"schedule": ["after 10pm every weekday", "before 5am every weekday", "every weekend"],
 	"timezone": "America/Chicago",
 	"prConcurrentLimit": 3,
 	"prCreation": "not-pending",
@@ -56,12 +52,7 @@
 		},
 		{
 			"description": "Group React packages",
-			"matchPackageNames": [
-				"react",
-				"react-dom",
-				"@types/react",
-				"@types/react-dom"
-			],
+			"matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
 			"groupName": "React packages",
 			"minimumReleaseAge": "7 days"
 		},
