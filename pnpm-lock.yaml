@@ -131,7 +131,7 @@ importers:
         version: 15.5.6(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
       happy-dom:
         specifier: ^20.0.8
-        version: 20.0.8
+        version: 20.0.10
       husky:
         specifier: ^9.0.0
         version: 9.1.7
@@ -155,7 +155,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.1
-        version: 4.0.1(@types/node@24.9.2)(@vitest/ui@4.0.1)(happy-dom@20.0.8)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.93.2)(yaml@2.8.1)
+        version: 4.0.1(@types/node@24.9.2)(@vitest/ui@4.0.1)(happy-dom@20.0.10)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.93.2)(yaml@2.8.1)
 
 packages:
 
@@ -2847,8 +2847,8 @@ packages:
   graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
 
-  happy-dom@20.0.8:
-    resolution: {integrity: sha512-TlYaNQNtzsZ97rNMBAm8U+e2cUQXNithgfCizkDgc11lgmN4j9CKMhO3FPGKWQYPwwkFcPpoXYF/CqEPLgzfOg==}
+  happy-dom@20.0.10:
+    resolution: {integrity: sha512-6umCCHcjQrhP5oXhrHQQvLB0bwb1UzHAHdsXy+FjtKoYjUhmNZsQL8NivwM1vDvNEChJabVrUYxUnp/ZdYmy2g==}
     engines: {node: '>=20.0.0'}
 
   has-bigints@1.1.0:
@@ -6062,7 +6062,7 @@ snapshots:
       magicast: 0.3.5
       std-env: 3.10.0
       tinyrainbow: 3.0.3
-      vitest: 4.0.1(@types/node@24.9.2)(@vitest/ui@4.0.1)(happy-dom@20.0.8)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.93.2)(yaml@2.8.1)
+      vitest: 4.0.1(@types/node@24.9.2)(@vitest/ui@4.0.1)(happy-dom@20.0.10)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.93.2)(yaml@2.8.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -6109,7 +6109,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vitest: 4.0.1(@types/node@24.9.2)(@vitest/ui@4.0.1)(happy-dom@20.0.8)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.93.2)(yaml@2.8.1)
+      vitest: 4.0.1(@types/node@24.9.2)(@vitest/ui@4.0.1)(happy-dom@20.0.10)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.93.2)(yaml@2.8.1)
 
   '@vitest/utils@4.0.1':
     dependencies:
@@ -7039,7 +7039,7 @@ snapshots:
 
   graphemer@1.4.0: {}
 
-  happy-dom@20.0.8:
+  happy-dom@20.0.10:
     dependencies:
       '@types/node': 20.19.24
       '@types/whatwg-mimetype': 3.0.2
@@ -8323,7 +8323,7 @@ snapshots:
       sass: 1.93.2
       yaml: 2.8.1
 
-  vitest@4.0.1(@types/node@24.9.2)(@vitest/ui@4.0.1)(happy-dom@20.0.8)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.93.2)(yaml@2.8.1):
+  vitest@4.0.1(@types/node@24.9.2)(@vitest/ui@4.0.1)(happy-dom@20.0.10)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.93.2)(yaml@2.8.1):
     dependencies:
       '@vitest/expect': 4.0.1
       '@vitest/mocker': 4.0.1(vite@7.1.11(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.93.2)(yaml@2.8.1))
@@ -8348,7 +8348,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.9.2
       '@vitest/ui': 4.0.1(vitest@4.0.1)
-      happy-dom: 20.0.8
+      happy-dom: 20.0.10
     transitivePeerDependencies:
       - jiti
       - less
