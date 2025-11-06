@@ -4,11 +4,18 @@ import { useState, useEffect, useRef } from "react";
 import { onPromise, preventDefault } from "@/lib/misc";
 import type { SimplifiedTargetType, SubmitProps, TargetType } from "@/rdap/schemas";
 import { TargetTypeEnum } from "@/rdap/schemas";
-import { MagnifyingGlassIcon, ReloadIcon, LockClosedIcon } from "@radix-ui/react-icons";
-import { TextField, Select, Flex, IconButton, Badge } from "@radix-ui/themes";
+import {
+	MagnifyingGlassIcon,
+	ReloadIcon,
+	LockClosedIcon,
+	ExclamationTriangleIcon,
+	CrossCircledIcon,
+} from "@radix-ui/react-icons";
+import { TextField, Select, Flex, IconButton, Badge, Tooltip, Text } from "@radix-ui/themes";
 import type { Maybe } from "true-myth";
 import { placeholders } from "@/rdap/constants";
 import ShareButton from "@/components/ShareButton";
+import type { TldValidationResult } from "@/rdap/services/tld-validation";
 
 /**
  * Props for the LookupInput component.
@@ -38,6 +45,10 @@ type LookupInputProps = {
 	 * Optional shareable URL to display in the share button. Only shown when provided.
 	 */
 	shareableUrl?: string;
+	/**
+	 * TLD validation result for domain inputs. Shows warning/error icon when TLD is invalid or unavailable.
+	 */
+	tldValidation?: TldValidationResult | null;
 };
 
 const LookupInput: FunctionComponent<LookupInputProps> = ({
@@ -46,6 +57,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 	onChange,
 	detectedType,
 	shareableUrl,
+	tldValidation,
 }: LookupInputProps) => {
 	const { register, handleSubmit, getValues } = useForm<SubmitProps>({
 		defaultValues: {
@@ -222,8 +234,42 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 								)}
 							</IconButton>
 						</TextField.Slot>
-						{shareableUrl && (
+						{tldValidation && tldValidation.type !== "valid" && (
 							<TextField.Slot side="right">
+								<Tooltip
+									content={
+										tldValidation.type === "no-rdap" ? (
+											<Text size="2">
+												The TLD <strong>.{tldValidation.tld}</strong> exists
+												but is not available in the IANA RDAP registry. The
+												query will not return results.
+											</Text>
+										) : (
+											<Text size="2">
+												The TLD <strong>.{tldValidation.tld}</strong> is not
+												recognized as a valid top-level domain.
+											</Text>
+										)
+									}
+								>
+									{tldValidation.type === "no-rdap" ? (
+										<ExclamationTriangleIcon
+											width="16"
+											height="16"
+											style={{ color: "var(--orange-9)" }}
+										/>
+									) : (
+										<CrossCircledIcon
+											width="16"
+											height="16"
+											style={{ color: "var(--red-9)" }}
+										/>
+									)}
+								</Tooltip>
+							</TextField.Slot>
+						)}
+						{shareableUrl && (
+							<TextField.Slot side="right" pr="3">
 								<ShareButton url={shareableUrl} />
 							</TextField.Slot>
 						)}

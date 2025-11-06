@@ -30,10 +30,16 @@ const Index: NextPage = () => {
 		[router]
 	);
 
-	const { error, target, setTarget, setTargetType, submit, currentType, manualType } = useLookup(
-		undefined,
-		handleUrlUpdate
-	);
+	const {
+		error,
+		target,
+		setTarget,
+		setTargetType,
+		submit,
+		currentType,
+		manualType,
+		tldValidation,
+	} = useLookup(undefined, handleUrlUpdate);
 
 	// Parse URL parameters on mount and auto-execute query if present
 	useEffect(() => {
@@ -143,6 +149,7 @@ const Index: NextPage = () => {
 						<LookupInput
 							isLoading={isLoading}
 							detectedType={currentType}
+							tldValidation={tldValidation}
 							shareableUrl={
 								response.isJust && target && typeof window !== "undefined"
 									? buildShareableUrl(window.location.origin, target, manualType)

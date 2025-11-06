@@ -13,6 +13,7 @@ import {
 } from "@/rdap/services/type-detection";
 import { executeRdapQuery, HttpSecurityError } from "@/rdap/services/query";
 import { useTelemetry } from "@/contexts/TelemetryContext";
+import { validateDomainTld, type TldValidationResult } from "@/rdap/services/tld-validation";
 
 export type WarningHandler = (warning: { message: string }) => void;
 export type UrlUpdateHandler = (target: string, manuallySelectedType: TargetType | null) => void;
@@ -30,6 +31,9 @@ const useLookup = (warningHandler?: WarningHandler, urlUpdateHandler?: UrlUpdate
 
 	// Used by a callback on LookupInput to forcibly set the type of the lookup.
 	const [currentType, setTargetType] = useState<TargetType | null>(null);
+
+	// TLD validation state for real-time warnings
+	const [tldValidation, setTldValidation] = useState<TldValidationResult | null>(null);
 
 	// Used to allow repeatable lookups when weird errors happen.
 	const repeatableRef = useRef<string>("");
@@ -54,6 +58,45 @@ const useLookup = (warningHandler?: WarningHandler, urlUpdateHandler?: UrlUpdate
 
 		detectType().catch(console.error);
 	}, [debouncedTarget, currentType, getTypeEasy]);
+
+	// Validate TLD in real-time for domain inputs
+	useEffect(() => {
+		const validateTld = async () => {
+			// Clear validation when input is empty
+			if (debouncedTarget.length === 0) {
+				setTldValidation(null);
+				return;
+			}
+
+			// Only validate domains
+			const isDomain =
+				currentType === "domain" ||
+				(currentType === null && uriType.mapOr(false, (t) => t === "domain"));
+
+			if (!isDomain) {
+				setTldValidation(null);
+				return;
+			}
+
+			// Perform validation
+			const result = await validateDomainTld(debouncedTarget);
+			setTldValidation(result);
+
+			// Track telemetry for warnings/errors
+			if (result.type !== "valid") {
+				track({
+					name: "user_interaction",
+					properties: {
+						action: "tld_warning_shown",
+						component: "LookupInput",
+						value: result.type,
+					},
+				});
+			}
+		};
+
+		validateTld().catch(console.error);
+	}, [debouncedTarget, currentType, uriType, track]);
 
 	useEffect(() => {
 		const preload = async () => {
@@ -229,6 +272,7 @@ const useLookup = (warningHandler?: WarningHandler, urlUpdateHandler?: UrlUpdate
 		currentType: uriType,
 		manualType: currentType,
 		getType: getTypeEasy,
+		tldValidation,
 	};
 };
 

@@ -2,6 +2,7 @@ import type { RootRegistryType } from "@/rdap/schemas";
 import { getCachedRegistry } from "@/rdap/services/registry";
 import { domainMatchPredicate, getBestURL } from "@/rdap/utils";
 import { ipv4InCIDR, ipv6InCIDR, asnInRange } from "@/lib/network";
+import { extractTld, validateDomainTld } from "@/rdap/services/tld-validation";
 
 export interface URLQueryParams {
 	jsContact?: boolean;
@@ -11,11 +12,11 @@ export interface URLQueryParams {
 /**
  * Resolve the RDAP URL for a given registry type and lookup target
  */
-export function getRegistryURL(
+export async function getRegistryURL(
 	type: RootRegistryType,
 	lookupTarget: string,
 	queryParams?: URLQueryParams
-): string {
+): Promise<string> {
 	const bootstrap = getCachedRegistry(type);
 	if (bootstrap == null)
 		throw new Error(`Cannot acquire RDAP URL without bootstrap data for ${type} lookup.`);
@@ -23,7 +24,7 @@ export function getRegistryURL(
 	let url: string | null = null;
 
 	typeSwitch: switch (type) {
-		case "domain":
+		case "domain": {
 			for (const bootstrapItem of bootstrap.services) {
 				if (bootstrapItem[0].some(domainMatchPredicate(lookupTarget))) {
 					// min length of 1 is validated in zod schema
@@ -31,7 +32,31 @@ export function getRegistryURL(
 					break typeSwitch;
 				}
 			}
-			throw new Error(`No matching domain found.`);
+
+			// Domain not found in RDAP registry - provide detailed error
+			const tld = extractTld(lookupTarget);
+			if (!tld) {
+				throw new Error(
+					`Invalid domain format: "${lookupTarget}". Expected format: example.com`
+				);
+			}
+
+			// Validate TLD to provide context-specific error
+			const validation = await validateDomainTld(lookupTarget);
+
+			if (validation.type === "invalid") {
+				throw new Error(
+					`The TLD ".${validation.tld}" is not recognized as a valid top-level domain. Please verify the domain name is correct.`
+				);
+			} else if (validation.type === "no-rdap") {
+				throw new Error(
+					`The TLD ".${validation.tld}" exists but is not available in the IANA RDAP registry. This TLD does not support RDAP lookups.`
+				);
+			}
+
+			// Fallback (should not reach here given validation logic)
+			throw new Error(`No RDAP server found for domain "${lookupTarget}".`);
+		}
 		case "ip4": {
 			// Extract the IP address without CIDR suffix for matching
 			const [ipAddress] = lookupTarget.split("/");

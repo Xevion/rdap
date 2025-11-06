@@ -2,6 +2,19 @@ import type { ZodSchema } from "zod";
 import { Result } from "true-myth";
 
 /**
+ * Custom error for 404 Not Found responses that includes the URL for context.
+ */
+export class NotFoundError extends Error {
+	constructor(
+		message: string,
+		public url: string
+	) {
+		super(message);
+		this.name = "NotFoundError";
+	}
+}
+
+/**
  * Fetch and parse RDAP data from a URL
  * @param url - The URL to fetch
  * @param schema - The Zod schema to validate the response
@@ -63,8 +76,9 @@ export async function getAndParse<T>(
 
 		case 404:
 			return Result.err(
-				new Error(
-					"The registry indicated that the resource requested could not be found; the resource either does not exist, or is something that the registry does not track (i.e. this software queried incorrectly, which is unlikely)."
+				new NotFoundError(
+					"The registry indicated that the resource requested could not be found.",
+					url
 				)
 			);
 		case 500:

@@ -8,7 +8,7 @@ import {
 import { Result } from "true-myth";
 import { loadBootstrap } from "@/rdap/services/registry";
 import { getRegistryURL } from "@/rdap/services/resolver";
-import { getAndParse } from "@/rdap/services/api";
+import { getAndParse, NotFoundError } from "@/rdap/services/api";
 import type { ParsedGeneric } from "@/rdap/components/RdapObjectRouter";
 
 // An array of schemas to try and parse unknown JSON data with.
@@ -74,21 +74,35 @@ export async function executeRdapQuery(
 		// Block scoped case to allow url const reuse
 		case "ip4": {
 			await loadBootstrap("ip4");
-			const url = getRegistryURL(targetType, target, queryParams);
+			const url = await getRegistryURL(targetType, target, queryParams);
 			const result = await getAndParse<IpNetwork>(url, IpNetworkSchema, followReferral);
-			if (result.isErr) return Result.err(result.error);
+			if (result.isErr) {
+				if (result.error instanceof NotFoundError) {
+					return Result.err(
+						new Error(`The IP address "${target}" was not found in the registry.`)
+					);
+				}
+				return Result.err(result.error);
+			}
 			return Result.ok({ data: result.value, url });
 		}
 		case "ip6": {
 			await loadBootstrap("ip6");
-			const url = getRegistryURL(targetType, target, queryParams);
+			const url = await getRegistryURL(targetType, target, queryParams);
 			const result = await getAndParse<IpNetwork>(url, IpNetworkSchema, followReferral);
-			if (result.isErr) return Result.err(result.error);
+			if (result.isErr) {
+				if (result.error instanceof NotFoundError) {
+					return Result.err(
+						new Error(`The IP address "${target}" was not found in the registry.`)
+					);
+				}
+				return Result.err(result.error);
+			}
 			return Result.ok({ data: result.value, url });
 		}
 		case "domain": {
 			await loadBootstrap("domain");
-			const url = getRegistryURL(targetType, target, queryParams);
+			const url = await getRegistryURL(targetType, target, queryParams);
 
 			// HTTP
 			if (url.startsWith("http://") && url != repeatableUrl) {
@@ -102,19 +116,37 @@ export async function executeRdapQuery(
 				);
 			}
 			const result = await getAndParse<Domain>(url, DomainSchema, followReferral);
-			if (result.isErr) return Result.err(result.error);
+			if (result.isErr) {
+				if (result.error instanceof NotFoundError) {
+					return Result.err(
+						new Error(
+							`The domain "${target}" was not found in the registry. It may not be registered or may have expired.`
+						)
+					);
+				}
+				return Result.err(result.error);
+			}
 
 			return Result.ok({ data: result.value, url });
 		}
 		case "autnum": {
 			await loadBootstrap("autnum");
-			const url = getRegistryURL(targetType, target, queryParams);
+			const url = await getRegistryURL(targetType, target, queryParams);
 			const result = await getAndParse<AutonomousNumber>(
 				url,
 				AutonomousNumberSchema,
 				followReferral
 			);
-			if (result.isErr) return Result.err(result.error);
+			if (result.isErr) {
+				if (result.error instanceof NotFoundError) {
+					return Result.err(
+						new Error(
+							`The autonomous system number "${target}" was not found in the registry.`
+						)
+					);
+				}
+				return Result.err(result.error);
+			}
 			return Result.ok({ data: result.value, url });
 		}
 		case "tld": {
@@ -127,7 +159,14 @@ export async function executeRdapQuery(
 			const baseUrl = `https://root.rdap.org/domain/${value}`;
 			const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
 			const result = await getAndParse<Domain>(url, DomainSchema, followReferral);
-			if (result.isErr) return Result.err(result.error);
+			if (result.isErr) {
+				if (result.error instanceof NotFoundError) {
+					return Result.err(
+						new Error(`The TLD "${target}" was not found in the root zone.`)
+					);
+				}
+				return Result.err(result.error);
+			}
 			return Result.ok({ data: result.value, url });
 		}
 		case "url": {
@@ -164,9 +203,16 @@ export async function executeRdapQuery(
 		}
 		case "entity": {
 			await loadBootstrap("entity");
-			const url = getRegistryURL(targetType, target, queryParams);
+			const url = await getRegistryURL(targetType, target, queryParams);
 			const result = await getAndParse<Entity>(url, EntitySchema, followReferral);
-			if (result.isErr) return Result.err(result.error);
+			if (result.isErr) {
+				if (result.error instanceof NotFoundError) {
+					return Result.err(
+						new Error(`The entity "${target}" was not found in the registry.`)
+					);
+				}
+				return Result.err(result.error);
+			}
 			return Result.ok({ data: result.value, url });
 		}
 		case "registrar":
