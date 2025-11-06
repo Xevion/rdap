@@ -7,7 +7,7 @@
 		":automergeDigest",
 		":automergeMinor"
 	],
-	"schedule": ["after 10pm every weekday", "before 5am every weekday", "every weekend"],
+	"schedule": ["before 5am on monday"],
 	"timezone": "America/Chicago",
 	"prConcurrentLimit": 3,
 	"prCreation": "not-pending",
@@ -20,61 +20,23 @@
 	},
 	"packageRules": [
 		{
-			"description": "Automerge dev dependencies",
-			"matchDepTypes": ["devDependencies"],
+			"description": "Group all non-major dependency updates together",
+			"groupName": "all non-major dependencies",
+			"matchUpdateTypes": ["minor", "patch", "digest"],
 			"automerge": true,
 			"automergeType": "pr",
 			"minimumReleaseAge": "3 days"
 		},
 		{
-			"description": "Automerge TypeScript type packages",
-			"automerge": true,
-			"automergeType": "pr",
-			"matchPackageNames": ["/^@types//"]
-		},
-		{
-			"description": "Group ESLint packages together",
-			"groupName": "eslint packages",
-			"automerge": true,
-			"matchPackageNames": ["/^eslint/", "/^@typescript-eslint//"]
-		},
-		{
-			"description": "Group testing packages together",
-			"groupName": "testing packages",
-			"automerge": true,
-			"matchPackageNames": ["/^vitest/", "/^@vitest//", "/^@testing-library//"]
-		},
-		{
-			"description": "Group Next.js related packages",
-			"matchPackageNames": ["next", "eslint-config-next"],
-			"groupName": "Next.js packages",
-			"minimumReleaseAge": "7 days"
-		},
-		{
-			"description": "Group React packages",
-			"matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
-			"groupName": "React packages",
+			"description": "Major updates get individual PRs for review",
+			"matchUpdateTypes": ["major"],
+			"automerge": false,
 			"minimumReleaseAge": "7 days"
 		},
 		{
 			"description": "Pin Node.js major versions",
 			"matchPackageNames": ["node"],
 			"enabled": false
-		},
-		{
-			"description": "Group Tailwind CSS packages",
-			"groupName": "Tailwind CSS packages",
-			"matchPackageNames": [
-				"/^tailwindcss/",
-				"/^@tailwindcss//",
-				"/prettier-plugin-tailwindcss/"
-			]
-		},
-		{
-			"description": "Group font packages",
-			"groupName": "font packages",
-			"automerge": true,
-			"matchPackageNames": ["/^@fontsource/"]
 		}
 	],
 	"postUpdateOptions": ["pnpmDedupe"],
