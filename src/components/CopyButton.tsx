@@ -70,8 +70,11 @@ const CopyButton: FunctionComponent<CopyButtonProps> = ({
 	// Consolidated timer effect: Reset copied state, tooltip, and force-open flag
 	useEffect(() => {
 		if (copied) {
-			forceOpenRef.current = true;
-			setTooltipOpen(true);
+			// Schedule state updates to avoid synchronous setState in effect
+			queueMicrotask(() => {
+				forceOpenRef.current = true;
+				setTooltipOpen(true);
+			});
 
 			const timer = setTimeout(() => {
 				setCopied(false);

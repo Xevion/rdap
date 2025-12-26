@@ -27,7 +27,8 @@ export const ThemeToggle = () => {
 
 	// Avoid hydration mismatch by only rendering after mount
 	useEffect(() => {
-		setMounted(true);
+		// Schedule state update to avoid synchronous setState in effect
+		queueMicrotask(() => setMounted(true));
 	}, []);
 
 	if (!mounted) {
