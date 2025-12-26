@@ -145,7 +145,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 		if (showingPlaceholder) {
 			setShowingPlaceholder(false);
 		}
-	}, [detectedType]);
+	}, [detectedType, showingPlaceholder]);
 
 	/**
 	 * Restore focus to the input when loading completes.
@@ -160,6 +160,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 		}
 	}, [isLoading]);
 
+	/* eslint-disable react-hooks/refs -- False positive: isFocusedRef only accessed in event handlers, not during render */
 	return (
 		<form
 			className="pb-2.5"
@@ -342,6 +343,7 @@ const LookupInput: FunctionComponent<LookupInputProps> = ({
 			</Flex>
 		</form>
 	);
+	/* eslint-enable react-hooks/refs */
 };
 
 export default LookupInput;
