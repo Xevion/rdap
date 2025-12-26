@@ -1,8 +1,9 @@
 {
 	"name": "rdap",
-	"version": "0.9.0",
+	"version": "0.9.1",
 	"private": true,
 	"scripts": {
+		"preinstall": "npx only-allow pnpm",
 		"build": "next build",
 		"dev": "next dev",
 		"start": "next start",
