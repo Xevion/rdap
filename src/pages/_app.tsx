@@ -21,7 +21,13 @@ const MyApp: AppType = ({ Component, pageProps }) => {
 				// Cloudflare Rocket Loader breaks the script injection and causes theme flashing
 				scriptProps={{ "data-cfasync": "false" }}
 			>
-				<Theme accentColor="indigo" grayColor="slate" radius="medium" scaling="100%">
+				<Theme
+					accentColor="indigo"
+					grayColor="slate"
+					radius="medium"
+					scaling="100%"
+					panelBackground="solid"
+				>
 					<TelemetryProvider>
 						<DateFormatProvider>
 							<Component {...pageProps} />
