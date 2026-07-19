@@ -301,9 +301,11 @@ export const AutonomousNumberSchema = z.object({
 	startAutnum: z.number().positive(), // TODO: 32bit
 	endAutnum: z.number().positive(), // TODO: 32bit
 	name: z.string(),
-	type: z.string(),
+	// RFC 9083 makes both optional, and in practice no RIR returns both: ARIN, RIPE
+	// and AFRINIC omit each of them, APNIC sends only country, LACNIC only type.
+	type: z.string().optional(),
 	status: z.array(StatusEnum),
-	country: z.string().length(2),
+	country: z.string().length(2).optional(),
 	events: z.array(EventSchema),
 	get entities() {
 		return z.array(EntitySchema).optional();

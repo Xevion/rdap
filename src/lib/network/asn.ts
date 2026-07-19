@@ -36,19 +36,23 @@ export function findASN(asn: number, ranges: string[]) {
 
 /**
  * Check if an ASN falls within a range
+ *
+ * IANA encodes single-ASN allocations without a dash, so "2043" is a valid
+ * range covering only AS2043.
+ *
  * @param asn The ASN number to check (e.g., 13335 for Cloudflare)
- * @param range The range to check against (e.g., "13312-18431")
+ * @param range The range to check against (e.g., "13312-18431" or "2043")
  * @returns true if the ASN is within the range
  */
 export function asnInRange(asn: number, range: string): boolean {
 	const parts = range.split("-");
 
-	if (parts.length !== 2) {
+	if (parts.length < 1 || parts.length > 2) {
 		return false;
 	}
 
 	const start = parseInt(parts[0] ?? "", 10);
-	const end = parseInt(parts[1] ?? "", 10);
+	const end = parts.length === 2 ? parseInt(parts[1] ?? "", 10) : start;
 
 	if (isNaN(start) || isNaN(end) || start < 0 || end < 0 || start > end) {
 		return false;

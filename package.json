@@ -9,6 +9,8 @@
 		"start": "next start",
 		"test": "vitest run",
 		"test:coverage": "vitest run --coverage",
+		"test:live": "vitest run --config vitest.live.config.ts",
+		"fixtures:refresh": "node scripts/refresh-fixtures.mjs",
 		"check": "tsc --noEmit && eslint .",
 		"lint:fix": "eslint . --fix",
 		"format": "prettier --write .",

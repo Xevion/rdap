@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { asnInRange } from "@/lib/network";
+import { asnInRange, findASN } from "@/lib/network";
+import { allKeys, asnBounds } from "@/test/fixtures";
 
 describe("asnInRange", () => {
 	describe("basic matching", () => {
@@ -29,46 +30,61 @@ describe("asnInRange", () => {
 		});
 	});
 
-	describe("real-world ASN ranges from IANA", () => {
-		// ARIN ranges
-		it("should match ARIN ASN ranges", () => {
-			// ARIN typically has ranges like 1-1876, 1902-2042, etc.
-			expect(asnInRange(100, "1-1876")).toBe(true);
-			expect(asnInRange(1876, "1-1876")).toBe(true);
-			expect(asnInRange(2000, "1902-2042")).toBe(true);
+	describe("single-value ranges", () => {
+		// IANA writes a one-ASN allocation without a dash. Fixtures that only ever
+		// contained "start-end" ranges hid this for the whole life of the function.
+		it.each([2043, 2047, 1, 65535, 4294967295])(
+			"should match the bare range %d against itself",
+			(asn) => {
+				expect(asnInRange(asn, String(asn))).toBe(true);
+			}
+		);
+
+		it.each([
+			[2042, "2043"],
+			[2044, "2043"],
+			[0, "2043"],
+		])("should not match %d against the bare range %s", (asn, range) => {
+			expect(asnInRange(asn, range)).toBe(false);
+		});
+	});
+
+	describe("ranges as IANA actually publishes them", () => {
+		const ranges = allKeys("autnum");
+
+		it("should cover every published range at both bounds", () => {
+			const failures = ranges.filter(({ key }) => {
+				const { start, end } = asnBounds(key);
+				return !asnInRange(start, key) || !asnInRange(end, key);
+			});
+
+			expect(failures).toEqual([]);
+			expect(ranges.length).toBeGreaterThan(150);
 		});
 
-		// RIPE ranges
-		it("should match RIPE ASN ranges", () => {
-			// RIPE has ranges like 1877-1901, 2043-2109, etc.
-			expect(asnInRange(1900, "1877-1901")).toBe(true);
-			expect(asnInRange(2100, "2043-2109")).toBe(true);
+		it("should exclude the ASN immediately outside every published range", () => {
+			const failures = ranges.filter(({ key }) => {
+				const { start, end } = asnBounds(key);
+				return (start > 0 && asnInRange(start - 1, key)) || asnInRange(end + 1, key);
+			});
+
+			expect(failures).toEqual([]);
 		});
 
-		// APNIC ranges
-		it("should match APNIC ASN ranges", () => {
-			// APNIC has ranges like 2110-2136, 4608-4864, etc.
-			expect(asnInRange(2120, "2110-2136")).toBe(true);
-			expect(asnInRange(4700, "4608-4864")).toBe(true);
-		});
+		it("should assign every published range to exactly one registry", () => {
+			// Overlapping ranges would make resolution order-dependent and therefore
+			// silently dependent on IANA's ordering within the file.
+			const overlaps: string[] = [];
+			for (const { key, url } of ranges) {
+				const { start } = asnBounds(key);
+				const matches = ranges.filter((other) => asnInRange(start, other.key));
+				const distinct = new Set(matches.map((m) => m.url));
+				if (distinct.size > 1) {
+					overlaps.push(`AS${start} (${key} -> ${url}) also matches ${[...distinct]}`);
+				}
+			}
 
-		// Well-known ASNs
-		it("should match Google ASN (AS15169)", () => {
-			// Google's ASN 15169 falls in range that includes it
-			expect(asnInRange(15169, "15000-16000")).toBe(true);
-			expect(asnInRange(15169, "15169-15169")).toBe(true);
-			expect(asnInRange(15169, "15360-16383")).toBe(false); // Not in this range
-		});
-
-		it("should match Cloudflare ASN (AS13335)", () => {
-			// Cloudflare's ASN 13335 should be in ARIN range 13312-18431
-			expect(asnInRange(13335, "13312-18431")).toBe(true);
-		});
-
-		it("should match Amazon ASN (AS16509)", () => {
-			// Amazon's ASN 16509
-			expect(asnInRange(16509, "15360-16383")).toBe(false);
-			expect(asnInRange(16509, "16384-18431")).toBe(true);
+			expect(overlaps).toEqual([]);
 		});
 	});
 
@@ -106,12 +122,50 @@ describe("asnInRange", () => {
 		});
 	});
 
+	describe("findASN", () => {
+		// findASN is exported but nothing in the application calls it; the resolver
+		// uses asnInRange directly. These tests pin its behavior so its removal is a
+		// deliberate decision rather than an accident.
+		const sorted = ["1-100", "200-300", "400-500"];
+
+		it.each([
+			[1, 0],
+			[50, 0],
+			[100, 0],
+			[200, 1],
+			[300, 1],
+			[450, 2],
+		])("should locate AS%d at index %d", (asn, expected) => {
+			expect(findASN(asn, sorted)).toBe(expected);
+		});
+
+		it.each([0, 150, 350, 600])("should return -1 for the unlisted AS%d", (asn) => {
+			expect(findASN(asn, sorted)).toBe(-1);
+		});
+
+		it("should return -1 for an empty range list", () => {
+			expect(findASN(100, [])).toBe(-1);
+		});
+
+		it("requires sorted input, unlike asnInRange", () => {
+			// Binary search silently misses matches when ranges are out of order. The
+			// resolver's linear asnInRange scan has no such requirement.
+			const unsorted = ["200-300", "400-500", "1-100"];
+
+			expect(findASN(50, unsorted)).toBe(-1);
+			expect(unsorted.some((range) => asnInRange(50, range))).toBe(true);
+		});
+	});
+
 	describe("edge cases", () => {
-		it("should handle invalid range format", () => {
-			expect(asnInRange(100, "invalid")).toBe(false);
-			expect(asnInRange(100, "100")).toBe(false);
-			expect(asnInRange(100, "100-")).toBe(false);
-			expect(asnInRange(100, "-100")).toBe(false);
+		it.each([
+			["non-numeric", "invalid"],
+			["missing end", "100-"],
+			["missing start", "-100"],
+			["three parts", "1-2-3"],
+			["empty", ""],
+		])("should reject a range with %s (%s)", (_name, range) => {
+			expect(asnInRange(100, range)).toBe(false);
 		});
 
 		it("should handle negative numbers gracefully", () => {

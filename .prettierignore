@@ -15,6 +15,9 @@ build
 # Coverage
 coverage
 
+# Snapshots of IANA bootstrap data, written verbatim by scripts/refresh-fixtures.mjs
+src/test/fixtures/*.json
+
 # Misc
 .DS_Store
 *.log
