@@ -22,6 +22,8 @@ export async function getRegistryURL(
 		throw new Error(`Cannot acquire RDAP URL without bootstrap data for ${type} lookup.`);
 
 	let url: string | null = null;
+	// The value placed in the RDAP path, which may need normalization from the user's input
+	let pathTarget = lookupTarget;
 
 	typeSwitch: switch (type) {
 		case "domain": {
@@ -95,6 +97,9 @@ export async function getRegistryURL(
 				throw new Error(`Invalid ASN number: ${lookupTarget}`);
 			}
 
+			// ARIN rejects the "AS" prefix, so query with the bare number everywhere
+			pathTarget = asnNumber.toString();
+
 			for (const bootstrapItem of bootstrap.services) {
 				// bootstrapItem[0] contains ASN ranges like ["64512-65534", "13312-18431"]
 				if (bootstrapItem[0].some((range) => asnInRange(asnNumber, range))) {
@@ -156,7 +161,7 @@ export async function getRegistryURL(
 	}
 
 	const queryString = params.toString();
-	const baseUrl = `${url}${rdapPath}/${lookupTarget}`;
+	const baseUrl = `${url}${rdapPath}/${pathTarget}`;
 
 	return queryString ? `${baseUrl}?${queryString}` : baseUrl;
 }
