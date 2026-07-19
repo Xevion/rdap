@@ -1,8 +1,8 @@
 // see https://www.iana.org/assignments/rdap-json-values
 import type { RdapStatusType, RootRegistryType, SimplifiedTargetType } from "@/rdap/schemas";
-import type { badgePropDefs } from "@radix-ui/themes/src/components/badge.props";
+import type { BadgeProps } from "@radix-ui/themes";
 
-type BadgeColor = (typeof badgePropDefs)["color"]["values"][number];
+type BadgeColor = NonNullable<BadgeProps["color"]>;
 
 export const rdapStatusColors: Record<RdapStatusType, BadgeColor> = {
 	active: "jade",
