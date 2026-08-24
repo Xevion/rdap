@@ -14,10 +14,13 @@
 	"rebaseWhen": "behind-base-branch",
 	"semanticCommitScope": "deps",
 	"vulnerabilityAlerts": {
+		"enabled": true,
 		"labels": ["security"],
 		"automerge": true,
-		"schedule": ["at any time"]
+		"schedule": ["at any time"],
+		"minimumReleaseAge": null
 	},
+	"osvVulnerabilityAlerts": true,
 	"packageRules": [
 		{
 			"description": "Group all non-major dependency updates together",
