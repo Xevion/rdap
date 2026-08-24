@@ -57,11 +57,7 @@ export type ErrorEvent = {
 	name: "error";
 	properties: {
 		errorType:
-			| "rdap_query_error"
-			| "network_error"
-			| "validation_error"
-			| "runtime_error"
-			| string;
+			"rdap_query_error" | "network_error" | "validation_error" | "runtime_error" | string;
 		message: string;
 		stack?: string;
 		context?: Record<string, unknown>;

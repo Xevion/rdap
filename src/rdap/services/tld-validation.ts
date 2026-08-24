@@ -6,9 +6,7 @@
  */
 
 export type TldValidationResult =
-	| { type: "valid" }
-	| { type: "no-rdap"; tld: string }
-	| { type: "invalid"; tld: string };
+	{ type: "valid" } | { type: "no-rdap"; tld: string } | { type: "invalid"; tld: string };
 
 // Cache for IANA TLD list
 let tldListCache: Set<string> | null = null;
