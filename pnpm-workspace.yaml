@@ -5,7 +5,7 @@ overrides:
     "esbuild": "^0.28.1"
     "flatted": "^3.4.2"
     "js-yaml@4": "^4.2.0"
-    "picomatch@2": "^2.3.2"
+    "picomatch@2": "^4.0.0"
     "picomatch@4": "^4.0.5"
     "postcss": "^8.5.20"
     "undici": "^6.28.0"
